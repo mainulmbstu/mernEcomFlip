@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -14,7 +14,6 @@ const ProductUpdateInput = ({ value }) => {
     price: "",
     quantity: "",
     picture: [],
-    shipping: "",
   });
   let { token, category, loading, setLoading } = useAuth();
   // eslint-disable-next-line react/prop-types
@@ -22,13 +21,13 @@ const ProductUpdateInput = ({ value }) => {
 
   if (editProduct?.name && trix) {
     setInputVal({
-      name: editProduct.name,
-      description: editProduct.description,
-      category: editProduct.category._id,
-      price: editProduct.price,
-      quantity: editProduct.quantity,
+      name: editProduct?.name,
+      description: editProduct?.description,
+      // eslint-disable-next-line react/prop-types
+      category: editProduct?.category?._id,
+      price: editProduct?.price,
+      quantity: editProduct?.quantity,
       picture: "",
-      shipping: editProduct.shipping,
     });
     setTrix(false);
   }
@@ -37,24 +36,22 @@ const ProductUpdateInput = ({ value }) => {
     let { name, value } = e.target;
     setInputVal((prev) => ({ ...prev, [name]: value }));
   };
-//=======================================
+  //=======================================
+  let refCat=useRef()
   let productSubmit = async (e) => {
     e.preventDefault();
 
     let formdata = new FormData();
     inputVal?.picture?.length &&
-      inputVal.picture.length &&
       inputVal.picture.map((item) => formdata.append("picture", item));
     formdata.append("name", inputVal.name);
     formdata.append("description", inputVal.description);
     formdata.append("category", inputVal.category);
     formdata.append("price", inputVal.price);
     formdata.append("quantity", inputVal.quantity);
-    formdata.append("shipping", inputVal.shipping);
     try {
       setLoading(true);
-
-      let { data } = await axios.post(
+            let { data } = await axios.post(
         // eslint-disable-next-line react/prop-types
         `${import.meta.env.VITE_BASE_URL}/products/update-product/${editProduct?._id}`,
         formdata,
@@ -69,7 +66,8 @@ const ProductUpdateInput = ({ value }) => {
         toast.success(data.msg);
         setTrix(true);
         setEditProduct("");
-       getProducts();
+        getProducts();
+        refCat.current.value=''
         setLoading(false);
       } else {
         toast.error(data.msg);
@@ -144,6 +142,7 @@ const ProductUpdateInput = ({ value }) => {
 
                 <div className="mb-2">
                   <input
+                    ref={refCat}
                     className="form-control"
                     list="categoryList"
                     type={"text"}
@@ -161,7 +160,7 @@ const ProductUpdateInput = ({ value }) => {
                   />
 
                   <datalist id="categoryList">
-                    {category.map((item) => {
+                    {category?.length && category.map((item) => {
                       return <option key={item._id} value={item.slug}></option>;
                     })}
                   </datalist>
@@ -185,26 +184,6 @@ const ProductUpdateInput = ({ value }) => {
                   placeholder="Enter quantity"
                 />
 
-                <div className="input-group mb-3">
-                  <label className="input-group-text" htmlFor="shipping">
-                    Shipping
-                  </label>
-                  <select
-                    name="shipping"
-                    onChange={(e) => {
-                      return setInputVal((prev) => ({
-                        ...prev,
-                        shipping: e.target.value,
-                      }));
-                    }}
-                    className="form-select"
-                    id="shipping"
-                  >
-                    <option>{inputVal.shipping ? "Yes" : "No"} </option>
-                    <option value="0">No</option>
-                    <option value="1">Yes</option>
-                  </select>
-                </div>
 
                 <div>
                   <label htmlFor="pic" className="btn">
@@ -242,7 +221,10 @@ const ProductUpdateInput = ({ value }) => {
                     <p>Current Image</p>
                     <img
                       // eslint-disable-next-line react/prop-types
-                      src={editProduct?.picture?.length && editProduct?.picture[0]?.secure_url}
+                      src={
+                        editProduct?.picture?.length &&
+                        editProduct?.picture[0]?.secure_url
+                      }
                       alt="image"
                       className="img img-responsive"
                       height={"100px"}
@@ -304,4 +286,4 @@ const ProductUpdateInput = ({ value }) => {
   );
 };
 
-export default ProductUpdateInput;
+export default  ProductUpdateInput;

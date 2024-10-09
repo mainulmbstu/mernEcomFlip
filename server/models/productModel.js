@@ -24,7 +24,6 @@ const productSchema = new mongoose.Schema(
     //   secure_url: { type: String, required: true },
     //   public_id: { type: String, required: true },
     // },
-    shipping: { type: Boolean},
     amount: { type: Number, default:1},
   },
   { timestamps: true }

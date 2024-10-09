@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import AdminMenu from "./AdminMenu";
 import Layout from "../../components/Layout";
-import Loading from "../../components/Loading";
 import axios from "axios";
 import InfiniteScroll from "react-infinite-scroll-component";
 import DeleteModal from "../../components/DeleteModal";

@@ -13,10 +13,9 @@ const ProductInput = ({ getProducts }) => {
     price: "",
     quantity: "",
     picture: '',
-    shipping: 0,
   });
 
-  let { token, category } = useAuth();
+  let { token, catPlain } = useAuth();
   let inputHandle = (e) => {
     let { name, value } = e.target;
     setInputVal((prev) => ({ ...prev, [name]: value }));
@@ -35,7 +34,6 @@ const ProductInput = ({ getProducts }) => {
     formdata.append("category", inputVal.category);
     formdata.append("price", inputVal.price);
     formdata.append("quantity", inputVal.quantity);
-    formdata.append("shipping", inputVal.shipping);
     try {
       setLoading(true);
 
@@ -59,7 +57,6 @@ const ProductInput = ({ getProducts }) => {
           price: "",
           quantity: "",
           picture: inputVal.picture,
-          shipping: 0,
         });
         setLoading(false);
         // window.location.reload();
@@ -180,9 +177,9 @@ const ProductInput = ({ getProducts }) => {
                     type={"text"}
                     placeholder="Select category"
                     onChange={(e) => {
-                      let cat = category.filter(
-                        (item) => item.slug === e.target.value
-                      );
+                      let cat =
+                        catPlain?.length &&
+                        catPlain.filter((item) => item.slug === e.target.value);
                       setInputVal((prev) => ({
                         ...prev,
                         category: cat[0]?._id,
@@ -190,8 +187,8 @@ const ProductInput = ({ getProducts }) => {
                     }}
                   />
                   <datalist id="categoryList">
-                    {category?.length &&
-                      category.map((item) => {
+                    {catPlain?.length &&
+                      catPlain.map((item) => {
                         return (
                           <option key={item._id} value={item.slug}></option>
                         );
@@ -216,27 +213,6 @@ const ProductInput = ({ getProducts }) => {
                   value={inputVal.quantity}
                   placeholder="Enter quantity"
                 />
-
-                <div className="input-group mb-3">
-                  <label className="input-group-text" htmlFor="shipping">
-                    Shipping
-                  </label>
-                  <select
-                    name="shipping"
-                    onChange={(e) => {
-                      return setInputVal((prev) => ({
-                        ...prev,
-                        shipping: e.target.value,
-                      }));
-                    }}
-                    className="form-select"
-                    id="shipping"
-                  >
-                    {/* <option selected>Choose...</option> */}
-                    <option value={0}>No</option>
-                    <option value={1}>Yes</option>
-                  </select>
-                </div>
 
                 <div>
                   <label htmlFor="pic" className="">

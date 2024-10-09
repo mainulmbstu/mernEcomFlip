@@ -4,10 +4,9 @@ const categorySchema = new mongoose.Schema(
   {
     name: { type: String, required: true, trim: true, unique: true },
     slug: { type: String, lowercase: true },
-    parentId: { type: String, default: "" },
+    parentId: { type: String },
     picture: {
       type: String,
-      default: "",
     },
     user: {
       type: mongoose.Schema.Types.ObjectId, // or mongoose.ObjectId

@@ -13,7 +13,7 @@ const { OrderModel } = require("../models/OrderModel");
 //==================================================
 const createProduct = async (req, res) => {
   try {
-    const { name, description, category, price, quantity, shipping } = req.body;
+    const { name, description, category, price, quantity} = req.body;
     // console.log(req.files);
     const pictures = req.files
     if (!name || !description || !category || !price || !quantity) {
@@ -40,7 +40,6 @@ const createProduct = async (req, res) => {
       quantity,
       user: req.user?._id,
       picture:links,
-      shipping,
     });
     res
       .status(201)
@@ -91,16 +90,34 @@ const createProduct = async (req, res) => {
 //   }
 // };
 //======================================
-
+const productListLimit = async (req, res) => {
+  try {
+    let page = req.query.page ? req.query.page : 1;
+    let size = req.query.size ? req.query.size : 4;
+    let skip = (page - 1) * size;
+    const total = await ProductModel.find({}).estimatedDocumentCount();
+    const products = await ProductModel.find({})
+      .skip(skip)
+      .limit(size)
+      .populate("category")
+      .sort({ createdAt: -1 });
+    if (!products || products.length === 0) {
+      return res.send({ msg: "No data found", products, total });
+    }
+    res.status(200).send({ products, total });
+  } catch (error) {
+    res.status(401).json({ msg: "error from productListLimit", error });
+  }
+};
+//==============================================
 const updateProduct = async (req, res) => {
   try {
     let pid = req.params.pid;
-    const { name, description, category, price, quantity, shipping } = req.body;
-    // const picture = req.file?.fieldname;
+    const { name, description, category, price, quantity } = req.body;
     const pictures = req.files;
     let product = await ProductModel.findById(pid);
     if (!product) {
-      return res.status(400).send({ msg: "No data found" });
+      return res.send({ msg: "No data found" });
     }
 
     if (name) product.name = name;
@@ -109,7 +126,6 @@ const updateProduct = async (req, res) => {
     if (category) product.category = category;
     if (price) product.price = price;
     if (quantity) product.quantity = quantity;
-    if (shipping) product.shipping = shipping;
 
 
     // upload and delete image on cloudinary
@@ -465,25 +481,7 @@ const orderFail = async (req, res) => {
   }
 };
 //==============================================================
-const productListLimit = async (req, res) => {
-  try {
-    let page = req.query.page ? req.query.page : 1;
-    let size = req.query.size ? req.query.size : 4;
-    let skip = (page - 1) * size;
-    const total = await ProductModel.find({}).estimatedDocumentCount();
-    const products = await ProductModel.find({})
-      .skip(skip)
-      .limit(size)
-      .populate("category")
-      .sort({ createdAt: -1 });
-    if (!products || products.length === 0) {
-      return res.status(400).send({ msg: "No data found" });
-    }
-    res.status(200).send({ products, total });
-  } catch (error) {
-    res.status(401).json({ msg: "error from productListLimit", error });
-  }
-};
+
 
 module.exports = {
   createProduct,

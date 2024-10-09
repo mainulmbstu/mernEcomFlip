@@ -128,4 +128,21 @@ img {
   z-index: 9999;
 }
 
+.myCat ul {
+  margin-left: 15px;
+  text-transform: capitalize;
+}
+.myCat li {
+  text-transform: capitalize;
+}
+
+.form-control{
+  border: 1px solid rgb(168, 151, 151);
+}
+
+
+
+
+
+
 

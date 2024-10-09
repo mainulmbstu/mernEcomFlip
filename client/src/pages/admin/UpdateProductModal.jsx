@@ -1,6 +1,9 @@
 import ProductUpdateInput from "./ProductUpdateInput";
 
-const UpdateProductModal = ({value}) => {
+const UpdateProductModal = ({ value }) => {
+  
+
+  
   return (
     <div>
       <div>

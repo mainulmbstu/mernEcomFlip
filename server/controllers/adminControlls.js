@@ -20,7 +20,7 @@ const userList = async (req, res) => {
       .limit(size)
       .sort({ updatedAt: -1 });
     if (!userList || userList.length === 0) {
-      return res.status(400).send({ msg: "No data found" });
+      return res.send({ msg: "No data found", userList, total });
     }
     res.status(200).send({ userList, total });
   } catch (error) {
@@ -149,7 +149,7 @@ const adminProductList = async (req, res) => {
       .populate("category")
       .sort({ updatedAt: -1 });
     if (!products || products.length === 0) {
-      return res.status(400).send({ msg: "No data found" });
+      return res.send({ msg: "No data found", products, total });
     }
     res.status(200).send({ products, total });
   } catch (error) {

@@ -13,35 +13,39 @@ const AuthContextProvider = ({ children }) => {
 
   //   let isLoggedIn = !!token; // isLoggedIn true/false if token true/false
   const getUserInfo = () => {
-   if (token) {
-     fetch(`${import.meta.env.VITE_BASE_URL}/user`, {
-       method: "GET",
-       headers: { Authorization: `Bearer ${token}` },
-     })
-       .then((res) => res.json())
-       .then((data) => {
-         if (data.userData === 'token expired') {
-           localStorage.removeItem('token')
+    if (token) {
+      fetch(`${import.meta.env.VITE_BASE_URL}/user`, {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.userData === "token expired") {
+            localStorage.removeItem("token");
             setToken("");
-           setUserInfo('')
+            setUserInfo("");
           }
-          setUserInfo(data.userData)
-       })
-       .catch((error) => console.log(error));
-   }
-}
+          setUserInfo(data.userData);
+        })
+        .catch((error) => console.log(error));
+    }
+  };
   useEffect(() => {
-   if(token) getUserInfo();
+    if (token) getUserInfo();
   }, [token]);
   //============== all category====================================
   const [category, setCategory] = useState([]);
 
   let getCategory = async () => {
     try {
-      let res = await fetch(`${import.meta.env.VITE_BASE_URL}/category/category-list`, {
-        method: "GET",
-      });
+      let res = await fetch(
+        `${import.meta.env.VITE_BASE_URL}/category/category-list`,
+        {
+          method: "GET",
+        }
+      );
       let data = await res.json();
+      // console.log(data);
       setCategory(data);
     } catch (error) {
       console.log(error);
@@ -51,17 +55,25 @@ const AuthContextProvider = ({ children }) => {
   useEffect(() => {
     getCategory();
   }, []);
-  
+
   //======================================================================
-    // get edit data (edit Product)
-  // const [editData, setEditData] = useState([]);
-  //   let getEditData = (item) => {
-  //     setEditData(item);
-  // };
-  
+  // //=================================================
+    const [catPlain, setcatPlain] = useState([]);
 
+  let getPlainCatList = (category, list = []) => {
+    for (let v of category) {
+      list.push(v);
+      if (v.children.length > 0) {
+        getPlainCatList(v.children, list);
+      }
+    }
+    // return list;
+    setcatPlain(list);
+  };
 
-  
+  useEffect(() => {
+    getPlainCatList(category);
+  }, [category]);
 
   return (
     <AuthContext.Provider
@@ -75,6 +87,8 @@ const AuthContextProvider = ({ children }) => {
         getCategory,
         loading,
         setLoading,
+        catPlain,
+        setcatPlain,
       }}
     >
       {children}

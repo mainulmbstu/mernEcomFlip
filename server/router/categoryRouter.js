@@ -9,11 +9,12 @@ const router = express.Router();
 
 router.post('/create-category', loginMiddleware, adminMiddleware,upload.single('picture'), categoryControlls.createCategory)
 
-router.patch('/update-category/:id', loginMiddleware, adminMiddleware, categoryControlls.updateCategory)
+router.post('/update-category/:id', loginMiddleware, adminMiddleware, upload.single('picture'), categoryControlls.updateCategory)
 
 router.delete('/delete-category/:id', loginMiddleware, adminMiddleware, categoryControlls.deleteCategory)
 
 router.get('/category-list', categoryControlls.categoryList)
+router.get("/category-search", categoryControlls.getSearchCategory);
 
 router.get("/single-category/:slug", categoryControlls.singleCategory);
 

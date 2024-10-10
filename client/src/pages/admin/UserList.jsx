@@ -2,14 +2,14 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import AdminMenu from "./AdminMenu";
 import Layout from "../../components/Layout";
-import axios from "axios";
 import InfiniteScroll from "react-infinite-scroll-component";
 import DeleteModal from "../../components/DeleteModal";
+import axios from "axios";
 
 const UserList = () => {
   let [adminUsers, setAdminUsers] = useState([]);
   let [okdel, setOkdel] = useState(true);
-  let { token, userInfo } = useAuth();
+  let { token, userInfo, Axios } = useAuth();
   //====================================================
   let roleHandle = async (value, id) => {
     if (id === userInfo._id) {
@@ -39,14 +39,12 @@ const UserList = () => {
     page === 1 && window.scrollTo(0, 0);
     try {
       setLoading(true);
-      let { data } = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/admin/user-list`,
+      let { data } = await Axios.get(`/admin/user-list`,
         {
           params: {
             page: page,
             size: 10,
           },
-          headers: { Authorization: `Bearer ${token}` },
         }
       );
       setTotal(data.total);
@@ -55,6 +53,7 @@ const UserList = () => {
         : setAdminUsers([...adminUsers, ...data.userList]);
       setLoading(false);
     } catch (error) {
+      setLoading(false);
       console.log(error);
     }
   };

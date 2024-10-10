@@ -10,4 +10,4 @@ const gallerySchema = new mongoose.Schema(
 
 const GalleryModel = mongoose.model("Gallery", gallerySchema);
 
-module.exports = { GalleryModel };
+module.exports = GalleryModel ;

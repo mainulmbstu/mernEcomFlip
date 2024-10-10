@@ -1,10 +1,12 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { UserModel } = require("../models/userModel");
-const { OrderModel } = require("../models/OrderModel");
-const { GalleryModel } = require("../models/GalleryModel");
+const UserModel  = require("../models/userModel");
+const  OrderModel  = require("../models/OrderModel");
+const  GalleryModel  = require("../models/GalleryModel");
+const  ContactModel  = require("../models/ContactModel");
 const otpGenerator = require("otp-generator");
 const mailer = require("../helper/nodeMailer");
+const mailerContact = require("../helper/nodeMailerContact");
 const localVariable = require("../middleware/LocalVariable");
 
 const home = async (req, res) => {
@@ -128,6 +130,7 @@ const login = async (req, res) => {
 const loggedUser = async (req, res) => {
   try {
     let userData = req.user;
+    // console.log(userData);
     res.status(200).send({ userData });
   } catch (error) {
     res.status(401).send({ msg: "userControls, user", error });
@@ -294,6 +297,26 @@ const ResetNewPassword = async (req, res) => {
   }
 };
 //======================================================================
+const contact = async (req, res) => {
+  try {
+    const { name, email, message } = req.body;
+    if (!message || !name || !email) {
+     return res.status(400).json({ msg: "All fields are required" });
+    }
+    await ContactModel.create({ name, email, message });
+    
+    // let credential = {
+    //   email,
+    //   subject: "Contact query",
+    //   body: message,
+    // };
+    // mailerContact(credential);
+    res.status(201).json({ msg: "message has been sent successfully" });
+  } catch (error) {
+    res.status(401).json({ msg: "error from contact", error });
+  }
+};
+//==============================================
 
 module.exports = {
   home,
@@ -307,4 +330,5 @@ module.exports = {
   OTPVerified,
   ResetNewPassword,
   getOTP,
+  contact,
 };

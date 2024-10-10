@@ -29,16 +29,17 @@ const CreateCategory = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+      setLoading(false);
       let data = await res.json();
       if (res.ok) {
         getCategory();
-        setLoading(false);
         toast.success(`${delItem?.name} is deleted successfully`);
       } else {
         toast.success(data.msg);
       }
     } catch (error) {
-      console.log(error);
+      setLoading(false);
+      console.log('error from delete category', error);
     }
   };
   //====================================================================
@@ -141,7 +142,7 @@ const CreateCategory = () => {
               </div>
               <hr />
               <div>
-                <h3>Category List ({category?.length && catPlain.length})</h3>
+                <h3>Category List ({category?.length && catPlain?.length})</h3>
                 <div className=" border">
                   <table className="table table-hover">
                     <thead>

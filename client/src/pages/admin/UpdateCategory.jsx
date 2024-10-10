@@ -53,8 +53,7 @@ let parentRef = useRef()
 
       let { data } = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/category/update-category/${
-          updateItem?._id
-        }`,
+          updateItem?._id}`,
         formdata,
         {
           headers: {
@@ -63,6 +62,7 @@ let parentRef = useRef()
           },
         }
       );
+      setLoading(false);
       if (data.success) {
         toast.success(data.msg);
         parentRef.current.value=''
@@ -70,7 +70,7 @@ let parentRef = useRef()
         getCategory();
         setUpdateItem("");
         setTrix(true);
-        setLoading(false);
+
       } else {
         toast.error(data.msg);
       }
@@ -102,7 +102,9 @@ let parentRef = useRef()
       //     toast.error(data.msg);
       //   }
     } catch (error) {
-      console.log({ msg: "update category", error });
+      setLoading(false);
+      toast.error(error.response.data);
+      console.log({ msg: "error from update category", error });
     }
   };
 

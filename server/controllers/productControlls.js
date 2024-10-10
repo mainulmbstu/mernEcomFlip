@@ -6,10 +6,10 @@ const { v4: uuidv4 } = require("uuid");
 
 const SSLCommerzPayment = require("sslcommerz-lts");
 
-const { ProductModel } = require("../models/productModel");
-const { CategoryModel } = require("../models/CategoryModel");
+const  ProductModel = require("../models/productModel");
+const  CategoryModel  = require("../models/CategoryModel");
 const slugify = require("slugify");
-const { OrderModel } = require("../models/OrderModel");
+const OrderModel  = require("../models/OrderModel");
 //==================================================
 const createProduct = async (req, res) => {
   try {
@@ -18,6 +18,9 @@ const createProduct = async (req, res) => {
     const pictures = req.files
     if (!name || !description || !category || !price || !quantity) {
       return res.send({ msg: "All fields are required" })
+    }
+    if (category==='undefined') {
+      return res.send({ msg: "Wrong category" })
     }
     let picturePaths = await pictures.length && pictures.map(pic => pic.path)
     
@@ -90,7 +93,7 @@ const createProduct = async (req, res) => {
 //   }
 // };
 //======================================
-const productListLimit = async (req, res) => {
+const productList = async (req, res) => {
   try {
     let page = req.query.page ? req.query.page : 1;
     let size = req.query.size ? req.query.size : 4;
@@ -106,7 +109,8 @@ const productListLimit = async (req, res) => {
     }
     res.status(200).send({ products, total });
   } catch (error) {
-    res.status(401).json({ msg: "error from productListLimit", error });
+    console.log(error);
+    res.status(500).json({ msg: "error from productList", error });
   }
 };
 //==============================================
@@ -115,6 +119,9 @@ const updateProduct = async (req, res) => {
     let pid = req.params.pid;
     const { name, description, category, price, quantity } = req.body;
     const pictures = req.files;
+      if (category === "undefined") {
+        return res.send({ msg: "Wrong category" });
+      }
     let product = await ProductModel.findById(pid);
     if (!product) {
       return res.send({ msg: "No data found" });
@@ -222,7 +229,7 @@ const productByCategory = async (req, res) => {
     const { page, size } = req.query;
     let skip = (page - 1) * size;
 
-    const category = await CategoryModel.findOne({ slug: req.params.slug });
+    const category = await CategoryModel.findOne({ slug: req.params.slug })
     const total = await ProductModel.find({ category })
     const products = await ProductModel.find({ category })
       .skip(skip)
@@ -232,7 +239,7 @@ const productByCategory = async (req, res) => {
     res.status(200).send({ products, total });
   } catch (error) {
     console.log(error);
-    res.status(401).send({ msg: "error from productByCategory", error });
+    res.send({ msg: "error from productByCategory", error });
   }
 };
 //================================================
@@ -252,21 +259,24 @@ const productSearch = async (req, res) => {
   try {
     const { keyword, page, size } = req.query;
     let skip = (page - 1) * size;
+    
+    const totalCat = await CategoryModel.find({
+      name: { $regex: keyword, $options: "i" },
+    })
+    let catIds = totalCat.map((item) => item._id);
+
     const totalProd = await ProductModel.find({
       $or: [
         { name: { $regex: keyword, $options: "i" } },
         { description: { $regex: keyword, $options: "i" } },
+        { category: catIds },
       ],
-    })
-    const totalCat = await CategoryModel.find({
-      name: { $regex: keyword, $options: "i" },
     });
-
-    console.log(totalCat);
     const products = await ProductModel.find({
       $or: [
         { name: { $regex: keyword, $options: "i" } },
         { description: { $regex: keyword, $options: "i" } },
+        { category: catIds },
       ],
     })
       .skip(skip)
@@ -275,7 +285,7 @@ const productSearch = async (req, res) => {
       .sort({ updatedAt: -1 });
     res
       .status(200)
-      .send({ msg: "got product from search", products,  });
+      .send({ msg: "got product from search", products, total:totalProd?.length  });
   } catch (error) {
     console.log(error);
     res.status(401).send({ msg: "error from productSearch", error });
@@ -320,7 +330,7 @@ const productFilter = async (req, res) => {
   } catch (error) {
     console.log(error);
     res
-      .status(401)
+      .status(500)
       .send({ success: false, msg: "error from productFilter", error });
   }
 };
@@ -496,5 +506,5 @@ module.exports = {
   orderCheckout,
   orderSuccess,
   orderFail,
-  productListLimit,
+ productList,
 };

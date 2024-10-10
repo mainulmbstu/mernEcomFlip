@@ -49,7 +49,7 @@ const SearchContextProvider = ({ children }) => {
   //=================================================
     let [page, setPage] = useState(1);
   let [total, setTotal] = useState(0);
-  
+
   let submitHandler = async (e) => {
     e.preventDefault();
     try {
@@ -60,7 +60,7 @@ const SearchContextProvider = ({ children }) => {
           params: {
            keyword:keyword,
             page: 1,
-            size: 4,
+            size: 8,
           },
         }
       );
@@ -83,7 +83,7 @@ const SearchContextProvider = ({ children }) => {
           params: {
            keyword:keyword,
             page: page,
-            size: 4,
+            size: 8,
           },
         }
       );

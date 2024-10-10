@@ -1,4 +1,4 @@
-const { CategoryModel } = require("../models/CategoryModel");
+const CategoryModel = require("../models/CategoryModel");
 const slugify = require("slugify");
 const fs = require("fs");
 
@@ -113,7 +113,8 @@ let deleteCategory = async (req, res) => {
       .status(200)
       .send({ msg: `${deleteItem} has been deleted successfully` });
   } catch (error) {
-    res.status(401).send({ msg: "error from delete Category", error });
+    console.log(error);
+    res.status(500).send({ msg: "error from delete Category", error });
   }
 };
 //======================================
@@ -157,6 +158,7 @@ const categoryList = async (req, res) => {
     //  });
     res.status(200).send(categoryList);
   } catch (error) {
+    console.log(error);
     res.status(401).json({ msg: "error from category List", error });
   }
 };
@@ -189,7 +191,7 @@ const getSearchCategory = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.status(401).send({ msg: "error from userSearch", error });
+    res.status(500).send({ msg: "error from userSearch", error });
   }
 };
 

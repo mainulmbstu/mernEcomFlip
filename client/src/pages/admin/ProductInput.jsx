@@ -65,7 +65,8 @@ const ProductInput = ({ getProducts }) => {
         toast.error(data.msg);
       }
     } catch (error) {
-      alert("error from product create, refresh, check file type and size");
+      setLoading(false);
+       toast.error(error.response.data);
       console.log({ msg: "error from create product", error });
     }
   };
@@ -216,7 +217,7 @@ const ProductInput = ({ getProducts }) => {
 
                 <div>
                   <label htmlFor="pic" className="">
-                    Upload product image (jpeg, jpg, png, webp, Max size- 1mb)
+                    Upload product image (jpeg, jpg, png, webp, Max size- 4mb)
                   </label>
                   <input
                     className=" form-control mb-2"

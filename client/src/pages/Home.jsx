@@ -11,6 +11,7 @@ import Loading from "../components/Loading";
 import Marquee from "react-fast-marquee";
 import axios from "axios";
 import InfiniteScroll from "react-infinite-scroll-component";
+import HomeCatPage from "../components/HomeCatPage";
 
 const Home = () => {
   let { category } = useStore();
@@ -95,7 +96,8 @@ const Home = () => {
       setProducts([...products, ...data.products]);
       setLoading(false);
     } catch (error) {
-      console.log(error);
+      setLoading(false);
+      console.log({msg:'error from get products', error});
     }
   };
   useEffect(() => {
@@ -214,7 +216,12 @@ const Home = () => {
             </div>
           </div>
 
+
           <div className="col-md-10">
+          <div>
+            <HomeCatPage/>
+            </div>
+            <hr />
             <h3>
               {!checkedCat.length ? "All Products" : "Products by category"}
             </h3>

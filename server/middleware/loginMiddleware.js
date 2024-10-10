@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const { UserModel } = require("../models/userModel");
+const UserModel = require("../models/userModel");
 
 const loginMiddleware = async (req, res, next) => {
   try {
@@ -12,22 +12,22 @@ const loginMiddleware = async (req, res, next) => {
     let jwtToken = token.replace("Bearer", "").trim();
     let tokenData = jwt.verify(jwtToken, process.env.JWT_KEY,
       (err, res) => {
-      if (err) {
-        return "token expired";
+        if (err) {
+          return "token expired";
+        }
+        return res;
       }
-      return res;
-    }
     );
     if (!tokenData) {
       return res
-        .status(400)
-        .json({ msg: "Unauthorized, wrong token", src: "check login" });
+      .status(400)
+      .json({ msg: "Unauthorized, wrong token", src: "check login" });
     }
-  
+    
     let userData = await UserModel.findById(tokenData.id, { password: 0 });
     if (tokenData === 'token expired') {
       req.user = "token expired";
-     return next()
+      return next()
     }
     req.user = userData;
     next();

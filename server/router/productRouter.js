@@ -16,7 +16,7 @@ router.post("/product-filter", productControlls.productFilter);
 router.get("/more-info/:pid", productControlls.moreInfo);
 //=============product list
 
-router.get("/product-list-limit", productControlls.productListLimit);
+router.get("/product-list-limit", productControlls.productList);
 //search
 router.get("/search", productControlls.productSearch);
 //simila products

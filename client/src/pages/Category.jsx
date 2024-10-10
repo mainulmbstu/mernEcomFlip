@@ -54,12 +54,12 @@ let [page, setPage] = useState(1);
               {!products?.length ? "No Product Found!!" : ""}
             </h3>
             <InfiniteScroll
-              dataLength={products.length}
+              dataLength={products?.length}
               next={() => {
                 setPage(page + 1);
                 getProducts(page + 1);
               }}
-              hasMore={products.length < total}
+              hasMore={products?.length < total}
               loader={<h1>Loading...</h1>}
               endMessage={<h4 className=" text-center">All items loaded</h4>}
             >
@@ -79,7 +79,7 @@ let [page, setPage] = useState(1);
                             <h5 className="card-title">{item.name}</h5>
                             <div className="card-text">
                               <p className="m-0">
-                                Category: {item.category.name}{" "}
+                                Category: {item.category?.name}
                               </p>
                               <p className="m-0">Price: {item.price} </p>
                               <p className="m-0">
@@ -111,7 +111,7 @@ let [page, setPage] = useState(1);
               </div>
             </InfiniteScroll>
             <div className="d-flex">
-              {products.length < total ? (
+              {products?.length < total ? (
                 <>
                   <button
                     onClick={() => {

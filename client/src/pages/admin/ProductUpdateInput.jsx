@@ -62,17 +62,20 @@ const ProductUpdateInput = ({ value }) => {
           },
         }
       );
+      setLoading(false);
       if (data.success) {
         toast.success(data.msg);
         setTrix(true);
         setEditProduct("");
         getProducts();
         refCat.current.value=''
-        setLoading(false);
+        
       } else {
         toast.error(data.msg);
       }
     } catch (error) {
+      setLoading(false);
+      toast.error(error.response.data);
       console.log({ msg: "update product", error });
     }
   };

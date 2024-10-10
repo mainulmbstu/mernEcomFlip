@@ -1,30 +1,30 @@
-const { UserModel } = require("../models/userModel");
-const { OrderModel } = require("../models/OrderModel");
-const { ProductModel } = require("../models/productModel");
-const { GalleryModel } = require("../models/GalleryModel");
+const  UserModel  = require("../models/userModel");
+const OrderModel = require("../models/OrderModel");
+const ProductModel = require("../models/productModel");
+const GalleryModel  = require("../models/GalleryModel");
 const {
   uploadOnCloudinary,
   deleteImageOnCloudinary,
 } = require("../helper/cloudinary");
-
+//====================================
 const userList = async (req, res) => {
   try {
     let page = req.query.page ? req.query.page : 1;
     let size = req.query.size ? req.query.size : 4;
     let skip = (page - 1) * size;
-
     const total = await UserModel.find({}).estimatedDocumentCount();
 
-    const userList = await UserModel.find({}, { password: 0, answer: 0 })
+    const userList = await UserModel.find({}, { password: 0 })
       .skip(skip)
       .limit(size)
       .sort({ updatedAt: -1 });
     if (!userList || userList.length === 0) {
-      return res.send({ msg: "No data found", userList, total });
+      return res.send({ msg: "No data found" });
     }
     res.status(200).send({ userList, total });
   } catch (error) {
-    res.status(401).json({ msg: "error from user list", error });
+    console.log(error);
+    res.status(500).json({ msg: "error from user list", error });
   }
 };
 //===============================================================
@@ -41,7 +41,7 @@ const searchUser = async (req, res) => {
           { phone: { $regex: keyword, $options: "i" } },
         ],
       },
-      { password: 0, answer: 0 }
+      { password: 0 }
     )
       .skip(skip)
       .limit(size);
@@ -52,7 +52,7 @@ const searchUser = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.status(401).send({ msg: "error from userSearch", error });
+    res.status(500).send({ msg: "error from userSearch", error });
   }
 };
 //======================================================================
@@ -66,7 +66,8 @@ let deleteUser = async (req, res) => {
     }
     res.status(200).send({ msg: "User deleted successfully" });
   } catch (error) {
-    res.status(401).send({ msg: "error from delete users", error });
+    console.log(error);
+    res.status(500).send({ msg: "error from delete users", error });
   }
 };
 //======================================================
@@ -81,7 +82,7 @@ let userStatusUpdate = async (req, res) => {
     res.status(200).send({ msg: "User updated successfully" });
   } catch (error) {
     console.log(error);
-    res.status(401).send({ msg: "error from update users", error });
+    res.status(500).send({ msg: "error from update users", error });
   }
 };
 //========================================================
@@ -114,7 +115,7 @@ const orderList = async (req, res) => {
     }
     res.status(200).send({ orderList, total});
   } catch (error) {
-    res.status(401).json({ msg: "error from orderList", error });
+    res.status(500).json({ msg: "error from orderList", error });
   }
 };
 
@@ -130,7 +131,7 @@ let orderStatusUpdate = async (req, res) => {
     res.status(200).send({ msg: "order updated successfully" });
   } catch (error) {
     console.log(error);
-    res.status(401).send({ msg: "error from update order", error });
+    res.status(500).send({ msg: "error from update order", error });
   }
 };
 //=====================================================================
@@ -153,7 +154,8 @@ const adminProductList = async (req, res) => {
     }
     res.status(200).send({ products, total });
   } catch (error) {
-    res.status(401).json({ msg: "error from orderList", error });
+    console.log(error);
+    res.status(500).json({ msg: "error from orderList", error });
   }
 };
 
@@ -191,7 +193,7 @@ const adminSearchProductList = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.status(401).send({ msg: "error from adminSearchProductList", error });
+    res.status(500).send({ msg: "error from adminSearchProductList", error });
   }
 };
 
@@ -227,14 +229,14 @@ const orderSearch = async (req, res) => {
     })
       .skip(skip)
       .limit(size)
-      .populate("user", { password: 0, answer: 0 })
-      .populate("products")
-      .populate({
-        path: "products",
-        populate: {
-          path: "category",
-        },
-      })
+      .populate("user", { password: 0 })
+      // .populate("products")
+      // .populate({
+      //   path: "products",
+      //   populate: {
+      //     path: "category",
+      //   },
+      // })
       .sort({ createdAt: -1 });
 
     res.status(200).send({
@@ -244,7 +246,7 @@ const orderSearch = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.status(401).send({ msg: "error from orderSearch", error });
+    res.status(500).send({ msg: "error from orderSearch", error });
   }
 };
 

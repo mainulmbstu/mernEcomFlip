@@ -18,7 +18,7 @@ const CategoryTable = ({ value }) => {
 
   //===============================================
   let refPic = useRef()
-  
+
   let categorySubmit = async (e) => {
     e.preventDefault();
     let formdata = new FormData();
@@ -52,7 +52,9 @@ const CategoryTable = ({ value }) => {
         toast.error(data.msg);
       }
     } catch (error) {
-      console.log({ msg: "create category", error });
+      setLoading(false);
+      toast.error(error.response.data);
+      console.log({msg:'error from create category',error});
     }
   };
 

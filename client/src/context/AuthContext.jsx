@@ -1,3 +1,4 @@
+import axios from "axios";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 
 export const AuthContext = createContext();
@@ -10,7 +11,6 @@ const AuthContextProvider = ({ children }) => {
     setToken(token);
     return localStorage.setItem("token", token);
   };
-
   //   let isLoggedIn = !!token; // isLoggedIn true/false if token true/false
   const getUserInfo = () => {
     if (token) {
@@ -45,10 +45,9 @@ const AuthContextProvider = ({ children }) => {
         }
       );
       let data = await res.json();
-      // console.log(data);
       setCategory(data);
     } catch (error) {
-      console.log(error);
+      console.log({msg:'cat', error});
     }
   };
 
@@ -72,8 +71,13 @@ const AuthContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    getPlainCatList(category);
+   category.length && getPlainCatList(category);
   }, [category]);
+//==============================================
+    const Axios = axios.create({
+      baseURL: import.meta.env.VITE_BASE_URL,
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
   return (
     <AuthContext.Provider
@@ -89,6 +93,7 @@ const AuthContextProvider = ({ children }) => {
         setLoading,
         catPlain,
         setcatPlain,
+        Axios,
       }}
     >
       {children}

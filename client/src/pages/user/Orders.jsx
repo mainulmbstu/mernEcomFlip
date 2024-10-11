@@ -6,6 +6,7 @@ import moment from "moment";
 import { useAuth } from "../../context/AuthContext";
 import Layout from "./../../components/Layout";
 import InfiniteScroll from "react-infinite-scroll-component";
+import PriceFormat from "../../Helper/PriceFormat";
 
 const Orders = () => {
   let [loading, setLoading] = useState(false);
@@ -91,7 +92,7 @@ const Orders = () => {
                                 {item?.payment?.status ? "Success" : "Failed"}{" "}
                               </td>
                               <td>{item?.products.length} </td>
-                              <td>{item?.total} </td>
+                              <td>{<PriceFormat price={item?.total} />} </td>
                               <td>{moment(item?.createdAt).fromNow()} </td>
                             </tr>
                           </tbody>
@@ -112,12 +113,18 @@ const Orders = () => {
                                 <div className=" col-sm-6 d-flex flex-column">
                                   <div>
                                     <h5>
-                                      Name: {p?.name}- Price: {p?.price}
+                                      Name: {p?.name}- Price:{" "}
+                                      {<PriceFormat price={p?.price} />}
                                     </h5>
                                     <p>Category: {p?.category?.name} </p>
+                                    <p>{`Quantity: ${p?.amount}`}</p>
                                     <p>
-                                      {`Qnty: ${p?.amount}, Sub-Total: 
-                                            ${p.price * p?.amount}`}
+                                      Sub-Total:{" "}
+                                      {
+                                        <PriceFormat
+                                          price={p?.price * p.amount}
+                                        />
+                                      }{" "}
                                     </p>
                                   </div>
                                 </div>

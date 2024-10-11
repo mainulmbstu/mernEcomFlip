@@ -3,6 +3,7 @@ import { useSearch } from "../context/SearchContext";
 import { toast } from "react-toastify";
 import Layout from "./Layout";
 import InfiniteScroll from "react-infinite-scroll-component";
+import PriceFormat from "../Helper/PriceFormat";
 
 const SearchResults = () => {
   const { results, cart, setCart, submitHandlerScroll, total, page, loading } = useSearch();
@@ -36,11 +37,11 @@ const SearchResults = () => {
                         <h5 className="card-title">{item?.name}</h5>
                         <div className="card-text">
                           <p>Category: {item?.category?.name} </p>
-                          <p>Price: {item?.price} </p>
+                          <p>Price:{<PriceFormat price={item.price} />} </p>
                           <p>Available quantity: {item?.quantity} </p>
                           <p>
-                            Description: {item?.description?.substring(0, 8)}{" "}
-                            ....{" "}
+                            Description: {item?.description?.substring(0, 8)}
+                            ....
                           </p>
                         </div>
                       </div>

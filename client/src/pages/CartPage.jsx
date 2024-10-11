@@ -2,30 +2,28 @@ import Layout from "../components/Layout";
 import { useAuth } from "../context/AuthContext";
 import { useSearch } from "../context/SearchContext";
 import { useNavigate } from "react-router-dom";
+import PriceFormat from "../Helper/PriceFormat";
 
 export const CartPage = () => {
   let { token, userInfo } = useAuth();
   let { cart, setCart } = useSearch();
   let navigate = useNavigate();
 
-
   let amountHandle = (id, d) => {
-    let ind = -1
+    let ind = -1;
     cart?.forEach((data, index) => {
-      if (data._id === id)
-        ind = index;
-    })
+      if (data._id === id) ind = index;
+    });
 
-    let tempArr = [...cart]
-    tempArr[ind].amount += d
-    setCart([...tempArr])
-      }
-
+    let tempArr = [...cart];
+    tempArr[ind].amount += d;
+    setCart([...tempArr]);
+  };
 
   let total =
     cart?.length &&
     cart?.reduce((previous, current) => {
-      return previous + current?.price*current.amount;
+      return previous + current?.price * current.amount;
     }, 0);
 
   let removeCartItem = (id) => {
@@ -49,7 +47,7 @@ export const CartPage = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ cart}),
+          body: JSON.stringify({ cart }),
         }
       );
       let data = await res.json();
@@ -79,28 +77,29 @@ export const CartPage = () => {
               cart.map((item, i) => {
                 return (
                   <div key={i} className="row border p-1 mb-2">
-                    <div className=" col-md-4 ">
+                    <div className=" col-4 ">
                       <img
                         src={`${item?.picture[0]?.secure_url}`}
                         className=" w-100"
-                        height={200}
+                        height={100}
                         alt="image"
                       />
                     </div>
-                    <div className=" col-md-8">
+                    <div className=" col-8">
                       <div className=" d-flex flex-column h-100">
                         <div>
-                          <h5>Name: {item?.name} </h5>
-                          <p className="m-0">Product ID: {item?._id} </p>
+                          <h5>
+                            Name: {item?.name}, Price:{" "}
+                            {<PriceFormat price={item?.price} />}
+                          </h5>
                           <p className="m-0">
                             Category: {item?.category?.name}{" "}
                           </p>
-                          <p className="m-0">Price: {item?.price} </p>
                           <div>
                             <button
                               onClick={() => amountHandle(item._id, -1)}
                               className=" px-3 me-3"
-                              disabled={item.amount===1}
+                              disabled={item.amount === 1}
                             >
                               -
                             </button>
@@ -112,7 +111,10 @@ export const CartPage = () => {
                               +
                             </button>
                           </div>
-                          Sub-total: BDT {item.price * item.amount}
+                          <p className=" fw-bold">
+                            Sub-Total:{" "}
+                            {<PriceFormat price={item.price * item.amount} />}{" "}
+                          </p>{" "}
                         </div>
                         <div className=" mt-auto">
                           <button
@@ -132,7 +134,7 @@ export const CartPage = () => {
             <h4>Cart Summary</h4>
             <p>Total|| Checkout|| Payment</p>
             <hr />
-            <h3>Total: BDT {total}</h3>
+            <h3>Total: {<PriceFormat price={total} />}</h3>
             <hr />
             {userInfo?.address ? (
               <>

@@ -1,12 +1,11 @@
-import { useRef, useState } from "react";
-import { useAuth } from "../../context/AuthContext";
+import { useEffect, useRef, useState } from "react";
+import { AuthContext, useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
 import axios from "axios";
 import Layout from "../../components/Layout";
 
 // eslint-disable-next-line react/prop-types
 const ProductUpdateInput = ({ value }) => {
-  let [trix, setTrix] = useState(true);
   const [inputVal, setInputVal] = useState({
     name: "",
     description: "",
@@ -15,11 +14,11 @@ const ProductUpdateInput = ({ value }) => {
     quantity: "",
     picture: [],
   });
-  let { token, category, loading, setLoading } = useAuth();
+  let { token, category, loading, setLoading, Axios } = useAuth();
   // eslint-disable-next-line react/prop-types
   let { editProduct, getProducts, setEditProduct } = value;
 
-  if (editProduct?.name && trix) {
+  useEffect(() => {
     setInputVal({
       name: editProduct?.name,
       description: editProduct?.description,
@@ -29,15 +28,14 @@ const ProductUpdateInput = ({ value }) => {
       quantity: editProduct?.quantity,
       picture: "",
     });
-    setTrix(false);
-  }
+  }, [editProduct]);
 
   let inputHandle = (e) => {
     let { name, value } = e.target;
     setInputVal((prev) => ({ ...prev, [name]: value }));
   };
   //=======================================
-  let refCat=useRef()
+  let refCat = useRef();
   let productSubmit = async (e) => {
     e.preventDefault();
 
@@ -51,25 +49,15 @@ const ProductUpdateInput = ({ value }) => {
     formdata.append("quantity", inputVal.quantity);
     try {
       setLoading(true);
-            let { data } = await axios.post(
-        // eslint-disable-next-line react/prop-types
-        `${import.meta.env.VITE_BASE_URL}/products/update-product/${editProduct?._id}`,
-        formdata,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      let { data } = await Axios.post(
+        `/products/update-product/${
+          editProduct?._id}`, formdata);
       setLoading(false);
       if (data.success) {
         toast.success(data.msg);
-        setTrix(true);
         setEditProduct("");
         getProducts();
-        refCat.current.value=''
-        
+        refCat.current.value = "";
       } else {
         toast.error(data.msg);
       }
@@ -163,9 +151,12 @@ const ProductUpdateInput = ({ value }) => {
                   />
 
                   <datalist id="categoryList">
-                    {category?.length && category.map((item) => {
-                      return <option key={item._id} value={item.slug}></option>;
-                    })}
+                    {category?.length &&
+                      category.map((item) => {
+                        return (
+                          <option key={item._id} value={item.slug}></option>
+                        );
+                      })}
                   </datalist>
                 </div>
 
@@ -186,7 +177,6 @@ const ProductUpdateInput = ({ value }) => {
                   value={inputVal.quantity}
                   placeholder="Enter quantity"
                 />
-
 
                 <div>
                   <label htmlFor="pic" className="btn">
@@ -245,14 +235,6 @@ const ProductUpdateInput = ({ value }) => {
                   placeholder="Enter product description"
                 />
                 <div className=" d-flex justify-content-end">
-                  <button
-                    type="button"
-                    className="btn  btn-danger text-white fs-5 ms-2 btn-outline-dark"
-                    data-bs-dismiss="modal"
-                  >
-                    Close
-                  </button>
-
                   {loading ? (
                     <>
                       <button
@@ -289,4 +271,4 @@ const ProductUpdateInput = ({ value }) => {
   );
 };
 
-export default  ProductUpdateInput;
+export default ProductUpdateInput;

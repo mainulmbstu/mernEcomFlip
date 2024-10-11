@@ -3,7 +3,6 @@ import ProductUpdateInput from "./ProductUpdateInput";
 const UpdateProductModal = ({ value }) => {
   
 
-  
   return (
     <div>
       <div>
@@ -35,6 +34,7 @@ const UpdateProductModal = ({ value }) => {
                   Edit product
                 </h5>
                 <button
+                  onClick={()=>value.setEditProduct("")}
                   type="button"
                   className="btn-close"
                   data-bs-dismiss="modal"
@@ -42,7 +42,9 @@ const UpdateProductModal = ({ value }) => {
                 />
               </div>
               <div className="modal-body">
-                <ProductUpdateInput value={value} />
+                <ProductUpdateInput
+                  value={value}
+                />
               </div>
             </div>
           </div>

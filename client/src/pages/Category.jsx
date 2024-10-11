@@ -3,11 +3,14 @@ import { Link, useParams } from 'react-router-dom';
 import Layout from '../components/Layout';
 import axios from "axios";
 import InfiniteScroll from "react-infinite-scroll-component";
-import Loading from '../components/Loading';
+import PriceFormat from '../Helper/PriceFormat';
+import { useAuth } from '../context/AuthContext';
 
 const Category = () => {
   const [products, setProducts] = useState([]);
   let params = useParams()
+  let { category } = useAuth()
+
   //======================================================
 let [page, setPage] = useState(1);
   let [total, setTotal] = useState(0);
@@ -41,11 +44,36 @@ let [page, setPage] = useState(1);
     getProducts();
   }, [params.slug]);
 
+  //======================================
+   let getCategoryList = (category) => {
+     let myCategories = [];
+     if (category.length) {
+       for (let v of category) {
+         myCategories.push(
+           <li key={v.slug}>
+             {
+               v.parentId?<Link to={`/products/category/${v.slug}`}>{v.name}</Link>:<span>{v.name} </span>
+             }
+             {v.children.length > 0 ? (
+               <ul>{getCategoryList(v.children)} </ul>
+             ) : null}
+           </li>
+         );
+       }
+     }
+     return myCategories;
+    };
 
   return (
     <Layout title={`Category-${params.slug}`}>
       <div className={loading ? "dim" : ""}>
         <div>
+          <div className='catPage'>
+            <ul>
+
+            {getCategoryList(category)}
+            </ul>
+          </div>
           <div className="px-2">
             <h3 className=" text-capitalize">
               Category: {params.slug}({products?.length} of {total} )
@@ -67,7 +95,7 @@ let [page, setPage] = useState(1);
                 {products?.length &&
                   products?.map((item) => {
                     return (
-                      <div key={item._id} className="col-md-3  ">
+                      <div key={item._id} className="col-6 col-md-3  ">
                         <div className="card h-100">
                           <img
                             src={`${item?.picture[0]?.secure_url}`}
@@ -81,7 +109,9 @@ let [page, setPage] = useState(1);
                               <p className="m-0">
                                 Category: {item.category?.name}
                               </p>
-                              <p className="m-0">Price: {item.price} </p>
+                              <p className="m-0">
+                                Price: {<PriceFormat price={item.price} />}{" "}
+                              </p>
                               <p className="m-0">
                                 Available quantity: {item.quantity}{" "}
                               </p>

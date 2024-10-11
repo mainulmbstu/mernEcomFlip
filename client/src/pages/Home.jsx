@@ -7,11 +7,11 @@ import { useSearch } from "../context/SearchContext";
 import Layout from "../components/Layout";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
-import Loading from "../components/Loading";
 import Marquee from "react-fast-marquee";
 import axios from "axios";
 import InfiniteScroll from "react-infinite-scroll-component";
 import HomeCatPage from "../components/HomeCatPage";
+import PriceFormat from "../Helper/PriceFormat";
 
 const Home = () => {
   let { category } = useStore();
@@ -27,7 +27,7 @@ const Home = () => {
     if (checked) {
       all.push(id);
     } else {
-      all = all.filter((item) => item !== id);
+      all = all.filter(item => item !== id);
     }
     setCheckedCat(all);
   };
@@ -247,7 +247,7 @@ const Home = () => {
                 {products?.length &&
                   products?.map((item) => {
                     return (
-                      <div key={item?._id} className="col-md-3  ">
+                      <div key={item?._id} className="col-6 col-md-3  ">
                         <div className="card h-100">
                           <LazyLoadImage
                             src={`${item?.picture[0]?.secure_url}`}
@@ -261,7 +261,7 @@ const Home = () => {
                               <p className="m-0">
                                 Category: {item?.category?.name}{" "}
                               </p>
-                              <p className="m-0">Price: {item?.price} </p>
+                              <p className="m-0">Price: {<PriceFormat price={item.price}/>} </p>
                               <p className="m-0">
                                 Available quantity: {item?.quantity}
                               </p>

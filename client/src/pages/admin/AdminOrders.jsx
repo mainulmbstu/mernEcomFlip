@@ -6,8 +6,8 @@ import { Select } from "antd";
 import Layout from "../../components/Layout";
 import axios from "axios";
 let { Option } = Select;
-import Loading from "./../../components/Loading";
 import InfiniteScroll from "react-infinite-scroll-component";
+import PriceFormat from "../../Helper/PriceFormat";
 
 const AdminOrders = () => {
   let [adminOrders, setAdminOrders] = useState([]);
@@ -228,7 +228,7 @@ const AdminOrders = () => {
                                 >
                                   {status.map((st, i) => (
                                     <Option key={i} value={st}>
-                                      {st}{" "}
+                                      {st}
                                     </Option>
                                   ))}
                                 </Select>
@@ -240,7 +240,7 @@ const AdminOrders = () => {
                                 {item?.payment?.status ? "Success" : "Failed"}
                               </td>
                               <td>{item?.products?.length} </td>
-                              <td>{item?.total} </td>
+                              <td>{<PriceFormat price={item.total} />} </td>
                               <td>{moment(item?.createdAt).fromNow()} </td>
                             </tr>
                           </tbody>
@@ -262,12 +262,18 @@ const AdminOrders = () => {
                                   <div className=" col-8 d-flex flex-column">
                                     <div>
                                       <h5>
-                                        Name: {p?.name}- Price: {p?.price}
+                                        Name: {p?.name}- Price:{" "}
+                                        {<PriceFormat price={p?.price} />}
                                       </h5>
                                       <p>Category: {p?.category?.name} </p>
+                                      <p>{`Qnty: ${p?.amount}`}</p>
                                       <p>
-                                        {`Qnty: ${p?.amount}, Sub-Total: 
-                                        ${p.price * p?.amount}`}
+                                        Sub-Total:{" "}
+                                        {
+                                          <PriceFormat
+                                            price={p?.price * p.amount}
+                                          />
+                                        }{" "}
                                       </p>
                                     </div>
                                   </div>

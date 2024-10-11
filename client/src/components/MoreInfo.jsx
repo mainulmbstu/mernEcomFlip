@@ -3,10 +3,10 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useSearch } from "../context/SearchContext";
 import Layout from "./Layout";
-import Loading from "./Loading";
+import PriceFormat from "../Helper/PriceFormat";
 // import ReactImageMagnify from "react-image-magnify";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import LoadingModal from "./LoadingModal";
+
 
 const MoreInfo = () => {
   const [moreInfo, setMoreInfo] = useState("");
@@ -84,6 +84,7 @@ const MoreInfo = () => {
           <div className="row g-3">
             <div className="row g-4 border">
               <h1 className=" text-center">Details of product</h1>
+
               <hr />
               {/* {loading && <Loading />} */}
               <div className="col-md-7 row">
@@ -145,7 +146,7 @@ const MoreInfo = () => {
                   <h5>Name: {moreInfo?.name} </h5>
                   <p>Product ID: {moreInfo?._id} </p>
                   <p>Category: {moreInfo?.category?.name} </p>
-                  <p>Price: {moreInfo?.price} </p>
+                  <p>Price: {<PriceFormat price={moreInfo.price} />} </p>
                   <p>Quqntity: {moreInfo?.quantity} </p>
                   <p>Description: {moreInfo?.description} </p>
                 </div>
@@ -188,7 +189,7 @@ const MoreInfo = () => {
                           <h5 className="card-title">{item?.name}</h5>
                           <div className="card-text">
                             <p>Category: {item?.category?.name} </p>
-                            <p>Price: {item?.price} </p>
+                            <p>Price: {<PriceFormat price={item.price} />} </p>
                             <p>Available quantity: {item?.quantity} </p>
                             <p>
                               Description: {item?.description.substring(0, 8)}{" "}

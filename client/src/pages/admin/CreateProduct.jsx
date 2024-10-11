@@ -8,6 +8,7 @@ import Layout from "../../components/Layout";
 import axios from "axios";
 import InfiniteScroll from "react-infinite-scroll-component";
 import DeleteModal from "../../components/DeleteModal";
+import PriceFormat from "../../Helper/PriceFormat";
 
 
 const CreateProduct = () => {
@@ -208,7 +209,7 @@ const CreateProduct = () => {
                                 </td>
                                 <td>{item.name}</td>
                                 <td>{item.category?.name}</td>
-                                <td>{item.price}</td>
+                                <td>{<PriceFormat price={item.price} />}</td>
                                 <td>{item.quantity}</td>
                                 {/* <td>{"edit/update"}</td> */}
                                 <td>

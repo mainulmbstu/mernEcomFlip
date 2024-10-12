@@ -87,14 +87,14 @@ img {
   );
 }
 
-.navbar {
+/* .navbar {
   background: linear-gradient(
     to right,
     rgb(165, 187, 165),
     rgb(143, 139, 139),
     rgb(240, 241, 248)
   );
-}
+} */
 
 .position-absolute {
   right: 0;
@@ -205,8 +205,6 @@ margin-right: 10px;
     display: block;
    padding: 5px 20px 5px 0;
   }
-
-
 
 
 

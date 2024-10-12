@@ -7,7 +7,6 @@ import { useState } from "react";
 
 const Header = () => {
   let { token, setToken, userInfo, setUserInfo, category } = useAuth();
-  // let sortedCategory = category?.length && category?.toSorted((a, b) => (a.name > b.name ? 1 : -1));
   let { cart } = useSearch();
   let catCopy = category.length && [...category];
   let sortedCategory =category.length &&  catCopy?.sort((a, b) => {
@@ -32,7 +31,7 @@ const Header = () => {
           <Link className="navbar-brand" to="/">
             Logo
           </Link>
-          <div className=" w-50 ms-md-5">
+          <div className=" ms-md-5">
             <SearchInput />
           </div>
 
@@ -182,9 +181,9 @@ const Header = () => {
               to="/cart"
             >
               Cart
-              <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+              <span className="position-absolute top-0 start-100 translate-middle badge  rounded-pill bg-danger">
                 {cart?.length}
-                <span className="visually-hidden">unread messages</span>
+                <span className="visually-hidden">cart</span>
               </span>
             </NavLink>
           </div>

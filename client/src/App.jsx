@@ -63,7 +63,7 @@ let wait = (time) => {
 
 const App = () => {
   return (
-    <div className="App">
+    <div className="App ">
       <BrowserRouter>
         <Layout/>
         <Header />

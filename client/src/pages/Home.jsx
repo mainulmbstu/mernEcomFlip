@@ -107,51 +107,53 @@ const Home = () => {
   //===========================================
   return (
     <Layout title={"home"}>
-      <div className={loading?'dim':''}>
+      <div className={loading ? "dim" : ""}>
         <div className=" hero-area text-danger">
           <Marquee direction="left" speed={300} autofill={false} loop={""}>
             <h1>WELCOME TO DEMO ECOMMERCE WEBSITE || </h1>
           </Marquee>
         </div>
         <div className="row px-md-4">
-          <div className="col-md-2">
-            <h5>Category</h5>
-            <div className=" d-flex flex-column">
-              {category?.length &&
-                category?.map((item) => (
-                  <Checkbox
-                    key={item?._id}
-                    onChange={(e) => catHandle(e.target.checked, item._id)}
-                  >
-                    {item?.name}
-                  </Checkbox>
-                ))}
-
-              {/* {category?.map((item) => {
-              return (
-                <div key={item._id} className="input-group mb-3">
-                  <div className="input-group-text">
-                    <input
+          <div className="col-2">
+            <div className=" d-none d-md-block">
+              <h5>Category</h5>
+              <div className=" d-flex flex-column">
+                {category?.length &&
+                  category?.map((item) => (
+                    <Checkbox
+                      key={item?._id}
                       onChange={(e) => catHandle(e.target.checked, item._id)}
-                      name="category"
-                      // checked
-                      value={item._id}
-                      className="form-check-input mt-0"
-                      type="checkbox"
-                      aria-label="Checkbox for following text input"
+                    >
+                      {item?.name}
+                    </Checkbox>
+                  ))}
+
+                {/* {category?.map((item) => {
+                return (
+                  <div key={item._id} className="input-group mb-3">
+                    <div className="input-group-text">
+                      <input
+                        onChange={(e) => catHandle(e.target.checked, item._id)}
+                        name="category"
+                        // checked
+                        value={item._id}
+                        className="form-check-input mt-0"
+                        type="checkbox"
+                        aria-label="Checkbox for following text input"
+                      />
+                    </div>
+    
+                    <input
+                      onChange={cat}
+                      value={item.name}
+                      type="text"
+                      className="form-control"
+                      aria-label="Text input with checkbox"
                     />
                   </div>
-  
-                  <input
-                    onChange={cat}
-                    value={item.name}
-                    type="text"
-                    className="form-control"
-                    aria-label="Text input with checkbox"
-                  />
-                </div>
-              );
-            })} */}
+                );
+              })} */}
+              </div>
             </div>
 
             <div>
@@ -216,10 +218,9 @@ const Home = () => {
             </div>
           </div>
 
-
-          <div className="col-md-10">
-          <div>
-            <HomeCatPage/>
+          <div className="col-10">
+            <div>
+              <HomeCatPage />
             </div>
             <hr />
             <h3>
@@ -252,7 +253,8 @@ const Home = () => {
                           <LazyLoadImage
                             src={`${item?.picture[0]?.secure_url}`}
                             className=" "
-                            height={200}
+                            width={"100%"}
+                            height={screen > 768 ? 200 : 50}
                             alt="image"
                           />
                           <div className="card-body">
@@ -261,7 +263,9 @@ const Home = () => {
                               <p className="m-0">
                                 Category: {item?.category?.name}{" "}
                               </p>
-                              <p className="m-0">Price: {<PriceFormat price={item.price}/>} </p>
+                              <p className="m-0">
+                                Price: {<PriceFormat price={item.price} />}{" "}
+                              </p>
                               <p className="m-0">
                                 Available quantity: {item?.quantity}
                               </p>

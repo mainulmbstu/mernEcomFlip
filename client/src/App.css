@@ -14,7 +14,7 @@ a{
 @media only screen and (max-width: 768px) {
   /* For mobile phones: */
   * {
-    font-size: 10px;
+    font-size: 8px;
   }
 }
 

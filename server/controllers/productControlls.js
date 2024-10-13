@@ -10,6 +10,7 @@ const  ProductModel = require("../models/productModel");
 const  CategoryModel  = require("../models/CategoryModel");
 const slugify = require("slugify");
 const OrderModel  = require("../models/OrderModel");
+const { ReviewModel, RatingModel } = require("../models/ReviewModel");
 //==================================================
 const createProduct = async (req, res) => {
   try {
@@ -42,7 +43,8 @@ const createProduct = async (req, res) => {
       price,
       quantity,
       user: req.user?._id,
-      picture:links,
+      picture: links,
+   
     });
     res
       .status(201)
@@ -246,8 +248,10 @@ const productByCategory = async (req, res) => {
 const moreInfo = async (req, res) => {
   try {
     const { pid } = req.params;
-    const products = await ProductModel.find({ _id: pid }).populate("category");
-    res.status(200).json({ msg: "got product moreInfo", products:products[0] });
+    const product = await ProductModel.find({ _id: pid }).populate("category");
+    let products = product[0];
+    products.rating = (products.rating).toFixed(1)
+    res.status(200).json({ msg: "got product moreInfo", products });
   } catch (error) {
     console.log(error);
     res.status(401).send({ msg: "error from moreInfo", error });
@@ -461,7 +465,14 @@ const orderSuccess = async (req, res) => {
       { new: true }
     );
 
+    
     if (updated.isModified) {
+      for (let v of updated.products) {
+        let product = await ProductModel.findById(v._id);
+        product.quantity = product.quantity - v.amount;
+         product.save();
+      }
+
       res.redirect(
         `${process.env.FRONT_URL}/products/payment/success/${updated._id}`
       );
@@ -490,6 +501,41 @@ const orderFail = async (req, res) => {
       .send({ success: false, msg: "error from orderFail", error });
   }
 };
+
+//======================================================================
+const reviewProduct = async (req, res) => {
+  try {
+    const { name, email, review, pid } = req.body
+    if (!review || !name || !pid) {
+      return res.json({ msg: "Name and review are required" });
+    }
+    await ReviewModel.create({ name, email, review, pid });
+    let product= await ProductModel.findById(pid)
+    await ProductModel.findByIdAndUpdate(pid,{review:product?.review + 1} )
+
+    res.status(201).json({ msg: "Thanks for your review", success:true });
+  } catch (error) {
+    res.status(500).json({ msg: "error from review", error });
+  }
+};
+
+//======================================================================
+const ratingProduct = async (req, res) => {
+  try {
+    const { name, email, rating, pid } = req.body;
+    if (!rating || !name || !pid) {
+      return res.json({ msg: "Name and rating are required" });
+    }
+    await RatingModel.create({ name, email, rating, pid });
+    let product = await ProductModel.findById(pid);
+    let calRating=((product?.rating*product?.ratingNo)+rating)/(product?.ratingNo + 1)
+    await ProductModel.findByIdAndUpdate(pid, {rating:calRating, ratingNo: product?.ratingNo + 1 });
+
+    res.status(201).json({ msg: "Thanks for your rating", success: true });
+  } catch (error) {
+    res.status(500).json({ msg: "error from rating", error });
+  }
+};
 //==============================================================
 
 
@@ -506,5 +552,7 @@ module.exports = {
   orderCheckout,
   orderSuccess,
   orderFail,
- productList,
+  productList,
+  reviewProduct,
+  ratingProduct,
 };

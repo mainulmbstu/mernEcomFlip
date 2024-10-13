@@ -8,7 +8,7 @@ export const CartPage = () => {
   let { token, userInfo } = useAuth();
   let { cart, setCart } = useSearch();
   let navigate = useNavigate();
-
+console.log(cart);
   let amountHandle = (id, d) => {
     let ind = -1;
     cart?.forEach((data, index) => {
@@ -99,21 +99,23 @@ export const CartPage = () => {
                             <button
                               onClick={() => amountHandle(item._id, -1)}
                               className=" px-3 me-3"
-                              disabled={item.amount === 1}
+                              disabled={item?.amount === 1}
                             >
                               -
                             </button>
-                            <span>{item.amount} </span>
+                            <span>{item?.amount} </span>
                             <button
-                              onClick={() => amountHandle(item._id, 1)}
+                              onClick={() => amountHandle(item?._id, 1)}
                               className=" px-3 mx-3"
+                              disabled={item?.amount === item?.quantity}
                             >
                               +
                             </button>
                           </div>
+                          <p className="text-danger">{item?.amount === item?.quantity?'Max available quantity reached':''} </p>
                           <p className=" fw-bold">
                             Sub-Total:{" "}
-                            {<PriceFormat price={item.price * item.amount} />}{" "}
+                            {<PriceFormat price={item?.price * item?.amount} />}{" "}
                           </p>{" "}
                         </div>
                         <div className=" mt-auto">

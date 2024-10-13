@@ -270,6 +270,9 @@ const Home = () => {
                                 Available quantity: {item?.quantity}
                               </p>
                               <p className="m-0">
+                                {`Rating: ${(item.rating).toFixed(1)} (${item.review} Reviews)`}
+                              </p>
+                              <p className="m-0">
                                 Description: {item?.description.substring(0, 8)}{" "}
                                 ....
                               </p>

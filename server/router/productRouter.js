@@ -25,6 +25,8 @@ router.get("/search/similar/:pid/:cid", productControlls.similarProducts);
 router.post('/update-product/:pid', loginMiddleware, adminMiddleware, upload.array('picture',20), productControlls.updateProduct)
 
 router.delete('/delete-product/:pid', loginMiddleware, adminMiddleware, productControlls.deleteProduct)
+router.post('/review', productControlls.reviewProduct)
+router.post('/rating', productControlls.ratingProduct)
 
 
 // ============== checkout ========================================

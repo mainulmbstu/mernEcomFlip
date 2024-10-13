@@ -5,6 +5,7 @@ import axios from "axios";
 import InfiniteScroll from "react-infinite-scroll-component";
 import PriceFormat from '../Helper/PriceFormat';
 import { useAuth } from '../context/AuthContext';
+import { MdStar } from 'react-icons/md';
 
 const Category = () => {
   const [products, setProducts] = useState([]);
@@ -62,7 +63,9 @@ let [page, setPage] = useState(1);
        }
      }
      return myCategories;
-    };
+  };
+  
+   let screen = window.screen.width;
 
   return (
     <Layout title={`Category-${params.slug}`}>
@@ -100,7 +103,8 @@ let [page, setPage] = useState(1);
                           <img
                             src={`${item?.picture[0]?.secure_url}`}
                             className=" card-img-top"
-                            height={200}
+                            width={screen > 768 ? 200 : 100}
+                            height={screen > 768 ? 200 : 100}
                             alt="image"
                           />
                           <div className="card-body">
@@ -114,6 +118,10 @@ let [page, setPage] = useState(1);
                               </p>
                               <p className="m-0">
                                 Available quantity: {item.quantity}{" "}
+                              </p>
+                              <p className="m-0">
+                                Rating: {item?.rating}
+                                <MdStar /> ({item?.review} Reviews)
                               </p>
                               <p className="m-0">
                                 Description: {item.description.substring(0, 8)}{" "}

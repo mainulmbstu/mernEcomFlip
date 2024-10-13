@@ -6,6 +6,10 @@ import Layout from "./Layout";
 import PriceFormat from "../Helper/PriceFormat";
 // import ReactImageMagnify from "react-image-magnify";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import Review from "./Review";
+import Rating from "./Rating";
+import { MdStar } from "react-icons/md";
+
 
 
 const MoreInfo = () => {
@@ -15,6 +19,8 @@ const MoreInfo = () => {
   let { cart, setCart } = useSearch();
   const [loading, setLoading] = useState(false);
   const [img, setImg] = useState([]);
+  const [reviewItem, setReviewItem] = useState('');
+  const [ratingItem, setRatingItem] = useState("");
   //=================================
   let getMoreInfo = async () => {
     try {
@@ -77,6 +83,8 @@ const MoreInfo = () => {
     }
   };
 
+  let screen=window.screen.width
+
   return (
     <Layout title={"More Information"}>
       <div className={loading ? "dim" : ""}>
@@ -112,8 +120,8 @@ const MoreInfo = () => {
                   <LazyLoadImage
                     src={img}
                     alt="image"
-                    width="400"
-                    height="500"
+                    width={screen > 768 ? 400 : 200}
+                    height={screen > 768 ? 500 : 200}
                     className="px-3"
                   />
 
@@ -148,9 +156,32 @@ const MoreInfo = () => {
                   <p>Category: {moreInfo?.category?.name} </p>
                   <p>Price: {<PriceFormat price={moreInfo.price} />} </p>
                   <p>Quqntity: {moreInfo?.quantity} </p>
+                  <p className="m-0">
+                    Rating: {moreInfo?.rating}<MdStar/> ({moreInfo?.review} Reviews)
+                  </p>
                   <p>Description: {moreInfo?.description} </p>
                 </div>
                 <div className=" my-3 w-100">
+                  <button
+                    onClick={() => setReviewItem(moreInfo)}
+                    type="button"
+                    className="btn btn-success mt-auto w-100 mb-2"
+                    data-bs-toggle="modal"
+                    data-bs-target="#review"
+                  >
+                    Review this product
+                  </button>
+                  <Review reviewItem={reviewItem} />
+                  <button
+                    onClick={() => setRatingItem(moreInfo)}
+                    type="button"
+                    className="btn btn-success mt-auto w-100 mb-2"
+                    data-bs-toggle="modal"
+                    data-bs-target="#rating"
+                  >
+                    Rate this product
+                  </button>
+                  <Rating ratingItem={ratingItem} />
                   <button
                     onClick={() => {
                       setCart([...cart, moreInfo]);
@@ -176,13 +207,13 @@ const MoreInfo = () => {
               {similarProducts?.length &&
                 similarProducts?.map((item) => {
                   return (
-                    <div key={item?._id} className="col-md-3 ">
+                    <div key={item?._id} className="col-6 col-md-3 ">
                       <div className="card h-100">
                         <img
                           src={`${item?.picture[0]?.secure_url}`}
                           className=" card-img-top"
-                          width={200}
-                          height={200}
+                          width={screen > 768 ? 200 : 100}
+                          height={screen > 768 ? 200 : 100}
                           alt="image"
                         />
                         <div className="card-body">

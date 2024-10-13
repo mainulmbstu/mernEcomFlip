@@ -8,7 +8,7 @@ export const CartPage = () => {
   let { token, userInfo } = useAuth();
   let { cart, setCart } = useSearch();
   let navigate = useNavigate();
-console.log(cart);
+
   let amountHandle = (id, d) => {
     let ind = -1;
     cart?.forEach((data, index) => {
@@ -29,7 +29,8 @@ console.log(cart);
   let removeCartItem = (id) => {
     try {
       let index = cart?.findIndex((item) => item._id === id);
-      let newCart = cart?.toSpliced(index, 1);
+      let newCart=[...cart]
+      newCart?.splice(index, 1);
       setCart(newCart);
       localStorage.setItem("cart", JSON.stringify(newCart));
     } catch (error) {

@@ -15,7 +15,7 @@ const createCategory = async (req, res) => {
       return res.send({ msg: "Name is required" });
     }
     const categoryExist = await CategoryModel.findOne({
-      name: name.toLowerCase(),
+      name: name.toUpperCase(),
     });
     if (categoryExist) {
       picturePath && (await fs.unlinkSync(picturePath));
@@ -23,7 +23,7 @@ const createCategory = async (req, res) => {
     }
 
     let category = await CategoryModel.create({
-      name: name.toLowerCase(),
+      name: name.toUpperCase(),
       slug: slugify(name),
       parentId,
       user: req.user?._id,
@@ -62,7 +62,7 @@ if (req.body?.parentId == "undefined") {
 }
 
     const nameExist = await CategoryModel.findOne({
-      name: name.toLowerCase(),
+      name: name.toUpperCase(),
     });
      if (nameExist) {
        return res.send({ msg: `${name} already exist` });
@@ -72,7 +72,7 @@ if (req.body?.parentId == "undefined") {
       return res.send({ msg: "No data found" });
     }
 
-    if (name) categoryExist.name = name.toLowerCase();
+    if (name) categoryExist.name= name.toUpperCase();
     if (name) categoryExist.slug = slugify(name);
      categoryExist.parentId = parentId;
 

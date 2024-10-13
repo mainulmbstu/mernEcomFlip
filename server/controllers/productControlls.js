@@ -6,37 +6,41 @@ const { v4: uuidv4 } = require("uuid");
 
 const SSLCommerzPayment = require("sslcommerz-lts");
 
-const  ProductModel = require("../models/productModel");
-const  CategoryModel  = require("../models/CategoryModel");
+const ProductModel = require("../models/productModel");
+const CategoryModel = require("../models/CategoryModel");
 const slugify = require("slugify");
-const OrderModel  = require("../models/OrderModel");
+const OrderModel = require("../models/OrderModel");
 const { ReviewModel, RatingModel } = require("../models/ReviewModel");
 //==================================================
 const createProduct = async (req, res) => {
   try {
-    const { name, description, category, price, quantity} = req.body;
+    const { name, description, category, price, quantity } = req.body;
     // console.log(req.files);
-    const pictures = req.files
+    const pictures = req.files;
     if (!name || !description || !category || !price || !quantity) {
-      return res.send({ msg: "All fields are required" })
+      return res.send({ msg: "All fields are required" });
     }
-    if (category==='undefined') {
-      return res.send({ msg: "Wrong category" })
+    if (category === "undefined") {
+      return res.send({ msg: "Wrong category" });
     }
-    let picturePaths = await pictures.length && pictures.map(pic => pic.path)
-    
+    let picturePaths =
+      (await pictures.length) && pictures.map((pic) => pic.path);
+
     let links = [];
-     for(spath of picturePaths) {
-  const { secure_url, public_id } =await uploadOnCloudinary(spath,"products"); // path and folder name as arguments
-      links = [...links, { secure_url, public_id }];      
-    if (!secure_url) {
-      return res
-        .status(500)
-        .send({ msg: "error uploading image", error: secure_url });
+    for (spath of picturePaths) {
+      const { secure_url, public_id } = await uploadOnCloudinary(
+        spath,
+        "products"
+      ); // path and folder name as arguments
+      links = [...links, { secure_url, public_id }];
+      if (!secure_url) {
+        return res
+          .status(500)
+          .send({ msg: "error uploading image", error: secure_url });
+      }
     }
-}
     let product = await ProductModel.create({
-      name,
+      name: name.toUpperCase(),
       slug: slugify(name),
       description,
       category,
@@ -44,14 +48,18 @@ const createProduct = async (req, res) => {
       quantity,
       user: req.user?._id,
       picture: links,
-   
     });
     res
       .status(201)
       .send({ msg: "product created successfully", success: true, product });
   } catch (error) {
     console.log(error);
-    res.status(500).send({ msg: "error from product create, check file size and file type", error });
+    res
+      .status(500)
+      .send({
+        msg: "error from product create, check file size and file type",
+        error,
+      });
   }
 };
 
@@ -121,51 +129,49 @@ const updateProduct = async (req, res) => {
     let pid = req.params.pid;
     const { name, description, category, price, quantity } = req.body;
     const pictures = req.files;
-      if (category === "undefined") {
-        return res.send({ msg: "Wrong category" });
-      }
+    if (category === "undefined") {
+      return res.send({ msg: "Wrong category" });
+    }
     let product = await ProductModel.findById(pid);
     if (!product) {
       return res.send({ msg: "No data found" });
     }
 
-    if (name) product.name = name;
+    if (name) product.name = name.toUpperCase();
     if (name) product.slug = slugify(name);
     if (description) product.description = description;
     if (category) product.category = category;
     if (price) product.price = price;
     if (quantity) product.quantity = quantity;
 
-
     // upload and delete image on cloudinary
-   let picturePaths = await pictures.length && pictures.map((pic) => pic.path);
-    
-      let links = [];
+    let picturePaths =
+      (await pictures.length) && pictures.map((pic) => pic.path);
+
+    let links = [];
     if (picturePaths.length) {
-       for (spath of picturePaths) {
-         const { secure_url, public_id } = await uploadOnCloudinary(
-           spath,
-           "products"
-         ); // path and folder name as arguments
-         links = [...links, { secure_url, public_id }];
-         if (!secure_url) {
-           return res
-             .status(500)
-             .send({ msg: "error uploading image", error: secure_url });
-         }
+      for (spath of picturePaths) {
+        const { secure_url, public_id } = await uploadOnCloudinary(
+          spath,
+          "products"
+        ); // path and folder name as arguments
+        links = [...links, { secure_url, public_id }];
+        if (!secure_url) {
+          return res
+            .status(500)
+            .send({ msg: "error uploading image", error: secure_url });
+        }
       }
-      
+
       if (product?.picture?.length && product?.picture[0].public_id) {
-        let publicPaths =await product.picture.map((pic) => pic.public_id);
+        let publicPaths = await product.picture.map((pic) => pic.public_id);
         for (dpath of publicPaths) {
           await deleteImageOnCloudinary(dpath);
         }
       }
 
-      product.picture = links
+      product.picture = links;
     }
-
-
 
     let updatedProduct = await product.save();
     res.status(201).send({
@@ -227,45 +233,78 @@ const updateProduct = async (req, res) => {
 // };
 //=========================================
 
-// let createCategories = async (category, parentId = null) => {
-//   let categoryList = [];
-//   let filteredCat;
-//   if (parentId == null) {
-//     filteredCat = await category.filter((item) => item.parentId == undefined);
-//   } else {
-//     filteredCat = await category.filter((item) => item.parentId == parentId);
-//   }
-//   for (let v of filteredCat) {
-//     await categoryList.push({
-//       _id: v._id,
-//       name: v.name,
-//       slug: v.slug,
-//       user: v.user,
-//       picture: v.picture,
-//       parentId: v.parentId,
-//       updatedAt: v.updatedAt,
-//       children: await createCategories(category, v._id),
-//     });
-//   }
-//   return categoryList;
-// };
+let createCategories = async (category, parentId = null) => {
+  let categoryList = [];
+  let filteredCat;
+  if (parentId == null) {
+    filteredCat = await category.filter((item) => item.parentId == undefined);
+  } else {
+    filteredCat = await category.filter((item) => item.parentId == parentId);
+  }
+  for (let v of filteredCat) {
+    await categoryList.push({
+      _id: v._id,
+      name: v.name,
+      slug: v.slug,
+      user: v.user,
+      picture: v.picture,
+      parentId: v.parentId,
+      updatedAt: v.updatedAt,
+      children: await createCategories(category, v._id),
+    });
+  }
+  return categoryList;
+};
 
 const productByCategory = async (req, res) => {
   try {
     const { page, size } = req.query;
     let skip = (page - 1) * size;
+    let keyCat = await CategoryModel.findOne({ slug: req.params?.slug });
 
-    const category = await CategoryModel.find({slug:req.params.slug});
+    if (keyCat?.parentId) {
+      const category = await CategoryModel.find({
+        $or: [
+          { _id: keyCat?._id },
+          { parentId: keyCat?._id },
+        ],
+      });
+      const total = await ProductModel.find({ category });
+      const products = await ProductModel.find({ category })
+        .skip(skip)
+        .limit(size)
+        .populate("category");
+
+      res.status(200).send({ products, total });
+      
+    } else {
+      const category = await CategoryModel.find({});
+      let categoryList = await createCategories(category); // function above
+      let filtered = await categoryList.filter(
+        (parent) => parent?.slug === req.params?.slug
+      );
+
+      let getPlainCatList = (filtered, list = []) => {
+        for (let v of filtered) {
+          list.push(v);
+          if (v.children.length > 0) {
+            getPlainCatList(v.children, list);
+          }
+        }
+        return list;
+      };
+      let catPlain = getPlainCatList(filtered);
+
+      const total = await ProductModel.find({ category: catPlain });
+      const products = await ProductModel.find({ category: catPlain })
+        .skip(skip)
+        .limit(size)
+        .populate("category");
+
+      res.status(200).send({ products, total });
+    }
+
     
-    // let categoryList = await createCategories(category); // function above
-
-    const total = await ProductModel.find({ category });
-    const products = await ProductModel.find({ category})
-      .skip(skip)
-      .limit(size)
-      .populate("category");
-
-    res.status(200).send({ products, total });
   } catch (error) {
     console.log(error);
     res.send({ msg: "error from productByCategory", error });
@@ -277,7 +316,7 @@ const moreInfo = async (req, res) => {
     const { pid } = req.params;
     const product = await ProductModel.find({ _id: pid }).populate("category");
     let products = product[0];
-    products.rating = (products.rating).toFixed(1)
+    products.rating = products.rating.toFixed(1);
     res.status(200).json({ msg: "got product moreInfo", products });
   } catch (error) {
     console.log(error);
@@ -290,10 +329,10 @@ const productSearch = async (req, res) => {
   try {
     const { keyword, page, size } = req.query;
     let skip = (page - 1) * size;
-    
+
     const totalCat = await CategoryModel.find({
       name: { $regex: keyword, $options: "i" },
-    })
+    });
     let catIds = totalCat.map((item) => item._id);
 
     const totalProd = await ProductModel.find({
@@ -316,7 +355,11 @@ const productSearch = async (req, res) => {
       .sort({ updatedAt: -1 });
     res
       .status(200)
-      .send({ msg: "got product from search", products, total:totalProd?.length  });
+      .send({
+        msg: "got product from search",
+        products,
+        total: totalProd?.length,
+      });
   } catch (error) {
     console.log(error);
     res.status(401).send({ msg: "error from productSearch", error });
@@ -391,9 +434,9 @@ let deleteProduct = async (req, res) => {
     }
     if (deleteItem.picture?.length && deleteItem.picture[0].public_id) {
       let publicPaths = await deleteItem?.picture?.map((pic) => pic.public_id);
-       for (dpath of publicPaths) {
-         await deleteImageOnCloudinary(dpath);
-       }
+      for (dpath of publicPaths) {
+        await deleteImageOnCloudinary(dpath);
+      }
     }
 
     await ProductModel.findByIdAndDelete(pid);
@@ -407,14 +450,14 @@ let deleteProduct = async (req, res) => {
 
 const orderCheckout = async (req, res) => {
   try {
-    const { cart} = req?.body;
+    const { cart } = req?.body;
     let total = 0;
-    cart.length && cart.map((item) => (total += item?.price* item.amount));
+    cart.length && cart.map((item) => (total += item?.price * item.amount));
     let trxn_id = "DEMO" + uuidv4();
 
     // let baseurl = "http://localhost:8000";
     // has been changed after deployment
-    let baseurl = process.env.BASE_URL; 
+    let baseurl = process.env.BASE_URL;
     // has been changed after deployment
     // let baseurl = "https://mernecom-server.onrender.com";
 
@@ -492,12 +535,11 @@ const orderSuccess = async (req, res) => {
       { new: true }
     );
 
-    
     if (updated.isModified) {
       for (let v of updated.products) {
-        let product = await ProductModel.findById(v._id)
+        let product = await ProductModel.findById(v._id);
         product.quantity = product.quantity - v.amount;
-         product.save();
+        product.save();
       }
 
       res.redirect(
@@ -532,15 +574,15 @@ const orderFail = async (req, res) => {
 //======================================================================
 const reviewProduct = async (req, res) => {
   try {
-    const { name, email, review, pid } = req.body
+    const { name, email, review, pid } = req.body;
     if (!review || !name || !pid) {
       return res.json({ msg: "Name and review are required" });
     }
     await ReviewModel.create({ name, email, review, pid });
-    let product= await ProductModel.findById(pid)
-    await ProductModel.findByIdAndUpdate(pid,{review:product?.review + 1} )
+    let product = await ProductModel.findById(pid);
+    await ProductModel.findByIdAndUpdate(pid, { review: product?.review + 1 });
 
-    res.status(201).json({ msg: "Thanks for your review", success:true });
+    res.status(201).json({ msg: "Thanks for your review", success: true });
   } catch (error) {
     res.status(500).json({ msg: "error from review", error });
   }
@@ -555,8 +597,12 @@ const ratingProduct = async (req, res) => {
     }
     await RatingModel.create({ name, email, rating, pid });
     let product = await ProductModel.findById(pid);
-    let calRating=((product?.rating*product?.ratingNo)+rating)/(product?.ratingNo + 1)
-    await ProductModel.findByIdAndUpdate(pid, {rating:calRating, ratingNo: product?.ratingNo + 1 });
+    let calRating =
+      (product?.rating * product?.ratingNo + rating) / (product?.ratingNo + 1);
+    await ProductModel.findByIdAndUpdate(pid, {
+      rating: calRating,
+      ratingNo: product?.ratingNo + 1,
+    });
 
     res.status(201).json({ msg: "Thanks for your rating", success: true });
   } catch (error) {
@@ -564,7 +610,6 @@ const ratingProduct = async (req, res) => {
   }
 };
 //==============================================================
-
 
 module.exports = {
   createProduct,

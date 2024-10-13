@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { AuthContext, useAuth } from "../../context/AuthContext";
+import {  useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
-import axios from "axios";
 import Layout from "../../components/Layout";
 
 // eslint-disable-next-line react/prop-types
@@ -14,7 +13,7 @@ const ProductUpdateInput = ({ value }) => {
     quantity: "",
     picture: [],
   });
-  let { token, category, loading, setLoading, Axios } = useAuth();
+  let { loading, setLoading, Axios, catPlain } = useAuth();
   // eslint-disable-next-line react/prop-types
   let { editProduct, getProducts, setEditProduct } = value;
 
@@ -140,21 +139,21 @@ const ProductUpdateInput = ({ value }) => {
                     // eslint-disable-next-line react/prop-types
                     placeholder={editProduct?.category?.name}
                     onChange={(e) => {
-                      let cat = category.filter(
-                        (item) => item.slug === e.target.value
+                      let cat = catPlain.find(
+                        (item) => item?.slug === e.target.value
                       );
                       setInputVal((prev) => ({
                         ...prev,
-                        category: cat[0]?._id,
+                        category: cat?._id,
                       }));
                     }}
                   />
 
                   <datalist id="categoryList">
-                    {category?.length &&
-                      category.map((item) => {
+                    {catPlain?.length &&
+                      catPlain.map((item) => {
                         return (
-                          <option key={item._id} value={item.slug}></option>
+                          <option key={item._id} value={item?.slug}></option>
                         );
                       })}
                   </datalist>

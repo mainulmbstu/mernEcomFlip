@@ -104,6 +104,9 @@ const Home = () => {
     getProducts();
   }, []);
 
+    let screen = window.screen.width;
+
+
   //===========================================
   return (
     <Layout title={"home"}>

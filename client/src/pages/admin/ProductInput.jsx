@@ -180,10 +180,10 @@ const ProductInput = ({ getProducts }) => {
                     onChange={(e) => {
                       let cat =
                         catPlain?.length &&
-                        catPlain.filter((item) => item.slug === e.target.value);
+                        catPlain.find((item) => item?.slug === e.target.value);
                       setInputVal((prev) => ({
                         ...prev,
-                        category: cat[0]?._id,
+                        category: cat?._id,
                       }));
                     }}
                   />
@@ -191,7 +191,7 @@ const ProductInput = ({ getProducts }) => {
                     {catPlain?.length &&
                       catPlain.map((item) => {
                         return (
-                          <option key={item._id} value={item.slug}></option>
+                          <option key={item._id} value={item?.slug}></option>
                         );
                       })}
                   </datalist>

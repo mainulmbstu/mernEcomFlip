@@ -10,7 +10,13 @@ import { MdStar } from 'react-icons/md';
 const Category = () => {
   const [products, setProducts] = useState([]);
   let params = useParams()
-  let { category } = useAuth()
+  let { category, catPlain } = useAuth()
+
+  
+  let catItem =catPlain.length && catPlain.find((item) => item.slug == params.slug);
+  
+  let catItemChildren= catItem && catPlain.filter(item=>item.parentId===catItem._id)
+  console.log(catItemChildren);
 
   //======================================================
 let [page, setPage] = useState(1);
@@ -71,15 +77,46 @@ let [page, setPage] = useState(1);
     <Layout title={`Category-${params.slug}`}>
       <div className={loading ? "dim" : ""}>
         <div>
-          <div className='catPage'>
-            <ul>
-
-            {getCategoryList(category)}
-            </ul>
+          <div className="catPage">
+            <ul>{getCategoryList(category)}</ul>
+          </div>
+          <div>
+            <div className="row my-2">
+              {catItemChildren.length &&
+                catItemChildren.map((item) => (
+                  <div key={item._id} className="col-2 col-md-2 p-2 ">
+                    <div className="p-2">
+                      <Link
+                        to={`/products/category/${item.slug}`}
+                        className=" text-decoration-none"
+                      >
+                        <img
+                          src={
+                            item.picture
+                              ? `${import.meta.env.VITE_BASE_URL}/${
+                                  item.picture
+                                }`
+                              : `/placeholder.jpg`
+                          }
+                          // `${import.meta.env.VITE_BASE_URL}/${cat.picture }`
+                          alt="image"
+                          width={"100%"}
+                          // height={400}
+                          height={screen > 768 ? 150 : 50}
+                        />
+                        <h3 className=" text-center">{item?.name} </h3>
+                      </Link>
+                    </div>
+                  </div>
+                ))}
+            </div>
           </div>
           <div className="px-2">
             <h3 className=" text-capitalize">
-              Category: {params.slug}({products?.length} of {total} )
+              {
+                products?.length?`Category: ${params.slug} (${products?.length} of ${total})`:''
+              }
+              
             </h3>
             <h3 className=" text-danger">
               {!products?.length ? "No Product Found!!" : ""}
@@ -120,7 +157,7 @@ let [page, setPage] = useState(1);
                                 Available quantity: {item.quantity}{" "}
                               </p>
                               <p className="m-0">
-                                Rating: {item?.rating}
+                                Rating: {item.rating.toFixed(1)}
                                 <MdStar /> ({item?.review} Reviews)
                               </p>
                               <p className="m-0">

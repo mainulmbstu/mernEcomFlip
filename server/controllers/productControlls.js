@@ -226,18 +226,45 @@ const updateProduct = async (req, res) => {
 //   }
 // };
 //=========================================
+
+// let createCategories = async (category, parentId = null) => {
+//   let categoryList = [];
+//   let filteredCat;
+//   if (parentId == null) {
+//     filteredCat = await category.filter((item) => item.parentId == undefined);
+//   } else {
+//     filteredCat = await category.filter((item) => item.parentId == parentId);
+//   }
+//   for (let v of filteredCat) {
+//     await categoryList.push({
+//       _id: v._id,
+//       name: v.name,
+//       slug: v.slug,
+//       user: v.user,
+//       picture: v.picture,
+//       parentId: v.parentId,
+//       updatedAt: v.updatedAt,
+//       children: await createCategories(category, v._id),
+//     });
+//   }
+//   return categoryList;
+// };
+
 const productByCategory = async (req, res) => {
   try {
     const { page, size } = req.query;
     let skip = (page - 1) * size;
 
-    const category = await CategoryModel.findOne({ slug: req.params.slug })
-    const total = await ProductModel.find({ category })
-    const products = await ProductModel.find({ category })
+    const category = await CategoryModel.find({slug:req.params.slug});
+    
+    // let categoryList = await createCategories(category); // function above
+
+    const total = await ProductModel.find({ category });
+    const products = await ProductModel.find({ category})
       .skip(skip)
       .limit(size)
-    .populate("category")
-    
+      .populate("category");
+
     res.status(200).send({ products, total });
   } catch (error) {
     console.log(error);

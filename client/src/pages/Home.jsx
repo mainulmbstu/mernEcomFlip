@@ -114,7 +114,7 @@ const Home = () => {
           </Marquee>
         </div>
         <div className="row px-md-4">
-          <div className="col-2">
+          <div className="col-2 d-none d-md-block">
             <div className=" d-none d-md-block">
               <h5>Category</h5>
               <div className=" d-flex flex-column">
@@ -218,7 +218,7 @@ const Home = () => {
             </div>
           </div>
 
-          <div className="col-10">
+          <div className="col-md-10">
             <div>
               <HomeCatPage />
             </div>
@@ -270,7 +270,9 @@ const Home = () => {
                                 Available quantity: {item?.quantity}
                               </p>
                               <p className="m-0">
-                                {`Rating: ${(item.rating).toFixed(1)} (${item.review} Reviews)`}
+                                {`Rating: ${item.rating.toFixed(1)} (${
+                                  item.review
+                                } Reviews)`}
                               </p>
                               <p className="m-0">
                                 Description: {item?.description.substring(0, 8)}{" "}

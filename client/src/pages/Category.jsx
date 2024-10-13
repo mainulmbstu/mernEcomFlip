@@ -6,11 +6,15 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import PriceFormat from '../Helper/PriceFormat';
 import { useAuth } from '../context/AuthContext';
 import { MdStar } from 'react-icons/md';
+import { useSearch } from '../context/SearchContext';
+import { toast } from 'react-toastify';
 
 const Category = () => {
   const [products, setProducts] = useState([]);
   let params = useParams()
   let { category, catPlain } = useAuth()
+    let { cart, setCart } = useSearch();
+
 
   
   let catItem =catPlain.length && catPlain.find((item) => item.slug == params.slug);
@@ -175,7 +179,21 @@ let [page, setPage] = useState(1);
                                 More info
                               </button>
                             </Link>
-                            <button className="btn btn-info mt-auto mb-1">
+                            <button
+                              onClick={() => {
+                                let cartIds = cart.map((it) => it._id);
+                                if (cartIds.includes(item._id)) {
+                                  return alert("Already added");
+                                }
+                                setCart([...cart, item]);
+                                localStorage.setItem(
+                                  "cart",
+                                  JSON.stringify([...cart, item])
+                                );
+                                toast.success(`${item.name} added to Cart`);
+                              }}
+                              className="btn btn-info mt-auto mb-1"
+                            >
                               Add to cart
                             </button>
                           </div>

@@ -21,6 +21,7 @@ const MoreInfo = () => {
   const [img, setImg] = useState([]);
   const [reviewItem, setReviewItem] = useState('');
   const [ratingItem, setRatingItem] = useState("");
+
   //=================================
   let getMoreInfo = async () => {
     try {
@@ -157,7 +158,8 @@ const MoreInfo = () => {
                   <p>Price: {<PriceFormat price={moreInfo.price} />} </p>
                   <p>Quqntity: {moreInfo?.quantity} </p>
                   <p className="m-0">
-                    Rating: {moreInfo?.rating}<MdStar/> ({moreInfo?.review} Reviews)
+                    Rating: {moreInfo?.rating}
+                    <MdStar /> ({moreInfo?.review} Reviews)
                   </p>
                   <p>Description: {moreInfo?.description} </p>
                 </div>
@@ -184,12 +186,16 @@ const MoreInfo = () => {
                   <Rating ratingItem={ratingItem} />
                   <button
                     onClick={() => {
+                      let cartIds = cart.map((it) => it._id);
+                      if (cartIds.includes(moreInfo._id)) {
+                        return alert("Already added");
+                      }
                       setCart([...cart, moreInfo]);
                       localStorage.setItem(
                         "cart",
                         JSON.stringify([...cart, moreInfo])
                       );
-                      toast.success(`${moreInfo[0]?.name} added to Cart`);
+                      toast.success(`${moreInfo.name} added to Cart`);
                     }}
                     className="btn btn-info mt-auto w-100"
                   >

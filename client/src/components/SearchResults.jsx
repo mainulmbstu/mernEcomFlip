@@ -53,6 +53,10 @@ const SearchResults = () => {
                         </Link>
                         <button
                           onClick={() => {
+                            let cartIds = cart.map((it) => it._id);
+                            if (cartIds.includes(item._id)) {
+                              return alert("Already added");
+                            }
                             setCart([...cart, item]);
                             localStorage.setItem(
                               "cart",

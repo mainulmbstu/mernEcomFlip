@@ -9,10 +9,10 @@ const SearchInput = () => {
     
   
   return (
-    <div>
+    <div className="">
       <form className="d-flex" role="search" onSubmit={ submitHandler}>
         <input
-          className="form-control me-2"
+          className="form-control"
           type="search"
           placeholder="Search product"
           aria-label="Search"

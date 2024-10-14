@@ -31,7 +31,7 @@ const Header = () => {
           <Link className="navbar-brand" to="/">
             Logo
           </Link>
-          <div className=" ms-md-5">
+          <div className=" ms-md-5 w-50">
             <SearchInput />
           </div>
 

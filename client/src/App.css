@@ -11,12 +11,10 @@ a{
   text-decoration: none;
 }
 
-@media only screen and (max-width: 768px) {
-  /* For mobile phones: */
-  * {
-    font-size: 8px;
+
+ #myHeader {
+    font-size: 60x;
   }
-}
 
 img {
   object-fit: contain;
@@ -215,4 +213,18 @@ margin-right: 10px;
 
 }
 
+
+
+
+@media only screen and (max-width: 768px) {
+  /* For mobile phones: */
+
+  * {
+    font-size: 8px;
+  }
+#myHeader a {
+  font-size:15px;
+  text-align: center;
+}
+}
 

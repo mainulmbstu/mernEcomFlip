@@ -7,6 +7,8 @@ const upload = require("../middleware/multerMiddleware");
 const router = express.Router();
 
 router.get('/user-list', loginMiddleware, adminMiddleware, adminControlls.userList  )
+router.get('/contacts', loginMiddleware, adminMiddleware, adminControlls.adminContacts  )
+router.post('/contact-reply', loginMiddleware, adminMiddleware, adminControlls.adminContactReply  )
 router.get('/user-search', loginMiddleware, adminMiddleware, adminControlls.searchUser  )
 router.post('/order-list', loginMiddleware, adminMiddleware, adminControlls.orderList  )
 router.delete('/user/:id', loginMiddleware, adminMiddleware, adminControlls.deleteUser  )

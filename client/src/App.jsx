@@ -35,6 +35,7 @@ import PaymentFail from "./components/PaymentFail";
 import Layout from "./components/Layout";
 import Gallery from "./pages/user/Gallery";
 import ResetNewPassword from "./pages/user/ResetNewPassword";
+import AdminContacts from "./pages/admin/AdminContacts";
 // import ResetNewPassword from "./pages/user/ResetNewPassword";
 
 // let CreateProduct= lazy(()=>import('./pages/admin/CreateProduct'))
@@ -95,6 +96,7 @@ const App = () => {
               />
               <Route path="admin/user-list" element=<UserList /> />
               <Route path="admin/order-list" element=<AdminOrders /> />
+              <Route path="admin/contacts" element=<AdminContacts /> />
             </Route>
             <Route path="/login" element=<Login /> />
             <Route path="/register" element=<Register /> />

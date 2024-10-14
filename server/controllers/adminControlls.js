@@ -2,6 +2,10 @@ const  UserModel  = require("../models/userModel");
 const OrderModel = require("../models/OrderModel");
 const ProductModel = require("../models/productModel");
 const GalleryModel  = require("../models/GalleryModel");
+const { ContactModel, ContactReplyModel } = require("../models/ContactModel");
+const mailer = require("../helper/nodeMailer");
+const { v4: uuidv4 } = require("uuid");
+
 const {
   uploadOnCloudinary,
   deleteImageOnCloudinary,
@@ -291,6 +295,56 @@ const gallery = async (req, res) => {
   }
 };
 
+//====================================
+const adminContacts = async (req, res) => {
+  try {
+    let page = req.query.page ? req.query.page : 1;
+    let size = req.query.size ? req.query.size : 4;
+    let skip = (page - 1) * size;
+    const total = await ContactModel.find({}).estimatedDocumentCount();
+
+    const contacts = await ContactModel.find({})
+      .skip(skip)
+      .limit(size)
+      .sort({ createdAt: -1 });
+    if (!contacts || contacts.length === 0) {
+      return res.send({ msg: "No data found" });
+    }
+    res.status(200).send({ contacts, total });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "error from user list", error });
+  }
+};
+
+//====================================
+const adminContactReply = async (req, res) => {
+  try {
+    const {email, reply, msgId } = req.body;
+    if (!reply || !msgId || !email) {
+      return res.json({ msg: "All fields are required" });
+    }
+    await ContactReplyModel.create({ email, reply, msgId, user: req.user?._id });
+    let findmsg = await ContactModel.findById(msgId)
+    let destructure = [...findmsg.replies];
+    findmsg.replies = [...destructure, { userName: req.user?.name, msg: reply, date: Date.now() },
+    ];
+    await findmsg.save()
+
+    let credential = {
+      email,
+      subject: "Contact reply",
+      body: `<h2>Hi ${findmsg?.name},</h2>
+      <h3>${reply} </h3>
+      Thanks for staying with us`,
+    };
+    mailer(credential);
+     res.status(201).json({ msg: "Reply sent successfully", success:true });
+   } catch (error) {
+     res.status(401).json({ msg: "error from adminContactReply", error });
+   }
+};
+
 module.exports = {
   userList,
   deleteUser,
@@ -302,4 +356,6 @@ module.exports = {
   searchUser,
   adminSearchProductList,
   gallery,
+  adminContacts,
+  adminContactReply,
 };

@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const UserModel  = require("../models/userModel");
 const  OrderModel  = require("../models/OrderModel");
 const  GalleryModel  = require("../models/GalleryModel");
-const  ContactModel  = require("../models/ContactModel");
+const  {ContactModel}  = require("../models/ContactModel");
 const otpGenerator = require("otp-generator");
 const mailer = require("../helper/nodeMailer");
 const mailerContact = require("../helper/nodeMailerContact");
@@ -19,7 +19,7 @@ const home = async (req, res) => {
 //============================================================
 const getOTP = async (req, res) => {
   try {
-    const { name, email, password, phone, address, regOTP } = req.body;
+    const { name, email, password, phone, address } = req.body;
     if (!name || !email || !password || !phone || !address) {
       return res.status(400).send({ msg: "All fields are required" });
     }

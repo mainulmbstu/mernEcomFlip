@@ -43,6 +43,13 @@ const AdminMenu = () => {
         >
           Orders
         </NavLink>
+        <NavLink
+          to="/dashboard/admin/contacts"
+          className="list-group-item list-group-item-action"
+          aria-current="true"
+        >
+          Contacts
+        </NavLink>
       </div>
     </div>
   );

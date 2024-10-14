@@ -15,7 +15,7 @@ const ProductUpdateInput = ({ value }) => {
   });
   let { loading, setLoading, Axios, catPlain } = useAuth();
   // eslint-disable-next-line react/prop-types
-  let { editProduct, getProducts, setEditProduct } = value;
+  let { editProduct, getProducts, setEditProduct, page, size } = value;
 
   useEffect(() => {
     setInputVal({
@@ -54,8 +54,8 @@ const ProductUpdateInput = ({ value }) => {
       setLoading(false);
       if (data.success) {
         toast.success(data.msg);
+        getProducts(1, page*size);
         setEditProduct("");
-        getProducts();
         refCat.current.value = "";
       } else {
         toast.error(data.msg);

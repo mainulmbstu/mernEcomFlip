@@ -18,22 +18,24 @@ const CreateProduct = () => {
   let [page, setPage] = useState(1);
   let [total, setTotal] = useState(0);
   let [products, setProducts] = useState([]);
-  let getProducts = async (page = 1) => {
-    page === 1 && window.scrollTo(0, 0);
+console.log(page);
+  let size=3
+  let getProducts = async (page = 1, size=10) => {
+    // page === 1 && window.scrollTo(0, 0);
     try {
       setLoading(true);
       let { data } = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/admin/product-list`,
         {
           params: {
-            page: page,
-            size: 10,
+            page,
+            size,
           },
           headers: { Authorization: `Bearer ${token}` },
         }
       );
       setTotal(data.total);
-      page===1?
+      page===1 || editProduct?
       setProducts(data.products)
       :setProducts([...products, ...data.products]);
       setLoading(false);
@@ -43,12 +45,12 @@ const CreateProduct = () => {
   };
 
   useEffect(() => {
-   if (token && userInfo.role) getProducts();
+   if (token && userInfo.role) getProducts(page, size);
   }, []);
   //======================================================
   let [searchVal, setSearchVal] = useState("");
 
-  let getSearchAdminProducts = async (e, page = 1) => {
+  let getSearchAdminProducts = async (e, page = 1, size=10) => {
     e && e.preventDefault();
     try {
       if (!searchVal) return;
@@ -58,8 +60,8 @@ const CreateProduct = () => {
         {
           params: {
             keyword: searchVal,
-            page: page,
-            size: 8,
+            page,
+            size,
           },
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -75,9 +77,9 @@ const CreateProduct = () => {
     }
   };
 
-  useEffect(() => {
-    setPage(1);
-  }, [searchVal]);
+  // useEffect(() => {
+  //   setPage(1);
+  // }, [searchVal]);
 
   //===================================================
   let [delItem, setDelItem] = useState('');
@@ -167,11 +169,11 @@ const CreateProduct = () => {
                       !searchVal
                         ? () => {
                             setPage(page + 1);
-                            getProducts(page + 1);
+                            getProducts(page + 1, size);
                           }
                         : (e) => {
                             setPage(page + 1);
-                            getSearchAdminProducts(e, page + 1);
+                            getSearchAdminProducts(e, page + 1, size);
                           }
                     }
                     hasMore={products.length < total}
@@ -260,7 +262,7 @@ const CreateProduct = () => {
                                     <>
                                       <button
                                         onClick={() => {
-                                          setPage(1);
+                                          // setPage(1);
                                           setEditProduct(item);
                                         }}
                                         className="btn btn-primary"
@@ -278,6 +280,8 @@ const CreateProduct = () => {
                                     editProduct,
                                     getProducts,
                                     setEditProduct,
+                                    page,
+                                    size
                                   }}
                                 />
                               </tr>
@@ -299,11 +303,11 @@ const CreateProduct = () => {
                     !searchVal
                       ? () => {
                           setPage(page + 1);
-                          getProducts(page + 1);
+                          getProducts(page + 1, size);
                         }
                       : (e) => {
                           setPage(page + 1);
-                          getSearchAdminProducts(e, page + 1);
+                          getSearchAdminProducts(e, page + 1, size);
                         }
                   }
                   className="btn btn-primary my-3 px-3 mx-auto"

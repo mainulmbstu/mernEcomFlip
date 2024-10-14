@@ -2,7 +2,11 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "react-toastify";
 
-const ContactReplyModal = ({ replyItem, getAdminContacts }) => {
+const ContactReplyModal = ({ value }) => {
+  
+  // eslint-disable-next-line react/prop-types
+  let { replyItem, getAdminContacts, page, size, setReplyItem, } = value
+
   const [inputVal, setinputVal] = useState({
     msgId: replyItem?._id,
     email: "",
@@ -32,8 +36,9 @@ const ContactReplyModal = ({ replyItem, getAdminContacts }) => {
       setLoading(false);
       if (data.success) {
         toast.success(data.msg);
-          setinputVal((prev) => ({ ...prev, reply: "" }));
-          getAdminContacts()
+        setinputVal((prev) => ({ ...prev, reply: "" }));
+        getAdminContacts(1, page * size);
+        setReplyItem('')
       } else {
         toast.error(data.msg);
       }

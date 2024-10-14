@@ -10,6 +10,9 @@ const UserList = () => {
   let [adminUsers, setAdminUsers] = useState([]);
   let [okdel, setOkdel] = useState(true);
   let { token, userInfo, Axios } = useAuth();
+    let [loading, setLoading] = useState(false);
+    let [page, setPage] = useState(1);
+    let [total, setTotal] = useState(0);
   //====================================================
   let roleHandle = async (value, id) => {
     if (id === userInfo._id) {
@@ -31,9 +34,7 @@ const UserList = () => {
     await alert(data.msg);
   };
   //============================================================
-  let [loading, setLoading] = useState(false);
-  let [page, setPage] = useState(1);
-  let [total, setTotal] = useState(0);
+
 
   let getAdminUsers = async (page=1) => {
     page === 1 && window.scrollTo(0, 0);
@@ -43,7 +44,7 @@ const UserList = () => {
         {
           params: {
             page: page,
-            size: 10,
+            size: 5,
           },
         }
       );

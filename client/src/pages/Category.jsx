@@ -20,7 +20,6 @@ const Category = () => {
   let catItem =catPlain.length && catPlain.find((item) => item.slug == params.slug);
   
   let catItemChildren= catItem && catPlain.filter(item=>item.parentId===catItem._id)
-  console.log(catItemChildren);
 
   //======================================================
 let [page, setPage] = useState(1);

@@ -9,27 +9,27 @@ import InfiniteScroll from "react-infinite-scroll-component";
 
 const AdminContacts = () => {
   let [contacts, setContacts] = useState([]);
-  let [okdel, setOkdel] = useState(true);
   let { token, userInfo, Axios } = useAuth();
 
   let [loading, setLoading] = useState(false);
   let [page, setPage] = useState(1);
   let [total, setTotal] = useState(0);
   let [replyItem, setReplyItem] = useState('');
-console.log(page);
+
+  let size=10
   //==================================
-  let getAdminContacts = async (page = 1) => {
+  let getAdminContacts = async (page = 1, size) => {
     // page === 1 && window.scrollTo(0, 0);
     try {
       setLoading(true);
       let { data } = await Axios.get(`/admin/contacts`, {
         params: {
-          page: page,
-          size: 5,
+          page,
+          size,
         },
       });
       setTotal(data.total);
-      page === 1
+      page === 1 || replyItem
         ? setContacts(data.contacts)
         : setContacts([...contacts, ...data.contacts]);
       setLoading(false);
@@ -40,11 +40,11 @@ console.log(page);
   };
 
   useEffect(() => {
-    if (token && userInfo.role) getAdminContacts();
-  }, [token, okdel, userInfo.role]);
+    if (token && userInfo.role) getAdminContacts(page, size);
+  }, [token, userInfo.role]);
 
   return (
-    <Layout title={"User list"}>
+    <Layout title={"Admin contacts"}>
       <div className={loading ? "dim" : ""}>
         <div className="row ">
           <div className="col-md-3 p-2">
@@ -57,7 +57,7 @@ console.log(page);
               dataLength={contacts?.length}
               next={() => {
                 setPage(page + 1);
-                getAdminContacts(page + 1);
+                getAdminContacts(page + 1, size);
               }}
               hasMore={contacts?.length < total}
               loader={<h1>Loading...</h1>}
@@ -84,8 +84,13 @@ console.log(page);
                         {item?.replies?.length ? "Replied" : "Reply"}
                       </button>
                       <ContactReplyModal
-                        replyItem={replyItem}
-                        getAdminContacts={getAdminContacts}
+                        value={{
+                          replyItem,
+                          getAdminContacts,
+                          page,
+                          size,
+                          setReplyItem,
+                        }}
                       />
                       <h5>Replies </h5>
                       {item?.replies.map((rep, i) => {

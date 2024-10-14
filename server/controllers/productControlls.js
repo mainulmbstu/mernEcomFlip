@@ -54,12 +54,10 @@ const createProduct = async (req, res) => {
       .send({ msg: "product created successfully", success: true, product });
   } catch (error) {
     console.log(error);
-    res
-      .status(500)
-      .send({
-        msg: "error from product create, check file size and file type",
-        error,
-      });
+    res.status(500).send({
+      msg: "error from product create, check file size and file type",
+      error,
+    });
   }
 };
 
@@ -256,56 +254,47 @@ let createCategories = async (category, parentId = null) => {
   return categoryList;
 };
 
+let getPlainCatList = (filtered, list = []) => {
+  for (let v of filtered) {
+    list.push(v);
+    if (v.children.length > 0) {
+      getPlainCatList(v.children, list);
+    }
+  }
+  return list;
+};
+
 const productByCategory = async (req, res) => {
   try {
     const { page, size } = req.query;
     let skip = (page - 1) * size;
     let keyCat = await CategoryModel.findOne({ slug: req.params?.slug });
 
-    if (keyCat?.parentId) {
-      const category = await CategoryModel.find({
-        $or: [
-          { _id: keyCat?._id },
-          { parentId: keyCat?._id },
-        ],
-      });
-      const total = await ProductModel.find({ category });
-      const products = await ProductModel.find({ category })
-        .skip(skip)
-        .limit(size)
-        .populate("category");
-
-      res.status(200).send({ products, total });
-      
-    } else {
       const category = await CategoryModel.find({});
       let categoryList = await createCategories(category); // function above
       let filtered = await categoryList.filter(
         (parent) => parent?.slug === req.params?.slug
       );
 
-      let getPlainCatList = (filtered, list = []) => {
-        for (let v of filtered) {
-          list.push(v);
-          if (v.children.length > 0) {
-            getPlainCatList(v.children, list);
-          }
-        }
-        return list;
-      };
-      let catPlain = getPlainCatList(filtered);
+    let catPlain = getPlainCatList(filtered);
+    
+     const category2 = await CategoryModel.find({
+       $or: [{ _id: keyCat?._id }, { parentId: keyCat?._id }],
+     });
 
-      const total = await ProductModel.find({ category: catPlain });
-      const products = await ProductModel.find({ category: catPlain })
+      const total = await ProductModel.find({
+        category: keyCat?.parentId ? category2 : catPlain,
+      });
+      const products = await ProductModel.find({
+        category: keyCat?.parentId ? category2 : catPlain,
+      })
         .skip(skip)
         .limit(size)
         .populate("category");
 
       res.status(200).send({ products, total });
     }
-
-    
-  } catch (error) {
+   catch (error) {
     console.log(error);
     res.send({ msg: "error from productByCategory", error });
   }
@@ -325,41 +314,50 @@ const moreInfo = async (req, res) => {
 };
 
 //==========================================
+
 const productSearch = async (req, res) => {
   try {
     const { keyword, page, size } = req.query;
     let skip = (page - 1) * size;
 
-    const totalCat = await CategoryModel.find({
+    const category = await CategoryModel.find({});
+    let categoryList = await createCategories(category);
+
+    const keyCat = await CategoryModel.findOne({
       name: { $regex: keyword, $options: "i" },
     });
-    let catIds = totalCat.map((item) => item._id);
+    let filtered = await categoryList.filter(
+      (parent) => parent?.slug === keyCat?.slug
+    );
+    let catPlain = getPlainCatList(filtered);
+    // if not top parent 
+    const category2 = await CategoryModel.find({
+      $or: [{ _id: keyCat?._id }, { parentId: keyCat?._id }],
+    });
 
     const totalProd = await ProductModel.find({
       $or: [
         { name: { $regex: keyword, $options: "i" } },
         { description: { $regex: keyword, $options: "i" } },
-        { category: catIds },
+        { category: keyCat?.parentId?category2:catPlain },
       ],
     });
     const products = await ProductModel.find({
       $or: [
         { name: { $regex: keyword, $options: "i" } },
         { description: { $regex: keyword, $options: "i" } },
-        { category: catIds },
+        { category: keyCat?.parentId ? category2 : catPlain },
       ],
     })
       .skip(skip)
       .limit(size)
       .populate("category")
       .sort({ updatedAt: -1 });
-    res
-      .status(200)
-      .send({
-        msg: "got product from search",
-        products,
-        total: totalProd?.length,
-      });
+    res.status(200).send({
+      msg: "got product from search",
+      products,
+      total: totalProd?.length,
+    });
   } catch (error) {
     console.log(error);
     res.status(401).send({ msg: "error from productSearch", error });

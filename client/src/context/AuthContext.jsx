@@ -37,6 +37,7 @@ const AuthContextProvider = ({ children }) => {
   const [category, setCategory] = useState([]);
 
   let getCategory = async () => {
+
     try {
       let res = await fetch(
         `${import.meta.env.VITE_BASE_URL}/category/category-list`,

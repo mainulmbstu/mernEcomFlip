@@ -10,18 +10,17 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import DeleteModal from "../../components/DeleteModal";
 import PriceFormat from "../../Helper/PriceFormat";
 
-
 const CreateProduct = () => {
-  let { token,userInfo, loading, setLoading } = useAuth();
-  const [editProduct, setEditProduct] = useState('');
+  let { token, userInfo, loading, setLoading } = useAuth();
+  const [editProduct, setEditProduct] = useState("");
   //=============================================================
   let [page, setPage] = useState(1);
   let [total, setTotal] = useState(0);
   let [products, setProducts] = useState([]);
-console.log(page);
-  let size=3
-  let getProducts = async (page = 1, size=10) => {
-    // page === 1 && window.scrollTo(0, 0);
+
+  let size = 10;
+  let getProducts = async (page = 1, size = 10) => {
+    page === 1 && window.scrollTo(0, 0);
     try {
       setLoading(true);
       let { data } = await axios.get(
@@ -35,9 +34,9 @@ console.log(page);
         }
       );
       setTotal(data.total);
-      page===1 || editProduct?
-      setProducts(data.products)
-      :setProducts([...products, ...data.products]);
+      page === 1 || editProduct
+        ? setProducts(data.products)
+        : setProducts([...products, ...data.products]);
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -45,12 +44,12 @@ console.log(page);
   };
 
   useEffect(() => {
-   if (token && userInfo.role) getProducts(page, size);
+    if (token && userInfo.role) getProducts(page, size);
   }, []);
   //======================================================
   let [searchVal, setSearchVal] = useState("");
 
-  let getSearchAdminProducts = async (e, page = 1, size=10) => {
+  let getSearchAdminProducts = async (e, page = 1, size = 10) => {
     e && e.preventDefault();
     try {
       if (!searchVal) return;
@@ -77,12 +76,12 @@ console.log(page);
     }
   };
 
-  // useEffect(() => {
-  //   setPage(1);
-  // }, [searchVal]);
+  useEffect(() => {
+    setPage(1);
+  }, [searchVal]);
 
   //===================================================
-  let [delItem, setDelItem] = useState('');
+  let [delItem, setDelItem] = useState("");
 
   let deleteItem = async (id) => {
     setLoading(true);
@@ -98,7 +97,7 @@ console.log(page);
     if (res.ok) {
       toast.success(`${delItem?.name} is deleted successfully`);
       setLoading(false);
-      getProducts()
+      getProducts();
     } else {
       toast.success(data?.msg);
     }
@@ -275,25 +274,25 @@ console.log(page);
                                     </>
                                   )}
                                 </td>
-                                <UpdateProductModal
-                                  value={{
-                                    editProduct,
-                                    getProducts,
-                                    setEditProduct,
-                                    page,
-                                    size
-                                  }}
-                                />
                               </tr>
                             );
                           })}
                       </tbody>
                     </table>
                   </InfiniteScroll>
-                  <DeleteModal value={{ func: deleteItem, item: delItem }} />
                 </div>
               </div>
             </div>
+            <DeleteModal value={{ func: deleteItem, item: delItem }} />
+            <UpdateProductModal
+              value={{
+                editProduct,
+                getProducts,
+                setEditProduct,
+                page,
+                size,
+              }}
+            />
           </div>
           <div className="d-flex">
             {products?.length < total ? (
@@ -326,5 +325,5 @@ console.log(page);
   );
 };
 
-export default  CreateProduct;
+export default CreateProduct;
 // export default UseEdit;

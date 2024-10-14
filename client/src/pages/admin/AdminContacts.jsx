@@ -83,15 +83,7 @@ const AdminContacts = () => {
                       >
                         {item?.replies?.length ? "Replied" : "Reply"}
                       </button>
-                      <ContactReplyModal
-                        value={{
-                          replyItem,
-                          getAdminContacts,
-                          page,
-                          size,
-                          setReplyItem,
-                        }}
-                      />
+
                       <h5>Replies </h5>
                       {item?.replies.map((rep, i) => {
                         return (
@@ -110,6 +102,15 @@ const AdminContacts = () => {
                 })}
             </InfiniteScroll>
           </div>
+          <ContactReplyModal
+            value={{
+              replyItem,
+              getAdminContacts,
+              page,
+              size,
+              setReplyItem,
+            }}
+          />
         </div>
       </div>
     </Layout>

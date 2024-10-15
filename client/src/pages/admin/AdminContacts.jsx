@@ -19,7 +19,7 @@ const AdminContacts = () => {
   let size=10
   //==================================
   let getAdminContacts = async (page = 1, size) => {
-    // page === 1 && window.scrollTo(0, 0);
+    page === 1 && window.scrollTo(0, 0);
     try {
       setLoading(true);
       let { data } = await Axios.get(`/admin/contacts`, {

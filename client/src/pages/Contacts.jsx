@@ -10,7 +10,7 @@ const Contacts = () => {
     setUser((prev) => ({ ...prev, [name]: value }));
   };
 
-  let { userInfo } = useAuth();
+  let { userInfo, Axios } = useAuth();
   const [trix, setTrix] = useState(true);
   const [loading, setLoading] = useState(false)
 
@@ -22,23 +22,19 @@ const Contacts = () => {
   let submitted = async (e) => {
     e.preventDefault();
     try {
+
       setLoading(true);
-      let res = await fetch("http://localhost:8000/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(user),
-      });
-      setLoading(false);
-      let data = await res.json();
-      if (res.ok) {
+      let { data } = await Axios.post(`/contact`, user);
+      if (data.success) {
         toast.success(data.msg);
         setUser((prev) => ({ ...prev, message: "" }));
       } else {
         toast.error(data.msg);
       }
+      setLoading(false);
     } catch (error) {
       setLoading(false);
-      console.log("contact", error);
+      console.log("error from contact", error);
     }
   };
 

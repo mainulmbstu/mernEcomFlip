@@ -305,7 +305,7 @@ const contact = async (req, res) => {
     }
     await ContactModel.create({ name, email, message });
 
-    res.status(201).json({ msg: "message has been sent successfully" });
+    res.status(201).json({ msg: "message has been sent successfully", success:true });
   } catch (error) {
     res.status(401).json({ msg: "error from contact", error });
   }

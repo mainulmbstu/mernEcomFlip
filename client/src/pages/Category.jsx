@@ -157,9 +157,12 @@ let [page, setPage] = useState(1);
                               <p className="m-0">
                                 Available quantity: {item.quantity}{" "}
                               </p>
-                              <p className="m-0">
-                                Rating: {item.rating.toFixed(1)}
-                                <MdStar /> ({item?.review} Reviews)
+                              <p className="m-0 ">
+                                <span className="bg-success p-1 rounded-3 text-white">
+                                  Rating: {item?.rating}
+                                  <MdStar className=" text-warning mb-1" />
+                                </span>{" "}
+                                ({item?.review} Reviews)
                               </p>
                               <p className="m-0">
                                 Description: {item.description.substring(0, 8)}{" "}

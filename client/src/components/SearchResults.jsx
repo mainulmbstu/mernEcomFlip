@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import Layout from "./Layout";
 import InfiniteScroll from "react-infinite-scroll-component";
 import PriceFormat from "../Helper/PriceFormat";
+import { MdStar } from "react-icons/md";
 
 const SearchResults = () => {
   const { results, cart, setCart, submitHandlerScroll, total, page, loading } = useSearch();
@@ -39,6 +40,14 @@ const SearchResults = () => {
                           <p>Category: {item?.category?.name} </p>
                           <p>Price:{<PriceFormat price={item.price} />} </p>
                           <p>Available quantity: {item?.quantity} </p>
+                          <p className="m-0 ">
+                              <span className="bg-success p-1 rounded-3 text-white">
+                                Rating: {item?.rating}
+                                <MdStar className=" text-warning mb-1" />
+                              </span>{" "}
+                              ({item?.review} Reviews)
+                            </p>
+                            <p></p>
                           <p>
                             Description: {item?.description?.substring(0, 8)}
                             ....

@@ -12,6 +12,7 @@ import axios from "axios";
 import InfiniteScroll from "react-infinite-scroll-component";
 import HomeCatPage from "../components/HomeCatPage";
 import PriceFormat from "../Helper/PriceFormat";
+import { MdStar } from "react-icons/md";
 
 const Home = () => {
   let { category } = useStore();
@@ -272,11 +273,14 @@ const Home = () => {
                               <p className="m-0">
                                 Available quantity: {item?.quantity}
                               </p>
-                              <p className="m-0">
-                                {`Rating: ${item.rating.toFixed(1)} (${
-                                  item.review
-                                } Reviews)`}
-                              </p>
+                              
+                             <p className="m-0 ">
+                              <span className="bg-success p-1 rounded-3 text-white">
+                                Rating: {item?.rating}
+                                <MdStar className=" text-warning mb-1" />
+                              </span>{" "}
+                              ({item?.review} Reviews)
+                            </p>
                               <p className="m-0">
                                 Description: {item?.description.substring(0, 8)}{" "}
                                 ....

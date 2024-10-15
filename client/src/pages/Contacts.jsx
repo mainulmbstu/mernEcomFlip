@@ -12,7 +12,7 @@ const Contacts = () => {
 
   let { userInfo } = useAuth();
   const [trix, setTrix] = useState(true);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false)
 
   if (userInfo && trix) {
     setUser({ name: userInfo.name, email: userInfo.email, message: "" });

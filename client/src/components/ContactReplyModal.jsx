@@ -1,9 +1,9 @@
+/* eslint-disable */
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "react-toastify";
 
 const ContactReplyModal = ({ value }) => {
-  // eslint-disable-next-line react/prop-types
   let { replyItem, getAdminContacts, page, size, setReplyItem } = value;
 
   const [inputVal, setinputVal] = useState({
@@ -12,18 +12,14 @@ const ContactReplyModal = ({ value }) => {
     reply: "",
   });
 
-  if (replyItem) {
+
+  useEffect(() => {
     setinputVal({
       email: replyItem?.email,
       msgId: replyItem?._id,
     });
-  }
-  // useEffect(() => {
-  //   setinputVal({
-  //     email: replyItem?.email,
-  //     msgId: replyItem?._id,
-  //   });
-  // }, [replyItem]);
+  }, [replyItem]);
+  
   let onInput = (e) => {
     let { name, value } = e.target;
     setinputVal((prev) => ({ ...prev, [name]: value }));

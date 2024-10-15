@@ -3,18 +3,13 @@ import { Link, useParams } from 'react-router-dom';
 import Layout from '../components/Layout';
 import axios from "axios";
 import InfiniteScroll from "react-infinite-scroll-component";
-import PriceFormat from '../Helper/PriceFormat';
 import { useAuth } from '../context/AuthContext';
-import { MdStar } from 'react-icons/md';
-import { useSearch } from '../context/SearchContext';
-import { toast } from 'react-toastify';
-import CategoryHeader from '../components/CategoryHeader';
+import ProductCard from '../components/ProductCard';
 
 const Category = () => {
   const [products, setProducts] = useState([]);
   let params = useParams()
-  let { category, catPlain } = useAuth()
-    let { cart, setCart } = useSearch();
+  let {  catPlain } = useAuth()
 
 
   
@@ -55,25 +50,7 @@ let [page, setPage] = useState(1);
     getProducts();
   }, [params.slug]);
 
-  //======================================
-   let getCategoryList = (category) => {
-     let myCategories = [];
-     if (category.length) {
-       for (let v of category) {
-         myCategories.push(
-           <li key={v.slug}>
-             {
-               v.parentId?<Link to={`/products/category/${v.slug}`}>{v.name}</Link>:<span>{v.name} </span>
-             }
-             {v.children.length > 0 ? (
-               <ul>{getCategoryList(v.children)} </ul>
-             ) : null}
-           </li>
-         );
-       }
-     }
-     return myCategories;
-  };
+
   
    let screen = window.screen.width;
 
@@ -134,73 +111,10 @@ let [page, setPage] = useState(1);
             >
               <div className="row g-3">
                 {products?.length &&
-                  products?.map((item) => {
-                    return (
-                      <div key={item._id} className="col-6 col-md-3  ">
-                        <div className="card h-100">
-                          <img
-                            src={`${item?.picture[0]?.secure_url}`}
-                            className=" card-img-top"
-                            width={screen > 768 ? 200 : 100}
-                            height={screen > 768 ? 200 : 100}
-                            alt="image"
-                          />
-                          <div className="card-body">
-                            <h5 className="card-title">{item.name}</h5>
-                            <div className="card-text">
-                              <p className="m-0">
-                                Category: {item.category?.name}
-                              </p>
-                              <p className="m-0">
-                                Price: {<PriceFormat price={item.price} />}{" "}
-                              </p>
-                              <p className="m-0">
-                                Available quantity: {item.quantity}{" "}
-                              </p>
-                              <p className="m-0 ">
-                                <span className="bg-success p-1 rounded-3 text-white">
-                                  Rating: {item?.rating}
-                                  <MdStar className=" text-warning mb-1" />
-                                </span>{" "}
-                                ({item?.review} Reviews)
-                              </p>
-                              <p className="m-0">
-                                Description: {item.description.substring(0, 8)}{" "}
-                                ...
-                              </p>
-                            </div>
-                          </div>
-                          <div className=" d-flex justify-content-evenly">
-                            <Link to={`/products/more-info/${item._id}`}>
-                              <button
-                                // onClick={() => navigate(`products/more-info/${item?._id}`)}
-                                className="btn btn-primary "
-                              >
-                                More info
-                              </button>
-                            </Link>
-                            <button
-                              onClick={() => {
-                                let cartIds = cart.map((it) => it._id);
-                                if (cartIds.includes(item._id)) {
-                                  return alert("Already added");
-                                }
-                                setCart([...cart, item]);
-                                localStorage.setItem(
-                                  "cart",
-                                  JSON.stringify([...cart, item])
-                                );
-                                toast.success(`${item.name} added to Cart`);
-                              }}
-                              className="btn btn-info mt-auto mb-1"
-                            >
-                              Add to cart
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
+                  products?.map((item) => <ProductCard
+                    key={item._id}
+                    item={item}
+                  />)}
               </div>
             </InfiniteScroll>
             <div className="d-flex">

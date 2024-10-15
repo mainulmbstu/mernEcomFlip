@@ -98,7 +98,12 @@ img {
     rgb(165, 187, 165),
     rgb(143, 139, 139),
     rgb(240, 241, 248)
-  );
+    );
+    min-height: 55px;
+}
+.navbar-toggler-icon{
+  width: 2rem;
+  height: 2rem;
 }
 
 .position-absolute {
@@ -223,8 +228,11 @@ margin-right: 10px;
   color: red;
 
 }
-
-
+/* 
+.myAdminPanel{
+  position: sticky;
+  top: 100px;
+} */
 
 
 

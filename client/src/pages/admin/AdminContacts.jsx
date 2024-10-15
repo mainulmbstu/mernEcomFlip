@@ -16,10 +16,10 @@ const AdminContacts = () => {
   let [total, setTotal] = useState(0);
   let [replyItem, setReplyItem] = useState('');
 
-  let size=10
+  let size=7
   //==================================
   let getAdminContacts = async (page = 1, size) => {
-    page === 1 && window.scrollTo(0, 0);
+    // page === 1 && window.scrollTo(0, 0);
     try {
       setLoading(true);
       let { data } = await Axios.get(`/admin/contacts`, {
@@ -43,6 +43,8 @@ const AdminContacts = () => {
     if (token && userInfo.role) getAdminContacts(page, size);
   }, [token, userInfo.role]);
 
+  let unread= contacts.filter(item=>item?.replies?.length===0)
+
   return (
     <Layout title={"Admin contacts"}>
       <div className={loading ? "dim" : ""}>
@@ -50,6 +52,10 @@ const AdminContacts = () => {
           <div className="col-md-3 p-2">
             <div className="card p-2">
               <AdminMenu />
+            </div>
+            <div>
+
+            <h4>{unread?.length} unread message of {total} </h4>
             </div>
           </div>
           <div className=" col-md-9 p-2">
@@ -66,9 +72,9 @@ const AdminContacts = () => {
               {contacts?.length &&
                 contacts.map((item) => {
                   return (
-                    <div key={item._id} className="mb-4 border p-2 px-3">
+                    <div key={item._id} className="mb-4 border border-2 p-2 px-3">
                       <h5>
-                        Name: {item.name} ({moment(item?.createdAt).fromNow()}, 
+                        Name: {item.name} ({moment(item?.createdAt).fromNow()},
                         {new Date(item?.createdAt).toLocaleString()})
                       </h5>
                       <p>email: {item.email} </p>
@@ -87,15 +93,15 @@ const AdminContacts = () => {
 
                       <hr className=" w-25" />
                       <h5>{item?.replies?.length ? "Replies" : ""}</h5>
-                      {item?.replies.map((rep, i) => {
+                      {item?.replies && item?.replies?.reverse().map((rep, i, arr) => {
                         return (
                           <div key={i}>
                             <p className=" fw-bold">
-                              Reply-{i + 1}: {rep.msg}
+                              Reply-{arr?.length-i}: {rep.msg}
                             </p>
                             <p>
                               Time: {moment(rep?.date).fromNow()},
-                              {new Date(item?.createdAt).toLocaleString()}{" "}
+                              {new Date(rep?.date).toLocaleString()}{" "}
                             </p>
                             <p className=" ms-4">Replied by: {rep.userName}</p>
                           </div>

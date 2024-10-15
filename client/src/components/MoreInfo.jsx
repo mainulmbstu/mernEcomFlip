@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useSearch } from "../context/SearchContext";
@@ -11,6 +11,7 @@ import Rating from "./Rating";
 import { MdStar } from "react-icons/md";
 import { useAuth } from "../context/AuthContext";
 import moment from "moment";
+import ProductCard from "./ProductCard";
 
 
 
@@ -173,7 +174,7 @@ const MoreInfo = () => {
                       Rating: {moreInfo?.rating}
                       <MdStar className=" text-warning mb-1" />
                     </span>{" "}
-                    ({moreInfo?.review} Reviews)
+                    ({moreInfo?.ratingNo} users)
                   </p>
                   <p>Description: {moreInfo?.description} </p>
                 </div>
@@ -220,7 +221,7 @@ const MoreInfo = () => {
             </div>
           </div>
           <div className=" ">
-            <h4 className=" fw-bold ms-3">Review about this product </h4>
+            <h4 className=" fw-bold ms-3">Reviews about this product </h4>
             {review?.length &&
               review.map((item) => {
                 return (
@@ -242,61 +243,9 @@ const MoreInfo = () => {
             {/* {loading && <Loading/>} */}
             <div className="row g-3">
               {similarProducts?.length &&
-                similarProducts?.map((item) => {
-                  return (
-                    <div key={item?._id} className="col-6 col-md-3 ">
-                      <div className="card h-100">
-                        <img
-                          src={`${item?.picture[0]?.secure_url}`}
-                          className=" card-img-top"
-                          width={screen > 768 ? 200 : 100}
-                          height={screen > 768 ? 200 : 100}
-                          alt="image"
-                        />
-                        <div className="card-body">
-                          <h5 className="card-title">{item?.name}</h5>
-                          <div className="card-text">
-                            <p>Category: {item?.category?.name} </p>
-                            <p>Price: {<PriceFormat price={item.price} />} </p>
-                            <p>Available quantity: {item?.quantity} </p>
-                            <p className="m-0 ">
-                              <span className="bg-success p-1 rounded-3 text-white">
-                                Rating: {item?.rating}
-                                <MdStar className=" text-warning mb-1" />
-                              </span>{" "}
-                              ({item?.review} Reviews)
-                            </p>
-                            <p>
-                              Description: {item?.description.substring(0, 8)}{" "}
-                              ....
-                            </p>
-                          </div>
-                        </div>
-                        <div className=" d-flex justify-content-evenly">
-                          <Link to={`/products/more-info/${item._id}`}>
-                            <button className="btn btn-primary ">
-                              More info
-                            </button>
-                          </Link>
-
-                          <button
-                            onClick={() => {
-                              setCart([...cart, item]);
-                              localStorage.setItem(
-                                "cart",
-                                JSON.stringify([...cart, item])
-                              );
-                              toast.success(`${item.name} added to Cart`);
-                            }}
-                            className="btn btn-info mt-auto mb-1"
-                          >
-                            Add to cart
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
+                similarProducts?.map((item) => (
+                  <ProductCard key={item._id} item={item} />
+                ))}
             </div>
 
             {/* <button

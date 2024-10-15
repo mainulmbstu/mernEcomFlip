@@ -613,7 +613,7 @@ const getReview = async (req, res) => {
   try {
     const { pid } = req.params;
     const reviews = await ReviewModel.find({ pid })
-    res.status(200).json({ msg: "got review", reviews });
+    res.status(200).json({ msg: "got review", reviews })
   } catch (error) {
     console.log(error);
     res.status(500).send({ msg: "error from moreInfo", error });

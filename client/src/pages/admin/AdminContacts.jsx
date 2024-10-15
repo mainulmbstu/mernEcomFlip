@@ -68,7 +68,8 @@ const AdminContacts = () => {
                   return (
                     <div key={item._id} className="mb-4 border p-2 px-3">
                       <h5>
-                        Name: {item.name} ({moment(item?.createdAt).fromNow()}){" "}
+                        Name: {item.name} ({moment(item?.createdAt).fromNow()}, 
+                        {new Date(item?.createdAt).toLocaleString()})
                       </h5>
                       <p>email: {item.email} </p>
                       <p>Message: {item.message} </p>
@@ -84,16 +85,19 @@ const AdminContacts = () => {
                         {item?.replies?.length ? "Replied" : "Reply"}
                       </button>
 
-                      <h5>Replies </h5>
+                      <hr className=" w-25" />
+                      <h5>{item?.replies?.length ? "Replies" : ""}</h5>
                       {item?.replies.map((rep, i) => {
                         return (
                           <div key={i}>
                             <p className=" fw-bold">
                               Reply-{i + 1}: {rep.msg}
                             </p>
-                            <p>Time: {moment(rep?.date).fromNow()} </p>
+                            <p>
+                              Time: {moment(rep?.date).fromNow()},
+                              {new Date(item?.createdAt).toLocaleString()}{" "}
+                            </p>
                             <p className=" ms-4">Replied by: {rep.userName}</p>
-                            <hr className=" w-25" />
                           </div>
                         );
                       })}

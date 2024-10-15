@@ -5,11 +5,9 @@ import "./App.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-// import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Contacts from "./pages/Contacts";
-// import About from "./pages/About";
 import Error from "./pages/Error";
 import Privacy from "./pages/Privacy";
 import Dashboard from "./pages/user/Dashboard";
@@ -17,26 +15,20 @@ import { Private } from "./components/routes/Private";
 import ForgotPassword from "./pages/ForgotPassword";
 import { AdminAuth } from "./components/routes/AdminAuth";
 import AdminPanel from "./pages/admin/AdminPanel";
-// import CreateCategory from "./pages/admin/CreateCategory";
-// import CreateProduct from "./pages/admin/CreateProduct";
-// import UserList from "./pages/admin/UserList";
 import Profile from "./pages/user/Profile";
-// import Orders from "./pages/user/Orders";
 import ProductInput from "./pages/admin/ProductInput";
 import SearchResults from "./components/SearchResults";
 import MoreInfo from "./components/MoreInfo";
 import Category from "./pages/Category";
-// import CartPage from "./pages/CartPage";
 import AdminProfile from "./pages/admin/AdminProfile";
 import { lazy, Suspense } from "react";
 import PaymentSuccess from "./components/PaymentSuccess";
 import PaymentFail from "./components/PaymentFail";
-// import AdminOrders from "./pages/admin/AdminOrders";
 import Layout from "./components/Layout";
 import Gallery from "./pages/user/Gallery";
 import ResetNewPassword from "./pages/user/ResetNewPassword";
 import AdminContacts from "./pages/admin/AdminContacts";
-// import ResetNewPassword from "./pages/user/ResetNewPassword";
+import CategoryHeader from "./components/CategoryHeader";
 
 // let CreateProduct= lazy(()=>import('./pages/admin/CreateProduct'))
 let UserList = lazy(() => import("./pages/admin/UserList"));
@@ -68,6 +60,7 @@ const App = () => {
       <BrowserRouter>
         <Layout/>
         <Header />
+        <CategoryHeader/>
         <Suspense fallback={<h2>Loading...</h2>}>
           <Routes>
             <Route path="/" element=<Home /> />

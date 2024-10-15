@@ -44,7 +44,7 @@ const UserList = () => {
         {
           params: {
             page: page,
-            size: 5,
+            size: 10,
           },
         }
       );

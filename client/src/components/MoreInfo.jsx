@@ -9,14 +9,18 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import Review from "./Review";
 import Rating from "./Rating";
 import { MdStar } from "react-icons/md";
+import { useAuth } from "../context/AuthContext";
+import moment from "moment";
 
 
 
 const MoreInfo = () => {
   const [moreInfo, setMoreInfo] = useState("");
+  const [review, setReview] = useState([]);
   const [similarProducts, setSimilarProducts] = useState([]);
   let params = useParams();
   let { cart, setCart } = useSearch();
+  let { Axios } = useAuth();
   const [loading, setLoading] = useState(false);
   const [img, setImg] = useState([]);
   const [reviewItem, setReviewItem] = useState('');
@@ -26,24 +30,31 @@ const MoreInfo = () => {
   let getMoreInfo = async () => {
     try {
       setLoading(true);
-      let res = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/products/more-info/${params.pid}`,
-        {
-          method: "GET",
-        }
-      );
+      let {data} = await Axios.get(`/products/more-info/${params.pid}`);
       setLoading(false);
-      let data = await res.json();
-      setMoreInfo(data.products);
-      setImg(data?.products?.picture[0]?.secure_url);
-      // window.location.reload()
+      setMoreInfo(data.product);
+      setImg(data?.product?.picture[0]?.secure_url);
     } catch (error) {
-      console.log(error);
+      setLoading(false);
+      console.log('error from more info', error)
+    }
+  };
+  //=================================
+  let getReview = async () => {
+    try {
+      setLoading(true);
+      let {data} = await Axios.get(`/products/getreview/${params.pid}`);
+      setLoading(false);
+      setReview(data.reviews);
+    } catch (error) {
+      setLoading(false);
+      console.log('error from more info', error)
     }
   };
 
   useEffect(() => {
     getMoreInfo();
+    getReview();
   }, [params]);
   //=============================================
   let getSimilarProducts = async () => {
@@ -64,7 +75,7 @@ const MoreInfo = () => {
     }
   };
   useEffect(() => {
-    if (moreInfo.length < 1) return;
+    if (moreInfo?.length < 1) return;
     getSimilarProducts();
   }, [moreInfo]);
 
@@ -155,11 +166,14 @@ const MoreInfo = () => {
                   <h5>Name: {moreInfo?.name} </h5>
                   <p>Product ID: {moreInfo?._id} </p>
                   <p>Category: {moreInfo?.category?.name} </p>
-                  <p>Price: {<PriceFormat price={moreInfo.price} />} </p>
+                  <p>Price: {<PriceFormat price={moreInfo?.price} />} </p>
                   <p>Quqntity: {moreInfo?.quantity} </p>
-                  <p className="m-0">
-                    Rating: {moreInfo?.rating}
-                    <MdStar /> ({moreInfo?.review} Reviews)
+                  <p className="m-0 ">
+                    <span className="bg-success p-1 rounded-3 text-white">
+                      Rating: {moreInfo?.rating}
+                      <MdStar className=" text-warning mb-1" />
+                    </span>{" "}
+                    ({moreInfo?.review} Reviews)
                   </p>
                   <p>Description: {moreInfo?.description} </p>
                 </div>
@@ -204,6 +218,23 @@ const MoreInfo = () => {
                 </div>
               </div>
             </div>
+          </div>
+          <div className=" ">
+            <h4 className=" fw-bold ms-3">Review about this product </h4>
+            {review?.length &&
+              review.map((item) => {
+                return (
+                  <div key={item._id} className=" p-2 px-3">
+                    <h5>
+                      Name: {item.name} ({moment(item?.createdAt).fromNow()})
+                    </h5>
+                    <p>review: {item.review} </p>
+
+                    <hr className=" w-25" />
+                    <h5>{item?.replies?.length ? "Replies" : ""}</h5>
+                  </div>
+                );
+              })}
           </div>
           <hr />
           <div className=" mb-4">

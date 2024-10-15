@@ -3,16 +3,27 @@ import { useAuth } from "../context/AuthContext";
 import { toast } from "react-toastify";
 
 const ContactReplyModal = ({ value }) => {
-  
   // eslint-disable-next-line react/prop-types
-  let { replyItem, getAdminContacts, page, size, setReplyItem, } = value
+  let { replyItem, getAdminContacts, page, size, setReplyItem } = value;
 
   const [inputVal, setinputVal] = useState({
     msgId: replyItem?._id,
-    email: "",
+    email: replyItem?.email,
     reply: "",
   });
 
+  if (replyItem) {
+    setinputVal({
+      email: replyItem?.email,
+      msgId: replyItem?._id,
+    });
+  }
+  // useEffect(() => {
+  //   setinputVal({
+  //     email: replyItem?.email,
+  //     msgId: replyItem?._id,
+  //   });
+  // }, [replyItem]);
   let onInput = (e) => {
     let { name, value } = e.target;
     setinputVal((prev) => ({ ...prev, [name]: value }));
@@ -21,12 +32,6 @@ const ContactReplyModal = ({ value }) => {
   let { Axios } = useAuth();
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    setinputVal({
-      email: replyItem.email,
-      msgId: replyItem?._id,
-    });
-  }, [replyItem]);
   //=================================
   let submitted = async (e) => {
     e.preventDefault();
@@ -38,7 +43,7 @@ const ContactReplyModal = ({ value }) => {
         toast.success(data.msg);
         setinputVal((prev) => ({ ...prev, reply: "" }));
         getAdminContacts(1, page * size);
-        setReplyItem('')
+        setReplyItem("");
       } else {
         toast.error(data.msg);
       }

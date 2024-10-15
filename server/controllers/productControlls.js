@@ -303,13 +303,13 @@ const productByCategory = async (req, res) => {
 const moreInfo = async (req, res) => {
   try {
     const { pid } = req.params;
-    const product = await ProductModel.find({ _id: pid }).populate("category");
-    let products = product[0];
-    products.rating = products.rating.toFixed(1);
-    res.status(200).json({ msg: "got product moreInfo", products });
+    const product = await ProductModel.findOne({ _id: pid }).populate("category");
+    // let products = product[0];
+    product.rating = product.rating.toFixed(1);
+    res.status(200).json({ msg: "got product moreInfo", product });
   } catch (error) {
     console.log(error);
-    res.status(401).send({ msg: "error from moreInfo", error });
+    res.status(500).send({ msg: "error from moreInfo", error })
   }
 };
 
@@ -607,6 +607,19 @@ const ratingProduct = async (req, res) => {
     res.status(500).json({ msg: "error from rating", error });
   }
 };
+
+//================================================
+const getReview = async (req, res) => {
+  try {
+    const { pid } = req.params;
+    const reviews = await ReviewModel.find({ pid })
+    res.status(200).json({ msg: "got review", reviews });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ msg: "error from moreInfo", error });
+  }
+};
+
 //==============================================================
 
 module.exports = {
@@ -625,4 +638,5 @@ module.exports = {
   productList,
   reviewProduct,
   ratingProduct,
+  getReview,
 };

@@ -8,6 +8,7 @@ import { useAuth } from '../context/AuthContext';
 import { MdStar } from 'react-icons/md';
 import { useSearch } from '../context/SearchContext';
 import { toast } from 'react-toastify';
+import CategoryHeader from '../components/CategoryHeader';
 
 const Category = () => {
   const [products, setProducts] = useState([]);
@@ -80,9 +81,6 @@ let [page, setPage] = useState(1);
     <Layout title={`Category-${params.slug}`}>
       <div className={loading ? "dim" : ""}>
         <div>
-          <div className="catPage">
-            <ul>{getCategoryList(category)}</ul>
-          </div>
           <div>
             <div className="row my-2">
               {catItemChildren.length &&

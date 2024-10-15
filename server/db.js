@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 
 
-// const URI = process.env.MONGO_LOCAL;
-const URI = process.env.MONGO_ATLAS
+const URI = process.env.MONGO_LOCAL;
+// const URI = process.env.MONGO_ATLAS
 
 const dbcon = async () => {
     try {

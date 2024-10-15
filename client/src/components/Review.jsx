@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 
 
 const Review = ({ reviewItem }) => {
-      const [inputVal, setinputVal] = useState({pid:reviewItem._id, name: "", email: "", review: "" });
+      const [inputVal, setinputVal] = useState({pid:'', name: "", email: "", review: "" });
       let onInput = (e) => {
         let { name, value } = e.target;
         setinputVal((prev) => ({ ...prev, [name]: value }));
@@ -13,6 +13,7 @@ const Review = ({ reviewItem }) => {
 
       let { userInfo, Axios } = useAuth();
       const [loading, setLoading] = useState(false);
+
     
     useEffect(() => {
      setinputVal({
@@ -30,7 +31,6 @@ const Review = ({ reviewItem }) => {
      setLoading(true);
      let {data} = await Axios.post("/products/review",inputVal);
        setLoading(false);
-       console.log(data);
      if (data.success) {
        toast.success(data.msg);
        setinputVal((prev) => ({ ...prev, review: "" }));

@@ -27,6 +27,7 @@ router.post('/update-product/:pid', loginMiddleware, adminMiddleware, upload.arr
 router.delete('/delete-product/:pid', loginMiddleware, adminMiddleware, productControlls.deleteProduct)
 router.post('/review', productControlls.reviewProduct)
 router.post('/rating', productControlls.ratingProduct)
+router.get("/getreview/:pid", productControlls.getReview);
 
 
 // ============== checkout ========================================

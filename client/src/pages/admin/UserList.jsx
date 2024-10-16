@@ -119,9 +119,7 @@ const UserList = () => {
       <div className={loading ? "dim" : ""}>
         <div className="row ">
           <div className="col-md-3 p-2">
-            <div className="card p-2">
               <AdminMenu />
-            </div>
             <h3>
               Total users ({adminUsers?.length} of {total})
             </h3>

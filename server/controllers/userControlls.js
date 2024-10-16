@@ -301,13 +301,13 @@ const contact = async (req, res) => {
   try {
     const { name, email, message } = req.body;
     if (!message || !name || !email) {
-     return res.status(400).json({ msg: "All fields are required" });
+     return res.json({ msg: "All fields are required" });
     }
     await ContactModel.create({ name, email, message });
 
     res.status(201).json({ msg: "message has been sent successfully", success:true });
   } catch (error) {
-    res.status(401).json({ msg: "error from contact", error });
+    res.status(500).json({ msg: "error from contact", error });
   }
 };
 //==============================================

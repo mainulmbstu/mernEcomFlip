@@ -151,7 +151,7 @@ const AdminOrders = () => {
             return <span>{i+1} </span>
           })}</h1> */}
           <div className="col-md-3 p-2">
-            <div className="card p-2  sticky-top z-0">
+            <div className="card p-2 myAdminPanel">
               <AdminMenu />
               <div className=" card p-2 mt-5">
                 <h4>

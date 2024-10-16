@@ -2,7 +2,7 @@ import { NavLink } from "react-router-dom";
 
 const AdminMenu = () => {
   return (
-    <div className="myAdminPanel">
+    <div className="card p-2 myAdminPanel">
       <h3>Admin Panel</h3>
       <div className="list-group">
         <NavLink

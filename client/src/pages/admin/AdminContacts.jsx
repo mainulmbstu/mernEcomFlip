@@ -15,7 +15,7 @@ const AdminContacts = () => {
   let [page, setPage] = useState(1);
   let [total, setTotal] = useState(0);
   let [replyItem, setReplyItem] = useState('');
-
+  
   let size=7
   //==================================
   let getAdminContacts = async (page = 1, size) => {
@@ -30,8 +30,8 @@ const AdminContacts = () => {
       });
       setTotal(data.total);
       page === 1 || replyItem
-        ? setContacts(data.contacts)
-        : setContacts([...contacts, ...data.contacts]);
+      ? setContacts(data.contacts)
+      : setContacts([...contacts, ...data.contacts]);
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -43,19 +43,19 @@ const AdminContacts = () => {
     if (token && userInfo.role) getAdminContacts(page, size);
   }, [token, userInfo.role]);
 
-  let unread= contacts.filter(item=>item?.replies?.length===0)
+  let unread = contacts.filter(item => item?.replies?.length === 0)
 
   return (
     <Layout title={"Admin contacts"}>
       <div className={loading ? "dim" : ""}>
         <div className="row ">
           <div className="col-md-3 p-2">
-            <div className="card p-2">
+            <div className="card p-2 myAdminPanel">
+              
               <AdminMenu />
-            </div>
-            <div>
-
-            <h4>{unread?.length} unread message of {total} </h4>
+              <h4 className="mt-4">
+                {unread?.length} unread message of {total}{" "}
+              </h4>
             </div>
           </div>
           <div className=" col-md-9 p-2">
@@ -70,9 +70,14 @@ const AdminContacts = () => {
               endMessage={<h4 className=" text-center">All items loaded</h4>}
             >
               {contacts?.length &&
-                contacts.map((item) => {
+                contacts.map((item, i) => {
                   return (
-                    <div key={item._id} className="mb-4 border border-2 p-2 px-3">
+                    <div
+                      key={item._id}
+                      className={` border border-2 p-2 px-3 ${
+                        i % 2 ? "bg-light" : "bg-white"
+                      }`}
+                    >
                       <h5>
                         Name: {item.name} ({moment(item?.createdAt).fromNow()},
                         {new Date(item?.createdAt).toLocaleString()})
@@ -93,20 +98,23 @@ const AdminContacts = () => {
 
                       <hr className=" w-25" />
                       <h5>{item?.replies?.length ? "Replies" : ""}</h5>
-                      {item?.replies && item?.replies?.reverse().map((rep, i, arr) => {
-                        return (
-                          <div key={i}>
-                            <p className=" fw-bold">
-                              Reply-{arr?.length-i}: {rep.msg}
-                            </p>
-                            <p>
-                              Time: {moment(rep?.date).fromNow()},
-                              {new Date(rep?.date).toLocaleString()}{" "}
-                            </p>
-                            <p className=" ms-4">Replied by: {rep.userName}</p>
-                          </div>
-                        );
-                      })}
+                      {item?.replies &&
+                        item?.replies?.reverse().map((rep, i, arr) => {
+                          return (
+                            <div key={i}>
+                              <p className=" fw-bold">
+                                Reply-{arr?.length - i}: {rep.msg}
+                              </p>
+                              <p>
+                                Time: {moment(rep?.date).fromNow()},
+                                {new Date(rep?.date).toLocaleString()}{" "}
+                              </p>
+                              <p className=" ms-4">
+                                Replied by: {rep.userName}
+                              </p>
+                            </div>
+                          );
+                        })}
                     </div>
                   );
                 })}

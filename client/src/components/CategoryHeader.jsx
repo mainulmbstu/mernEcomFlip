@@ -1,11 +1,12 @@
-import React from 'react'
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useState } from 'react';
 
 const CategoryHeader = () => {
-      let { category, catPlain } = useAuth();
+  let { category } = useAuth();
+  let [show, setShow]=useState(false)
 
-
+console.log(show);
  let getCategoryList = (category) => {
    let myCategories = [];
    if (category.length) {
@@ -13,12 +14,17 @@ const CategoryHeader = () => {
        myCategories.push(
          <li key={v.slug}>
            {v.parentId ? (
-             <Link to={`/products/category/${v.slug}`}>{v.name}</Link>
+             <Link
+               onClick={() => setShow(false)}
+               to={`/products/category/${v.slug}`}
+             >
+               {v.name}
+             </Link>
            ) : (
-             <span>{v.name} </span>
+             <span onMouseOver={() => setShow(true)}>{v.name} </span>
            )}
            {v.children.length > 0 ? (
-             <ul>{getCategoryList(v.children)} </ul>
+             <ul className={`${show?'':'d-none'}`}>{getCategoryList(v.children)} </ul>
            ) : null}
          </li>
        );

@@ -101,9 +101,7 @@ const CreateCategory = () => {
       <div className={loading ? "dim" : ""}>
         <div className="row ">
           <div className="col-md-3 p-2">
-            <div className="card p-2">
               <AdminMenu />
-            </div>
             <div className="fs-5 mt-3  myCat">
               <h3>Category</h3>
               {getCategoryList(category)}

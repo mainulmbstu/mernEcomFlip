@@ -109,9 +109,7 @@ const CreateProduct = () => {
       <div className={loading ? "dim" : ""}>
         <div className="row ">
           <div className="col-md-3 p-2">
-            <div className="card p-2">
               <AdminMenu />
-            </div>
           </div>
           <div className=" col-md-9 p-2">
             <div className=" card p-2">

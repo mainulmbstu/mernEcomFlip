@@ -247,16 +247,6 @@ const MoreInfo = () => {
                   <ProductCard key={item._id} item={item} />
                 ))}
             </div>
-
-            {/* <button
-              type="button"
-              className="btn btn-primary"
-              data-bs-toggle="modal"
-              data-bs-target="#loadingModal" // same with modal id
-            >
-              Launch demo modal
-            </button>
-            {loading && <LoadingModal />} */}
           </div>
         </div>
       </div>

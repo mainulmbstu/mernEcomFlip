@@ -6,7 +6,7 @@ const PriceCategory = () => {
   let { setPriceCat } = useSearch();
 
   return (
-    <div className=" d-flex flex-column col-2 px-2 pt-4 fs-4 border border-5">
+    <div className=" d-flex flex-column col-2 px-2 pt-4 fs-4 border">
       {priceCategory?.map((item) => {
         return (
           <div key={item._id} className="mb-4">

@@ -90,7 +90,7 @@ const Category = () => {
                             // height={400}
                             height={screen > 768 ? 150 : 50}
                           />
-                          <h3 className=" text-center">{item?.name} </h3>
+                          <p className=" text-center">{item?.name} </p>
                         </Link>
                       </div>
                     </div>

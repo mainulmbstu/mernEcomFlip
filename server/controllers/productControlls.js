@@ -318,12 +318,11 @@ const moreInfo = async (req, res) => {
 
 const productSearch = async (req, res) => {
   try {
-    const { keyword, page, size } = req.query;
+    const { keyword, page, size, priceCatArr } = req.body;
     let skip = (page - 1) * size;
-
     const category = await CategoryModel.find({});
     let categoryList = await createCategories(category);
-
+    
     const keyCat = await CategoryModel.findOne({
       name: { $regex: keyword, $options: "i" },
     });
@@ -335,7 +334,7 @@ const productSearch = async (req, res) => {
     const category2 = await CategoryModel.find({
       $or: [{ _id: keyCat?._id }, { parentId: keyCat?._id }],
     });
-
+    
     const totalProd = await ProductModel.find({
       $or: [
         { name: { $regex: keyword, $options: "i" } },
@@ -343,7 +342,7 @@ const productSearch = async (req, res) => {
         { category: keyCat?.parentId?category2:catPlain },
       ],
     });
-    const products = await ProductModel.find({
+    const prods = await ProductModel.find({
       $or: [
         { name: { $regex: keyword, $options: "i" } },
         { description: { $regex: keyword, $options: "i" } },
@@ -354,10 +353,21 @@ const productSearch = async (req, res) => {
       .limit(size)
       .populate("category")
       .sort({ updatedAt: -1 });
+    
+    let totalProdFilter =
+      totalProd?.length &&
+      totalProd.filter((item) => {
+        return item?.price >= priceCatArr[0] && item?.price <= priceCatArr[1];
+      });
+    
+    let products= prods?.length && prods.filter(item => {
+      return item?.price >= priceCatArr[0] && item?.price <= priceCatArr[1];
+    });
+    
     res.status(200).send({
       msg: "got product from search",
-      products,
-      total: totalProd?.length,
+      products: priceCatArr?.length ? products : prods,
+      total: priceCatArr?.length ? totalProdFilter?.length : totalProd?.length,
     });
   } catch (error) {
     console.log(error);

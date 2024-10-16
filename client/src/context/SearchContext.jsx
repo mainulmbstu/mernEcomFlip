@@ -50,18 +50,20 @@ const SearchContextProvider = ({ children }) => {
     let [page, setPage] = useState(1);
   let [total, setTotal] = useState(0);
 
+     let [priceCat, setPriceCat] = useState("");
+     let priceCatArr = priceCat && priceCat?.split(",").map((v) => Number(v));
+
   let submitHandler = async (e) => {
-    e.preventDefault();
+    e && e.preventDefault();
     try {
       setLoading(true)
-      let { data } = await axios.get(
+      let { data } = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/products/search`,
         {
-          params: {
-           keyword:keyword,
-            page: 1,
-            size: 8,
-          },
+          keyword,
+          page: 1,
+          size: 8,
+          priceCatArr,
         }
       );
       setLoading(false);
@@ -73,18 +75,19 @@ const SearchContextProvider = ({ children }) => {
     }
 
   };
+
+
   //=================================================
   let submitHandlerScroll = async (page) => {
     try {
       setLoading(true);
-      let { data } = await axios.get(
+      let { data } = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/products/search`,
         {
-          params: {
-           keyword:keyword,
-            page: page,
-            size: 8,
-          },
+          keyword,
+          page: 1,
+          size: 8,
+          priceCatArr,
         }
       );
       setLoading(false);
@@ -96,9 +99,13 @@ const SearchContextProvider = ({ children }) => {
 
   };
 
-    // useEffect(() => {
-    //  keyword && submitHandlerScroll()
-    // }, []);
+    useEffect(() => {
+      keyword && submitHandler();
+    }, [priceCat]);
+  
+    useEffect(() => {
+      setPriceCat('')
+    }, [keyword]);
 
   return (
     <SearchContext.Provider
@@ -119,6 +126,9 @@ const SearchContextProvider = ({ children }) => {
         loading,
         amount,
         setAmount,
+        priceCat,
+        setPriceCat,
+        priceCatArr,
       }}
     >
       {children}

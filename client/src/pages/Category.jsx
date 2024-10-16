@@ -5,12 +5,14 @@ import axios from "axios";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useAuth } from "../context/AuthContext";
 import ProductCard from "../components/ProductCard";
-import useStore from "../hooks/useStore";
+import PriceCategory from "../components/PriceCategory";
+import { useSearch } from "../context/SearchContext";
 
 const Category = () => {
   const [products, setProducts] = useState([]);
   let params = useParams();
-  let { catPlain } = useAuth();
+  let { catPlain} = useAuth();
+  let { priceCatArr, priceCat, setPriceCat } = useSearch();
 
   let catItem =
     catPlain.length && catPlain.find((item) => item.slug == params.slug);
@@ -22,12 +24,7 @@ const Category = () => {
   let [page, setPage] = useState(1);
   let [total, setTotal] = useState(0);
   let [loading, setLoading] = useState(false);
-  let [priceCat, setPriceCat] = useState('');
-  let { priceCategory } = useStore();
 
-  let priceCatArr = priceCat && priceCat?.split(",").map((v) => Number(v));
-
-  console.log(priceCatArr);
   useEffect(() => {
     setPage(1);
   }, [params.slug]);
@@ -67,22 +64,7 @@ const Category = () => {
     <Layout title={`Category-${params.slug}`}>
       <div className={loading ? "dim" : ""}>
         <div className="row">
-          <div className=" d-flex flex-column col-2 px-2 pt-4 fs-4">
-            {priceCategory?.map((item) => {
-              return (
-                <div key={item._id}>
-                  <input
-                    onChange={(e) => setPriceCat(e.target.value)}
-                    value={item.array}
-                    type="radio"
-                    name="kkk"
-                    id={item.name}
-                  />{" "}
-                  <label htmlFor={item.name}>{item.name}</label>
-                </div>
-              );
-            })}
-          </div>
+          <PriceCategory/>
           <div className="col-10 px-2">
             <div>
               <div className="row my-2">

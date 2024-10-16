@@ -63,8 +63,12 @@ const useStore = () => {
     },
   ];
 
-
-  return { products, category, priceCategory };
+ 
+  return {
+    products,
+    category,
+    priceCategory,
+  };
 };
 
 export default useStore;

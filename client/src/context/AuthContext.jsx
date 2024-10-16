@@ -79,6 +79,8 @@ const AuthContextProvider = ({ children }) => {
       baseURL: import.meta.env.VITE_BASE_URL,
       headers: { Authorization: `Bearer ${token}` },
     });
+  
+
 
   return (
     <AuthContext.Provider

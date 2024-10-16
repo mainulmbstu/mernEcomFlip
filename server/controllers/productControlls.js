@@ -266,31 +266,32 @@ let getPlainCatList = (filtered, list = []) => {
 
 const productByCategory = async (req, res) => {
   try {
-    const { page, size } = req.query;
+    const { page, size, priceCatArr } = req.body;
     let skip = (page - 1) * size;
     let keyCat = await CategoryModel.findOne({ slug: req.params?.slug });
-
-      const category = await CategoryModel.find({});
-      let categoryList = await createCategories(category); // function above
-      let filtered = await categoryList.filter(
-        (parent) => parent?.slug === req.params?.slug
-      );
-
-    let catPlain = getPlainCatList(filtered);
+    const category = await CategoryModel.find({});
+    let categoryList = await createCategories(category); // function above
+    let filtered = await categoryList.filter(
+      (parent) => parent?.slug === req.params?.slug
+    );
     
-     const category2 = await CategoryModel.find({
-       $or: [{ _id: keyCat?._id }, { parentId: keyCat?._id }],
-     });
+    let catPlain = getPlainCatList(filtered);
 
-      const total = await ProductModel.find({
-        category: keyCat?.parentId ? category2 : catPlain,
+    const category2 = await CategoryModel.find({
+       $or: [{ _id: keyCat?._id }, { parentId: keyCat?._id }],
       });
-      const products = await ProductModel.find({
-        category: keyCat?.parentId ? category2 : catPlain,
-      })
-        .skip(skip)
-        .limit(size)
-        .populate("category");
+      let finalCat=keyCat?.parentId ? category2 : catPlain
+
+     let args = {};
+     if (finalCat?.length > 0) args.category = finalCat;
+     if (priceCatArr?.length > 0)
+       args.price = { $gte: priceCatArr[0], $lte: priceCatArr[1] };
+
+      const total = await ProductModel.find(args);
+    const products = await ProductModel.find(args)
+      .skip(skip)
+      .limit(size)
+      .populate("category");
 
       res.status(200).send({ products, total });
     }

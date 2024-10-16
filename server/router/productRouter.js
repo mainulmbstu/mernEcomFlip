@@ -10,7 +10,7 @@ router.post('/create-product', loginMiddleware, adminMiddleware, upload.array('p
 // router.post('/create-product', loginMiddleware, adminMiddleware, upload.single('picture'), productControlls.createProduct)
 
 // router.get("/product-list", productControlls.productList);
-router.get("/category/:slug", productControlls.productByCategory);
+router.post("/category/:slug", productControlls.productByCategory);
 router.post("/product-filter", productControlls.productFilter);
 
 router.get("/more-info/:pid", productControlls.moreInfo);

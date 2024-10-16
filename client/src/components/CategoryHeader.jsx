@@ -6,7 +6,6 @@ const CategoryHeader = () => {
   let { category } = useAuth();
   let [show, setShow]=useState(false)
 
-console.log(show);
  let getCategoryList = (category) => {
    let myCategories = [];
    if (category.length) {

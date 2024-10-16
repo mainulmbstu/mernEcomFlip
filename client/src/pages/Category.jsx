@@ -1,145 +1,170 @@
-import  { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom';
-import Layout from '../components/Layout';
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import Layout from "../components/Layout";
 import axios from "axios";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { useAuth } from '../context/AuthContext';
-import ProductCard from '../components/ProductCard';
+import { useAuth } from "../context/AuthContext";
+import ProductCard from "../components/ProductCard";
+import useStore from "../hooks/useStore";
 
 const Category = () => {
   const [products, setProducts] = useState([]);
-  let params = useParams()
-  let {  catPlain } = useAuth()
+  let params = useParams();
+  let { catPlain } = useAuth();
 
+  let catItem =
+    catPlain.length && catPlain.find((item) => item.slug == params.slug);
 
-  
-  let catItem =catPlain.length && catPlain.find((item) => item.slug == params.slug);
-  
-  let catItemChildren= catItem && catPlain.filter(item=>item.parentId===catItem._id)
+  let catItemChildren =
+    catItem && catPlain.filter((item) => item.parentId === catItem._id);
 
   //======================================================
-let [page, setPage] = useState(1);
+  let [page, setPage] = useState(1);
   let [total, setTotal] = useState(0);
   let [loading, setLoading] = useState(false);
-  
-   useEffect(() => {
-     setPage(1);
-   }, [params.slug]);
-//================================================
-    let getProducts = async (page=1) => {
-      try {
-        setLoading(true);
-        let { data } = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/products/category/${params.slug}`,
-          {
-            params: {
-              page: page,
-              size: 4,
-            },
-          }
-        );
-        setLoading(false);
-        setTotal(data?.total?.length);
-        page===1?setProducts(data?.products):setProducts([...products, ...data.products]);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-  
+  let [priceCat, setPriceCat] = useState('');
+  let { priceCategory } = useStore();
+
+  let priceCatArr = priceCat && priceCat?.split(",").map((v) => Number(v));
+
+  console.log(priceCatArr);
+  useEffect(() => {
+    setPage(1);
+  }, [params.slug]);
+  //================================================
+  let getProducts = async (page = 1) => {
+    try {
+      setLoading(true);
+      let { data } = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/products/category/${params.slug}`,
+        {
+          page: page,
+          size: 4,
+          priceCatArr,
+        }
+      );
+      setLoading(false);
+      setTotal(data?.total?.length);
+      page === 1
+        ? setProducts(data?.products)
+        : setProducts([...products, ...data.products]);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     getProducts();
+  }, [params.slug, priceCat]);
+
+  useEffect(() => {
+    setPriceCat('')
   }, [params.slug]);
 
-
-  
-   let screen = window.screen.width;
+  let screen = window.screen.width;
 
   return (
     <Layout title={`Category-${params.slug}`}>
       <div className={loading ? "dim" : ""}>
-        <div>
-          <div>
-            <div className="row my-2">
-              {catItemChildren.length &&
-                catItemChildren.map((item) => (
-                  <div key={item._id} className="col-2 col-md-2 p-2 ">
-                    <div className="p-2">
-                      <Link
-                        to={`/products/category/${item.slug}`}
-                        className=" text-decoration-none"
-                      >
-                        <img
-                          src={
-                            item.picture
-                              ? `${import.meta.env.VITE_BASE_URL}/${
-                                  item.picture
-                                }`
-                              : `/placeholder.jpg`
-                          }
-                          // `${import.meta.env.VITE_BASE_URL}/${cat.picture }`
-                          alt="image"
-                          width={"100%"}
-                          // height={400}
-                          height={screen > 768 ? 150 : 50}
-                        />
-                        <h3 className=" text-center">{item?.name} </h3>
-                      </Link>
-                    </div>
-                  </div>
-                ))}
-            </div>
+        <div className="row">
+          <div className=" d-flex flex-column col-2 px-2 pt-4 fs-4">
+            {priceCategory?.map((item) => {
+              return (
+                <div key={item._id}>
+                  <input
+                    onChange={(e) => setPriceCat(e.target.value)}
+                    value={item.array}
+                    type="radio"
+                    name="kkk"
+                    id={item.name}
+                  />{" "}
+                  <label htmlFor={item.name}>{item.name}</label>
+                </div>
+              );
+            })}
           </div>
-          <div className="px-2">
-            <h3 className=" text-capitalize">
-              {
-                products?.length?`Category: ${params.slug} (${products?.length} of ${total})`:''
-              }
-              
-            </h3>
-            <h3 className=" text-danger">
-              {!products?.length ? "No Product Found!!" : ""}
-            </h3>
-            <InfiniteScroll
-              dataLength={products?.length}
-              next={() => {
-                setPage(page + 1);
-                getProducts(page + 1);
-              }}
-              hasMore={products?.length < total}
-              loader={<h1>Loading...</h1>}
-              endMessage={<h4 className=" text-center">All items loaded</h4>}
-            >
-              <div className="row g-3">
-                {products?.length &&
-                  products?.map((item) => <ProductCard
-                    key={item._id}
-                    item={item}
-                  />)}
+          <div className="col-10 px-2">
+            <div>
+              <div className="row my-2">
+                {catItemChildren.length &&
+                  catItemChildren.map((item) => (
+                    <div key={item._id} className="col-2 col-md-2 p-2 ">
+                      <div className="p-2">
+                        <Link
+                          to={`/products/category/${item.slug}`}
+                          className=" text-decoration-none"
+                        >
+                          <img
+                            src={
+                              item.picture
+                                ? `${import.meta.env.VITE_BASE_URL}/${
+                                    item.picture
+                                  }`
+                                : `/placeholder.jpg`
+                            }
+                            // `${import.meta.env.VITE_BASE_URL}/${cat.picture }`
+                            alt="image"
+                            width={"100%"}
+                            // height={400}
+                            height={screen > 768 ? 150 : 50}
+                          />
+                          <h3 className=" text-center">{item?.name} </h3>
+                        </Link>
+                      </div>
+                    </div>
+                  ))}
               </div>
-            </InfiniteScroll>
-            <div className="d-flex">
-              {products?.length < total ? (
-                <>
-                  <button
-                    onClick={() => {
-                      setPage(page + 1);
-                      getProducts(page + 1);
-                    }}
-                    className="btn btn-primary my-3 px-3 mx-auto"
-                    disabled={loading}
-                  >
-                    {loading ? "Loading..." : "Load More"}
-                  </button>
-                </>
-              ) : (
-                ""
-              )}
+            </div>
+            <div className="px-2">
+              <h3 className=" text-capitalize">
+                {products?.length
+                  ? `Category: ${params.slug} (${products?.length} of ${total})`
+                  : ""}
+              </h3>
+              <h3 className=" text-danger">
+                {!products?.length ? "No Product Found!!" : ""}
+              </h3>
+              <InfiniteScroll
+                dataLength={products?.length}
+                next={() => {
+                  setPage(page + 1);
+                  getProducts(page + 1);
+                }}
+                hasMore={products?.length < total}
+                loader={<h1>Loading...</h1>}
+                endMessage={<h4 className=" text-center">All items loaded</h4>}
+              >
+                <div className="row g-3">
+                  {products?.length &&
+                    products?.map((item) => (
+                      <ProductCard key={item._id} item={item} />
+                    ))}
+                </div>
+              </InfiniteScroll>
+              <div className="d-flex">
+                {products?.length < total ? (
+                  <>
+                    <button
+                      onClick={() => {
+                        setPage(page + 1);
+                        getProducts(page + 1);
+                      }}
+                      className="btn btn-primary my-3 px-3 mx-auto"
+                      disabled={loading}
+                    >
+                      {loading ? "Loading..." : "Load More"}
+                    </button>
+                  </>
+                ) : (
+                  ""
+                )}
+              </div>
             </div>
           </div>
         </div>
       </div>
     </Layout>
   );
-}
+};
 
-export default Category
+export default Category;

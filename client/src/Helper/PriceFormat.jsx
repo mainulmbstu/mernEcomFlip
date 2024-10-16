@@ -10,7 +10,7 @@ const PriceFormat = ({price}) => {
         // roundingMode:"ceil",
         // roundingMode:"floor",
         
-  }).format(price/113)
+  }).format(price)
 }
 
 export default PriceFormat

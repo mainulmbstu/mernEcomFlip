@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import PriceFormat from "../../Helper/PriceFormat";
 // import TopProdChart from "../../components/topProdChart";
 import DateChart from "../../components/DateChart";
+import TopSellingChart from "../../components/TopSellingChart";
 
 const AdminPanel = () => {
   let [startDate, setStartDate] = useState(new Date(2024, 0, 1));
@@ -124,10 +125,10 @@ const AdminPanel = () => {
                 </h4>
               </div>
             </div>
-            {/* <div className="col-md-6 border">
+            <div className="col-md-6 border">
               <h4>Top {topProds?.length} selling products </h4>
-              <TopProdChart topProds={topProds} />
-            </div> */}
+              <TopSellingChart topProds={topProds} />
+            </div>
             <div className="col-12 border">
               <h4>Sale statstic by date </h4>
               <DateChart dateTotal={dateTotal} />

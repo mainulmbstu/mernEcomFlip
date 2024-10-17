@@ -128,7 +128,7 @@ const AdminPanel = () => {
               <h4>Top {topProds?.length} selling products </h4>
               <TopProdChart topProds={topProds} />
             </div>
-            <div className="col-md-6 border">
+            <div className="col-12 border">
               <h4>Sale statstic by date </h4>
               <DateChart dateTotal={dateTotal} />
             </div>

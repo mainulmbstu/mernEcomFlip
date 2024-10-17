@@ -4,7 +4,7 @@ import Chart from "react-apexcharts";
 const DateChart = ({ dateTotal }) => {
   let date = Object.keys(dateTotal)
   let totalSale = Object.values(dateTotal)
-
+console.log(Object.keys(dateTotal));
   const [state, setstate] = useState("");
 
   useEffect(() => {

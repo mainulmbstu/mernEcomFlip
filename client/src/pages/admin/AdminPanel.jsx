@@ -21,7 +21,7 @@ const AdminPanel = () => {
   let [timeDiff, setTimeDiff] = useState({days:'', hrs:'', mins:''});
   
   let seconds = Math.floor((new Date(endDate) - new Date(startDate)) / 1000);
-  // console.log(sdd);
+  console.log(dateTotal);
 
   let timeConvert = (seconds) => {
     let days = Math.floor(seconds / 86400)

@@ -365,37 +365,45 @@ const totalSale = async (req, res) => {
     let todayShort = todayFull.toDateString();
     let today = new Date(todayShort);
     let todayNow = new Date();
-    const totalOrders = await OrderModel.find({ })
+
+    const orders = await OrderModel.find({ createdAt: { $gte: sdate, $lte: edate } })
      
     // let plainOrders = await getPlainOrders(totalOrders)
     let list=[]
-    let filtered = await totalOrders.map(item => {
-       for (let v of item.products) {
-             list.push(v)
-          }
-        }
-    )
-      // let res = {};
-      // list.map(item => {
-      //   res[item].name = (res[item].name || 0) +1 
-      //   res[item].name = (res[item].name?res[item].name + res[item].price: 0 + res[item].price)
-
-      //   console.log(res);
-      // });
-console.log(list);
+    await orders.map((item) => {
+      for (let v of item.products) {
+        list.push(v);
+      }
+    });
+//===== top 5 products
+     let result = {};
+     await list.map(item => {
+       result[item.name] = (result[item.name] || 0) + item.price;
+     });
+    
+    let arrTotal = [];
+    for (let k in result) {
+     await arrTotal.push({ name: k, totalSale: result[k] });
+    }
+    let topProds = await arrTotal.sort((a, b) => {
+      return b.totalSale - a.totalSale
+    }).slice(0, 5)
+ //==============   
+// console.log(sortedTotal);
     
     const ordersToday = await OrderModel.find({ createdAt: { $gte: today, $lte: todayNow } })
     let totalSaleToday= ordersToday?.length && ordersToday.reduce((previous, current) => { return previous + current.total
     }, 0);
     
-    const orders = await OrderModel.find({ createdAt: { $gte: sdate, $lte: edate } })
     let totalSale= orders?.length && orders.reduce((previous, current) => previous + current.total, 0);
     
 
     if (!totalSale || totalSale?.length === 0) {
-      return res.send({ totalSaleToday,totalSale, msg: "No data found" });
+      return res.send({ msg: "No data found" });
     }
-    res.status(200).send({totalSaleToday, totalSale , success:true});
+    res
+      .status(200)
+      .send({ topProds, totalSaleToday, totalSale, success: true });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "error from totalSale", error });

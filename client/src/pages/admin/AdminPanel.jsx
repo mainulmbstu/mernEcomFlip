@@ -12,10 +12,11 @@ const AdminPanel = () => {
   let [loading, setLoading] = useState(false);
   let [totalSale, setTotalSale] = useState('');
   let [totalSaleToday, setTotalSaleToday] = useState('');
+  let [topProds, setTopProds] = useState([]);
   let [timeDiff, setTimeDiff] = useState({days:'', hrs:'', mins:''});
   
   let seconds = Math.floor((new Date(endDate) - new Date(startDate)) / 1000);
-  console.log(totalSaleToday);
+  // console.log(topProds);
 
   let timeConvert = (seconds) => {
     let days = Math.floor(seconds / 86400)
@@ -42,6 +43,7 @@ const AdminPanel = () => {
       if (data.success) {
         setTotalSaleToday(data.totalSaleToday)
         setTotalSale(data.totalSale);
+        setTopProds(data.topProds)
       } else {
         setTotalSale(data.totalSale);
         toast.error(data.msg)
@@ -66,10 +68,10 @@ const AdminPanel = () => {
               <AdminMenu />
             </div>
           </div>
-          <div className=" col-md-9 p-2">
+          <div className=" col-md-9 p-2 row">
             <div className=" p-2 col-md-6 border mt-2">
               <h4>
-                Total Sale in last{" "}
+                Last{" "}
                 <span className={timeDiff?.days ? "" : "d-none"}>
                   {timeDiff?.days} days{" "}
                 </span>{" "}
@@ -113,8 +115,27 @@ const AdminPanel = () => {
               </div>
               <div>
                 <h4>Total Sale: {<PriceFormat price={totalSale} />} </h4>
-                <h4 className="text-success">Todays Sale: {<PriceFormat price={totalSaleToday} />} </h4>
+                <h4 className="text-success">
+                  Todays Sale: {<PriceFormat price={totalSaleToday} />}{" "}
+                </h4>
               </div>
+            </div>
+            <div className=" p-2 col-md-6 border mt-2">
+              <h4>Top {topProds?.length} selling products </h4>
+              {topProds?.length &&
+                topProds.map((item, i) => {
+                  return (
+                    <div
+                      key={i}
+                      className={` border border-2 p-2 px-3 ${
+                        i % 2 ? "bg-light" : "bg-white"
+                      }`}
+                    >
+                      <h5>Name: {item?.name}</h5>
+                      <h6>Total Sale: {<PriceFormat price={item.totalSale} />}</h6>
+                    </div>
+                  );
+                })}
             </div>
           </div>
         </div>

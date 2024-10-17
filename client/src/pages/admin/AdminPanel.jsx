@@ -9,8 +9,9 @@ import DateChart from "../../components/DateChart";
 import TopSellingChart from "../../components/TopSellingChart";
 
 const AdminPanel = () => {
-  let [startDate, setStartDate] = useState(new Date(2024, 0, 1));
   let [endDate, setEndDate] = useState(new Date());
+  let stDate = new Date(new Date(endDate) - 30 * 24 * 3600000);
+  let [startDate, setStartDate] = useState(new Date(stDate));
   let { Axios } = useAuth();
   let [loading, setLoading] = useState(false);
   let [totalSale, setTotalSale] = useState('');
@@ -20,7 +21,7 @@ const AdminPanel = () => {
   let [timeDiff, setTimeDiff] = useState({days:'', hrs:'', mins:''});
   
   let seconds = Math.floor((new Date(endDate) - new Date(startDate)) / 1000);
-  // console.log(dateTotal);
+  // console.log(sdd);
 
   let timeConvert = (seconds) => {
     let days = Math.floor(seconds / 86400)
@@ -74,19 +75,19 @@ const AdminPanel = () => {
             </div>
           </div>
           <div className=" col-md-9 p-2 row">
+            <h3 className=" text-center">
+              Statistic of last{" "}
+              <span className={timeDiff?.days ? "" : "d-none"}>
+                {timeDiff?.days} days{" "}
+              </span>{" "}
+              <span className={timeDiff?.hrs ? "" : "d-none"}>
+                {timeDiff?.hrs} hours{" "}
+              </span>{" "}
+              <span className={timeDiff?.mins ? "" : "d-none"}>
+                {timeDiff.mins} minutes{" "}
+              </span>{" "}
+            </h3>
             <div className=" p-2 col-md-6 border mt-2">
-              <h4>
-                Last{" "}
-                <span className={timeDiff?.days ? "" : "d-none"}>
-                  {timeDiff?.days} days{" "}
-                </span>{" "}
-                <span className={timeDiff?.hrs ? "" : "d-none"}>
-                  {timeDiff?.hrs} hours{" "}
-                </span>{" "}
-                <span className={timeDiff?.mins ? "" : "d-none"}>
-                  {timeDiff.mins} minutes{" "}
-                </span>{" "}
-              </h4>
               <div>
                 <form onSubmit={submitted} className=" w-100">
                   <label htmlFor="sdate" className=" fw-bold">
@@ -125,7 +126,7 @@ const AdminPanel = () => {
                 </h4>
               </div>
             </div>
-            <div className="col-md-6 border">
+            <div className="p-2 col-md-6 border mt-2">
               <h4>Top {topProds?.length} selling products </h4>
               <TopSellingChart topProds={topProds} />
             </div>

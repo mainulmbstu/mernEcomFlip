@@ -4,7 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import AdminMenu from "./AdminMenu";
 import { toast } from 'react-toastify';
 import PriceFormat from "../../Helper/PriceFormat";
-import TopProdChart from "../../components/topProdChart";
+// import TopProdChart from "../../components/topProdChart";
 import DateChart from "../../components/DateChart";
 
 const AdminPanel = () => {
@@ -124,10 +124,10 @@ const AdminPanel = () => {
                 </h4>
               </div>
             </div>
-            <div className="col-md-6 border">
+            {/* <div className="col-md-6 border">
               <h4>Top {topProds?.length} selling products </h4>
               <TopProdChart topProds={topProds} />
-            </div>
+            </div> */}
             <div className="col-12 border">
               <h4>Sale statstic by date </h4>
               <DateChart dateTotal={dateTotal} />

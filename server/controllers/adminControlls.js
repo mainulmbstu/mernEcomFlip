@@ -346,15 +346,6 @@ const adminContactReply = async (req, res) => {
 };
 
 //====================================
-//  let getPlainOrders = async (totalOrders, list = []) => {
-//         for (let v of totalOrders) {
-//           if (v.products?.length > 0) {
-//             await list.push(v)
-//             getPlainOrders(v.products, list);
-//           }
-//         }
-//         return list;
-// }
       
 const totalSale = async (req, res) => {
   try {
@@ -367,8 +358,12 @@ const totalSale = async (req, res) => {
     let todayNow = new Date();
 
     const orders = await OrderModel.find({ createdAt: { $gte: sdate, $lte: edate } })
-     
-    // let plainOrders = await getPlainOrders(totalOrders)
+//=====
+     let dateTotal = {};
+     await orders.map((item) => {
+       dateTotal[item.createdAt.toLocaleDateString()] = (dateTotal[item.createdAt.toLocaleDateString()] || 0) + item.total;
+     });
+     // total lisr
     let list=[]
     await orders.map((item) => {
       for (let v of item.products) {
@@ -403,7 +398,7 @@ const totalSale = async (req, res) => {
     }
     res
       .status(200)
-      .send({ topProds, totalSaleToday, totalSale, success: true });
+      .send({ dateTotal,topProds, totalSaleToday, totalSale, success: true });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "error from totalSale", error });

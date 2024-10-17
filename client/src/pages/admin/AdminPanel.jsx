@@ -4,6 +4,8 @@ import { useAuth } from "../../context/AuthContext";
 import AdminMenu from "./AdminMenu";
 import { toast } from 'react-toastify';
 import PriceFormat from "../../Helper/PriceFormat";
+import TopProdChart from "../../components/topProdChart";
+import DateChart from "../../components/DateChart";
 
 const AdminPanel = () => {
   let [startDate, setStartDate] = useState(new Date(2024, 0, 1));
@@ -13,10 +15,11 @@ const AdminPanel = () => {
   let [totalSale, setTotalSale] = useState('');
   let [totalSaleToday, setTotalSaleToday] = useState('');
   let [topProds, setTopProds] = useState([]);
+  let [dateTotal, setDateTotal] = useState({});
   let [timeDiff, setTimeDiff] = useState({days:'', hrs:'', mins:''});
   
   let seconds = Math.floor((new Date(endDate) - new Date(startDate)) / 1000);
-  // console.log(topProds);
+  // console.log(dateTotal);
 
   let timeConvert = (seconds) => {
     let days = Math.floor(seconds / 86400)
@@ -44,6 +47,7 @@ const AdminPanel = () => {
         setTotalSaleToday(data.totalSaleToday)
         setTotalSale(data.totalSale);
         setTopProds(data.topProds)
+        setDateTotal(data.dateTotal);
       } else {
         setTotalSale(data.totalSale);
         toast.error(data.msg)
@@ -120,22 +124,13 @@ const AdminPanel = () => {
                 </h4>
               </div>
             </div>
-            <div className=" p-2 col-md-6 border mt-2">
+            <div className="col-md-6 border">
               <h4>Top {topProds?.length} selling products </h4>
-              {topProds?.length &&
-                topProds.map((item, i) => {
-                  return (
-                    <div
-                      key={i}
-                      className={` border border-2 p-2 px-3 ${
-                        i % 2 ? "bg-light" : "bg-white"
-                      }`}
-                    >
-                      <h5>Name: {item?.name}</h5>
-                      <h6>Total Sale: {<PriceFormat price={item.totalSale} />}</h6>
-                    </div>
-                  );
-                })}
+              <TopProdChart topProds={topProds} />
+            </div>
+            <div className="col-md-6 border">
+              <h4>Sale statstic by date </h4>
+              <DateChart dateTotal={dateTotal} />
             </div>
           </div>
         </div>

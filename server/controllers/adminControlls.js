@@ -345,6 +345,63 @@ const adminContactReply = async (req, res) => {
    }
 };
 
+//====================================
+//  let getPlainOrders = async (totalOrders, list = []) => {
+//         for (let v of totalOrders) {
+//           if (v.products?.length > 0) {
+//             await list.push(v)
+//             getPlainOrders(v.products, list);
+//           }
+//         }
+//         return list;
+// }
+      
+const totalSale = async (req, res) => {
+  try {
+    let sdate = new Date(req.query?.startDate)
+    let edate = new Date(req.query?.endDate)
+
+    let todayFull = new Date()
+    let todayShort = todayFull.toDateString();
+    let today = new Date(todayShort);
+    let todayNow = new Date();
+    const totalOrders = await OrderModel.find({ })
+     
+    // let plainOrders = await getPlainOrders(totalOrders)
+    let list=[]
+    let filtered = await totalOrders.map(item => {
+       for (let v of item.products) {
+             list.push(v)
+          }
+        }
+    )
+      // let res = {};
+      // list.map(item => {
+      //   res[item].name = (res[item].name || 0) +1 
+      //   res[item].name = (res[item].name?res[item].name + res[item].price: 0 + res[item].price)
+
+      //   console.log(res);
+      // });
+console.log(list);
+    
+    const ordersToday = await OrderModel.find({ createdAt: { $gte: today, $lte: todayNow } })
+    let totalSaleToday= ordersToday?.length && ordersToday.reduce((previous, current) => { return previous + current.total
+    }, 0);
+    
+    const orders = await OrderModel.find({ createdAt: { $gte: sdate, $lte: edate } })
+    let totalSale= orders?.length && orders.reduce((previous, current) => previous + current.total, 0);
+    
+
+    if (!totalSale || totalSale?.length === 0) {
+      return res.send({ totalSaleToday,totalSale, msg: "No data found" });
+    }
+    res.status(200).send({totalSaleToday, totalSale , success:true});
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "error from totalSale", error });
+  }
+};
+
 module.exports = {
   userList,
   deleteUser,
@@ -358,4 +415,5 @@ module.exports = {
   gallery,
   adminContacts,
   adminContactReply,
+  totalSale,
 };

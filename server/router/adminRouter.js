@@ -18,6 +18,7 @@ router.get('/order-search', loginMiddleware, adminMiddleware, adminControlls.ord
 router.get('/product-list', loginMiddleware, adminMiddleware, adminControlls.adminProductList  )
 router.get('/product-search', loginMiddleware, adminMiddleware, adminControlls.adminSearchProductList  )
 router.post('/gallery', loginMiddleware, adminMiddleware, upload.array('picture', 100), adminControlls.gallery  )
+router.get('/total-sale', loginMiddleware, adminMiddleware, adminControlls.totalSale  )
 
 // admin authentication (for Private.jsx)
 router.get("/adminAuth", loginMiddleware, adminMiddleware, (req, res) => {

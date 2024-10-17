@@ -64,14 +64,14 @@ const Category = () => {
     <Layout title={`Category-${params.slug}`}>
       <div className={loading ? "dim" : ""}>
         <div className="row">
-          <PriceCategory/>
+          <PriceCategory />
           <div className="col-10 px-2">
             <div>
-              <div className="row my-2">
+              <div className={`${catItemChildren.length?' row my-2':'d-none'}`}>
                 {catItemChildren.length &&
                   catItemChildren.map((item) => (
                     <div key={item._id} className="col-2 col-md-2 p-2 ">
-                      <div className="p-2">
+                      <div className={`${catItemChildren.length?'p-2':'d-none'}`}>
                         <Link
                           to={`/products/category/${item.slug}`}
                           className=" text-decoration-none"
@@ -97,7 +97,7 @@ const Category = () => {
                   ))}
               </div>
             </div>
-            <div className="px-2">
+            <div className="px-2 mt-3">
               <h3 className=" text-capitalize">
                 {products?.length
                   ? `Category: ${params.slug} (${products?.length} of ${total})`

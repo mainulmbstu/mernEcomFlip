@@ -3,7 +3,15 @@ import { NavLink } from "react-router-dom";
 const AdminMenu = () => {
   return (
     <div className="card p-2 myAdminPanel">
-      <h3>Admin Panel</h3>
+      <h3>
+        <NavLink
+          to="/dashboard/admin"
+          className=" text-decoration-none text-white"
+          aria-current="true"
+        >
+          Dashboard
+        </NavLink>
+      </h3>
       <div className="list-group">
         <NavLink
           to="/dashboard/admin/profile"

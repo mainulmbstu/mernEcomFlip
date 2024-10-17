@@ -45,8 +45,9 @@ img {
 }
 
 .active {
-  color: rgb(233, 21, 21) !important;
+  color: rgb(11, 105, 17) !important;
   text-decoration: underline;
+  /* background-color: rgb(240, 246, 244) !important; */
 }
 #myHeader {
   position: sticky;

@@ -15,6 +15,7 @@ router.post("/user/update", loginMiddleware, userControlls.userUpdate);
 router.get("/user/orders", loginMiddleware, userControlls.userOrders);
 router.get("/gallery", userControlls.gallery);
 router.post("/contact", userControlls.contact);
+router.get("/get-contacts",loginMiddleware, userControlls.getContacts);
 //=================== forgot password
 router.post("/userVerified", localVariable, userControlls.userVerified);
 router.post("/OTPVerified/:email", userControlls.OTPVerified);

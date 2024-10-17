@@ -2,6 +2,7 @@ import { useState } from "react";
 import Layout from "../components/Layout";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "react-toastify";
+import UserContacts from "./user/UserContacts";
 
 const Contacts = () => {
   const [user, setUser] = useState({ name: "", email: "", message: "" });
@@ -92,6 +93,9 @@ const Contacts = () => {
               </div>
             </div>
           </div>
+        </div>
+        <div>
+          <UserContacts/>
         </div>
       </div>
     </Layout>

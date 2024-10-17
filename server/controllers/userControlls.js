@@ -310,6 +310,30 @@ const contact = async (req, res) => {
     res.status(500).json({ msg: "error from contact", error });
   }
 };
+
+//====================================
+const getContacts = async (req, res) => {
+  try {
+    let page = req.query.page ? req.query.page : 1;
+    let size = req.query.size ? req.query.size : 4;
+    let skip = (page - 1) * size;
+    let {email} = req.user
+    const total = await ContactModel.find({email}).estimatedDocumentCount();
+    const contacts = await ContactModel.find({ email })
+      .skip(skip)
+      .limit(size)
+      .sort({ createdAt: -1 });
+    if (!contacts || contacts.length === 0) {
+      return res.send({ msg: "No data found" });
+    }
+    res.status(200).send({ contacts, total });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "error from user list", error });
+  }
+};
+
+
 //==============================================
 
 module.exports = {
@@ -325,4 +349,5 @@ module.exports = {
   ResetNewPassword,
   getOTP,
   contact,
+  getContacts,
 };

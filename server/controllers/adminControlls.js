@@ -361,7 +361,7 @@ const totalSale = async (req, res) => {
 //=====
      let dateTotal = {};
      await orders.map((item) => {
-       dateTotal[item.createdAt.toLocaleDateString()] = (dateTotal[item.createdAt.toLocaleDateString()] || 0) + item.total;
+       dateTotal[item.createdAt.toDateString()] = (dateTotal[item.createdAt.toDateString()] || 0) + item.total;
      });
      // total lisr
     let list=[]

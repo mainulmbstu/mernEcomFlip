@@ -1,3 +1,5 @@
+/* eslint-disable*/
+
 import { useEffect, useState } from "react";
 import Chart from "react-apexcharts";
 
@@ -8,42 +10,83 @@ const DateChart = ({ dateTotal }) => {
       let date = new Date(item.createdAt).toLocaleDateString();
       dateTotalObj[date] = (dateTotalObj[date] || 0) + item.total;
     });
-  let date = Object.keys(dateTotalObj);
-  let totalSale = Object.values(dateTotalObj);
+  let ordersObj = {};
+  dateTotal.length &&
+    dateTotal.map((item) => {
+      let date = new Date(item.createdAt).toLocaleDateString();
+      ordersObj[date] = (ordersObj[date] || 0) + 1;
+    });
+
   const [state, setstate] = useState("");
 
   useEffect(() => {
     setstate({
       options: {
-        colors: ["#111EAA"],
+        // title: { text: "Sale statistic by date" },
+        // colors: ["#111EAA", "#E91E63"],
         //   color: ["#2E93fA", "#66DA26", "#546E7A", "#E91E63", "#FF9800"],
         chart: {
-          id: "apexchart-example",
+          id: "chart-by-date",
+          stacked: true,
         },
+        // plotOptions: {
+        //   bar: { horizontal: true, columnWidth:'100%' },
+        // },
         xaxis: {
-          categories: date,
+          title: { text: "⬅ date ➡" },
+          categories: Object.keys(dateTotalObj),
+        },
+        // yaxis: {
+        //   title: { text: "Total Sale in $" },
+        // },
+        legend: {
+          position: "top",
         },
       },
-      series: [
+      series1: [
         {
           name: "Total Sale",
-          data: totalSale,
+          data: Object.values(dateTotalObj),
+          color: "#001E63",
+        },
+      ],
+      series2: [
+        {
+          name: "Total Sale quantity",
+          data: Object.values(ordersObj),
+          color: "#AA1E63",
         },
       ],
     });
   }, [dateTotal]);
+      let screen = window.screen.width;
 
   return (
     <div>
-      {state && state?.series && (
-        <Chart
-          options={state?.options}
-          series={state?.series}
-          type="bar" //line, area, bar, pie, donut, scatter, bubble, heatmap, radialBar
-          width={"100%"}
-          height={320}
-        />
-      )}
+      <div>
+        <h4>Total Sale statistics by date</h4>
+        {state && state?.series1 && (
+          <Chart
+            options={state?.options}
+            series={state?.series1}
+            type="bar" //line, area, bar, pie, donut, scatter, bubble, heatmap, radialBar
+            width={"100%"}
+            height={screen > 768 ? 500 : 320}
+          />
+        )}
+      </div>
+      <div>
+        <h4>Total orders by date</h4>
+        {state && state?.series2 && (
+          <Chart
+            options={state?.options}
+            series={state?.series2}
+            type="bar" //line, area, bar, pie, donut, scatter, bubble, heatmap, radialBar
+            width={"100%"}
+            height={screen > 768 ? 500 : 320}
+          />
+        )}
+      </div>
     </div>
   );
 };

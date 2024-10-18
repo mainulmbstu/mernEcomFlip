@@ -100,7 +100,7 @@ const Home = () => {
     getProducts();
   }, []);
 
-    let screen = window.screen.width;
+
 
 
   //===========================================
@@ -250,7 +250,6 @@ const Home = () => {
                   ))}
               </div>
             </InfiniteScroll>
-            {/* {loading && <Loading />} */}
           </div>
           <div className="d-flex">
             {products.length < total ? (

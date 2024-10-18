@@ -69,9 +69,7 @@ const AdminPanel = () => {
       <div className={loading ? "dim" : ""}>
         <div className="row ">
           <div className="col-md-3 p-2">
-            <div className="card p-2">
               <AdminMenu />
-            </div>
           </div>
           <div className=" col-md-9 p-2 row">
             <p className=" text-center fs-2 fw-bold">
@@ -130,7 +128,6 @@ const AdminPanel = () => {
               <TopSellingChart topProds={topProds} />
             </div>
             <div className="col-12 border">
-              <h4>Sale statstic by date </h4>
               <DateChart dateTotal={dateTotal} />
             </div>
           </div>

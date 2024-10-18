@@ -21,7 +21,7 @@ const TopSellingChart = ({ topProds }) => {
       },
       series: [
         {
-          name: "series-1",
+          name: "Total Sale",
           data: prodSale,
         },
       ],

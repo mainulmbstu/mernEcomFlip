@@ -74,8 +74,8 @@ const AdminPanel = () => {
             </div>
           </div>
           <div className=" col-md-9 p-2 row">
-            <h3 className=" text-center">
-              Statistic of last{" "}
+            <p className=" text-center fs-2 fw-bold">
+              <span>Statistic of last</span>{" "}
               <span className={timeDiff?.days ? "" : "d-none"}>
                 {timeDiff?.days} days{" "}
               </span>{" "}
@@ -85,7 +85,7 @@ const AdminPanel = () => {
               <span className={timeDiff?.mins ? "" : "d-none"}>
                 {timeDiff.mins} minutes{" "}
               </span>{" "}
-            </h3>
+            </p>
             <div className=" p-2 col-md-6 border mt-2">
               <div>
                 <form onSubmit={submitted} className=" w-100">

@@ -17,11 +17,10 @@ const AdminPanel = () => {
   let [totalSale, setTotalSale] = useState('');
   let [totalSaleToday, setTotalSaleToday] = useState('');
   let [topProds, setTopProds] = useState([]);
-  let [dateTotal, setDateTotal] = useState({});
+  let [dateTotal, setDateTotal] = useState([]);
   let [timeDiff, setTimeDiff] = useState({days:'', hrs:'', mins:''});
   
   let seconds = Math.floor((new Date(endDate) - new Date(startDate)) / 1000);
-  console.log(dateTotal);
 
   let timeConvert = (seconds) => {
     let days = Math.floor(seconds / 86400)

@@ -358,12 +358,9 @@ const totalSale = async (req, res) => {
     let todayNow = new Date();
 
     const orders = await OrderModel.find({ createdAt: { $gte: sdate, $lte: edate } })
+    const dateTotal = await OrderModel.find({ createdAt: { $gte: sdate, $lte: edate } }).select({total:1, createdAt:1})
 //=====
-     let dateTotal = {};
-     await orders.map((item) => {
-       dateTotal[item.createdAt.toDateString()] = (dateTotal[item.createdAt.toDateString()] || 0) + item.total;
-     });
-    console.log(dateTotal);
+
      // total lisr
     let list=[]
     await orders.map((item) => {

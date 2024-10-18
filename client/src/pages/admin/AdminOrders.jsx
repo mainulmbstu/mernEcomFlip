@@ -155,9 +155,11 @@ const AdminOrders = () => {
               <AdminMenu />
               <div className=" card p-2 mt-5">
                 <h4>
-                  Total Orders: ({adminOrders?.length} of {total}){" "}
+                  Total Orders: ({adminOrders?.length} of {total})
                 </h4>
-                <h4> Total Sale: BDT {totalPrice} </h4>
+                <h4>
+                  Total Sale: {<PriceFormat price={totalPrice} />}
+                </h4>
               </div>
             </div>
           </div>

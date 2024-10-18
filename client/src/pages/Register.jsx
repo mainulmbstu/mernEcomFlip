@@ -152,7 +152,7 @@ const Register = () => {
                 placeholder="password"
                 required
               />
-              <div className=" position-absolute">
+              <div className=" position-absolute passIcon">
                 <Link onClick={() => setShowPass((prev) => !prev)}>
                   {showpass ? (
                     <FaEyeSlash className=" fs-2" />

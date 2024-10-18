@@ -107,10 +107,10 @@ img {
   height: 2rem;
 }
 
-/* .position-absolute {
+.passIcon {
   right: 0;
-  top: 4px;
-} */
+  top: 10%;
+}
 
 .hero-area {
   background-color: black;

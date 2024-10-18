@@ -38,6 +38,7 @@ const Category = () => {
           page: page,
           size: 4,
           priceCatArr,
+          catSlug:params.slug
         }
       );
       setLoading(false);

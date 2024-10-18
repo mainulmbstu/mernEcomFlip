@@ -266,9 +266,9 @@ let getPlainCatList = (filtered, list = []) => {
 
 const productByCategory = async (req, res) => {
   try {
-    const { page, size, priceCatArr } = req.body;
+    const { page, size, priceCatArr, catSlug } = req.body;
     let skip = (page - 1) * size;
-    let keyCat = await CategoryModel.findOne({ slug: req.params?.slug });
+    let keyCat = await CategoryModel.findOne({ slug: catSlug });
     const category = await CategoryModel.find({});
     let categoryList = await createCategories(category); // function above
     let filtered = await categoryList.filter(

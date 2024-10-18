@@ -11,8 +11,11 @@ import DeleteModal from "../../components/DeleteModal";
 import PriceFormat from "../../Helper/PriceFormat";
 
 const CreateProduct = () => {
-  let { token, userInfo, loading, setLoading } = useAuth();
+  let { token, userInfo, loading, setLoading, catPlain } = useAuth();
   const [editProduct, setEditProduct] = useState("");
+  const [categorySlug, setCategorySlug] = useState("");
+
+  console.log(categorySlug);
   //=============================================================
   let [page, setPage] = useState(1);
   let [total, setTotal] = useState(0);
@@ -80,6 +83,33 @@ const CreateProduct = () => {
     setPage(1);
   }, [searchVal]);
 
+  //================================================
+  let getProductsByCat = async (e, page = 1) => {
+    e && e.preventDefault()
+    try {
+      setLoading(true);
+      let { data } = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/products/category/${categorySlug}`,
+        {
+          page: page,
+          size: 4,
+          catSlug: categorySlug,
+        }
+      );
+      setLoading(false);
+      setTotal(data?.total?.length);
+      page === 1
+        ? setProducts(data?.products)
+        : setProducts([...products, ...data.products]);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getProductsByCat();
+  }, []);
+
   //===================================================
   let [delItem, setDelItem] = useState("");
 
@@ -109,7 +139,7 @@ const CreateProduct = () => {
       <div className={loading ? "dim" : ""}>
         <div className="row ">
           <div className="col-md-3 p-2">
-              <AdminMenu />
+            <AdminMenu />
           </div>
           <div className=" col-md-9 p-2">
             <div className=" card p-2">
@@ -141,7 +171,7 @@ const CreateProduct = () => {
                       onSubmit={getSearchAdminProducts}
                     >
                       <input
-                        className="form-control me-2"
+                        className="form-control"
                         type="search"
                         placeholder="Product Name"
                         aria-label="Search"
@@ -154,6 +184,58 @@ const CreateProduct = () => {
                       >
                         Search
                       </button>
+                    </form>
+                  </div>
+
+                  <div className="col-md-4 ps-2">
+                    <form
+                      className="d-flex"
+                      role="search"
+                      onSubmit={getProductsByCat}
+                    >
+                      {/* <input
+                        className="form-control me-2"
+                        type="search"
+                        placeholder="Select Category"
+                        aria-label="Search"
+                        value={searchVal}
+                        onChange={(e) => setSearchVal(e.target.value)}
+                      /> */}
+                      <div className="mb-2">
+                        <input
+                          className="form-control"
+                          list="categoryList"
+                          type={"text"}
+                          placeholder="Select category"
+                          onChange={(e) => {
+                            let cat =
+                              catPlain?.length &&
+                              catPlain.find(
+                                (item) => item?.slug === e.target.value
+                              );
+                            setCategorySlug(cat?.slug);
+                          }}
+                        />
+                        <datalist id="categoryList">
+                          {catPlain?.length &&
+                            catPlain.map((item) => {
+                              return (
+                                <option
+                                  key={item._id}
+                                  value={item?.slug}
+                                ></option>
+                              );
+                            })}
+                        </datalist>
+                      </div>
+                      <div>
+                        <button
+                          className="btn btn-success btn-outline-black"
+                          type="submit"
+                        >
+                          Search
+                        </button>
+                      </div>
                     </form>
                   </div>
                 </div>

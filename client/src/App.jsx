@@ -29,6 +29,7 @@ import Gallery from "./pages/user/Gallery";
 import ResetNewPassword from "./pages/user/ResetNewPassword";
 import AdminContacts from "./pages/admin/AdminContacts";
 import CategoryHeader from "./components/CategoryHeader";
+import AdminOffer from "./pages/admin/AdminOffer";
 
 // let CreateProduct= lazy(()=>import('./pages/admin/CreateProduct'))
 let UserList = lazy(() => import("./pages/admin/UserList"));
@@ -90,6 +91,7 @@ const App = () => {
               <Route path="admin/user-list" element=<UserList /> />
               <Route path="admin/order-list" element=<AdminOrders /> />
               <Route path="admin/contacts" element=<AdminContacts /> />
+              <Route path="admin/offers" element=<AdminOffer /> />
             </Route>
             <Route path="/login" element=<Login /> />
             <Route path="/register" element=<Register /> />

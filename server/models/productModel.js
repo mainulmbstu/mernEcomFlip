@@ -11,6 +11,7 @@ const productSchema = new mongoose.Schema(
       required: true,
     },
     price: { type: Number, required: true },
+    offer: { type: Number, default: 0 },
     quantity: { type: Number, required: true },
     user: {
       type: mongoose.Schema.Types.ObjectId,

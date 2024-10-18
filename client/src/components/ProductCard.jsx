@@ -4,12 +4,25 @@ import { Link } from "react-router-dom";
 import { useSearch } from "../context/SearchContext";
 import { toast } from "react-toastify";
 import PriceFormat from "../Helper/PriceFormat";
+import { useState } from "react";
+import { useEffect } from 'react';
 
 
 
 const ProductCard = ({ item }) => {
     
-    let { cart, setCart } = useSearch();
+  let { cart, setCart } = useSearch();
+  const [blink, setBlink] = useState(true)
+  console.log(blink);
+
+useEffect(() => {
+
+  let mm= setInterval(() => {
+    setBlink(prev=>!prev)
+  }, 1000);
+  return ()=> clearInterval(mm)
+}, [])
+
 
 
 
@@ -27,8 +40,8 @@ const ProductCard = ({ item }) => {
           <h5 className="card-title">{item.name}</h5>
           <div className="card-text">
             <p className="m-0">Category: {item.category?.name}</p>
-            <p className="m-0">Price: {<PriceFormat price={item.price} />} </p>
-            <p className="m-0">Available quantity: {item.quantity} </p>
+            <p className={item.offer?'text-decoration-line-through':'mb-1' }>Price: {<PriceFormat price={item.price} />} </p>
+            <p className={item.offer?'mb-2 text-danger fs-5 offerPrice':'d-none' }><span className={blink?'text-danger':'text-dark'}>Offer Price: {<PriceFormat price={item.price - item.price*item.offer/100} />}</span> </p>
             <p className="m-0 ">
               <span className="bg-success p-1 rounded-3 text-white">
                 Rating: {item?.rating}

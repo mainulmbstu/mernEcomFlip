@@ -29,11 +29,21 @@ const DateChart = ({ dateTotal }) => {
           id: "chart-by-date",
           stacked: true,
         },
+
+        // fill: {
+        //   colors: ["#Fg4336", "#E91E63", "#9C27B0"],
+        // },
         // plotOptions: {
         //   bar: { horizontal: true, columnWidth:'100%' },
         // },
         xaxis: {
-          title: { text: "⬅ date ➡" },
+          title: {
+            text: "⬅ date ➡",
+            style: {
+              fontSize: 20,
+              color: "green",
+            },
+          },
           categories: Object.keys(dateTotalObj),
         },
         // yaxis: {
@@ -42,12 +52,16 @@ const DateChart = ({ dateTotal }) => {
         legend: {
           position: "top",
         },
+        // dataLabels: {
+        //   enabled: false,
+        // },
       },
+
       series1: [
         {
           name: "Total Sale",
           data: Object.values(dateTotalObj),
-          color: "#001E63",
+          // color:"#546E7A",
         },
       ],
       series2: [
@@ -59,7 +73,7 @@ const DateChart = ({ dateTotal }) => {
       ],
     });
   }, [dateTotal]);
-      let screen = window.screen.width;
+  let screen = window.screen.width;
 
   return (
     <div>

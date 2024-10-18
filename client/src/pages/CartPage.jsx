@@ -3,26 +3,44 @@ import { useAuth } from "../context/AuthContext";
 import { useSearch } from "../context/SearchContext";
 import { useNavigate } from "react-router-dom";
 import PriceFormat from "../Helper/PriceFormat";
+import { Checkbox } from "antd";
+import { useState } from "react";
 
 export const CartPage = () => {
   let { token, userInfo } = useAuth();
   let { cart, setCart } = useSearch();
+  let [ selectedCart, setSelectedCart ] = useState([]);
   let navigate = useNavigate();
 
-  let amountHandle = (id, d) => {
-    let ind = -1;
-    cart?.forEach((data, index) => {
-      if (data._id === id) ind = index;
-    });
+console.log(selectedCart);
+    let cartItemHandle = (checked, checkedItem) => {
+      let all = [...selectedCart];
+      if (checked) {
+        all.push(checkedItem);
+      } else {
+        all = all.filter((item) => item._id !== checkedItem._id);
+      }
+      setSelectedCart(all);
+    };
 
-    let tempArr = [...cart];
+
+  let amountHandle = (id, d) => {
+    let isSelected = selectedCart.length && selectedCart.find(item => item._id === id)
+    if (!isSelected) return alert('Please select the item first')
+    let ind = -1;
+    selectedCart.length &&
+      selectedCart?.forEach((data, index) => {
+        if (data._id === id) ind = index;
+      });
+
+    let tempArr = [...selectedCart];
     tempArr[ind].amount += d;
-    setCart([...tempArr]);
+    setSelectedCart([...tempArr]);
   };
 
   let total =
-    cart?.length &&
-    cart?.reduce((previous, current) => {
+    selectedCart?.length &&
+    selectedCart?.reduce((previous, current) => {
       return previous + current?.price * current.amount;
     }, 0);
 
@@ -48,7 +66,7 @@ export const CartPage = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ cart }),
+          body: JSON.stringify({ cart: selectedCart }),
         }
       );
       let data = await res.json();
@@ -77,8 +95,12 @@ export const CartPage = () => {
             {cart?.length &&
               cart.map((item, i) => {
                 return (
-                  <div key={i} className="row border p-1 mb-2">
+                  <div key={i} className="row border p-1 mb-2 ms-3">
                     <div className=" col-4 ">
+                    <Checkbox
+                      onChange={(e) => cartItemHandle(e.target.checked, item)}
+                    >
+                    </Checkbox>
                       <img
                         src={`${item?.picture[0]?.secure_url}`}
                         className=" w-100"
@@ -113,7 +135,11 @@ export const CartPage = () => {
                               +
                             </button>
                           </div>
-                          <p className="text-danger">{item?.amount === item?.quantity?'Max available quantity reached':''} </p>
+                          <p className="text-danger">
+                            {item?.amount === item?.quantity
+                              ? "Max available quantity reached"
+                              : ""}{" "}
+                          </p>
                           <p className=" fw-bold">
                             Sub-Total:{" "}
                             {<PriceFormat price={item?.price * item?.amount} />}{" "}

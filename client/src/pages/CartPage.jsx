@@ -12,7 +12,6 @@ export const CartPage = () => {
   let [ selectedCart, setSelectedCart ] = useState([]);
   let navigate = useNavigate();
 
-console.log(selectedCart);
     let cartItemHandle = (checked, checkedItem) => {
       let all = [...selectedCart];
       if (checked) {
@@ -58,6 +57,7 @@ console.log(selectedCart);
 
   let checkout = async () => {
     try {
+      if (!selectedCart.length) return alert('No item has been selected for check out')
       let res = await fetch(
         `${import.meta.env.VITE_BASE_URL}/products/order/checkout`,
         {
@@ -96,19 +96,24 @@ console.log(selectedCart);
               cart.map((item, i) => {
                 return (
                   <div key={i} className="row border p-1 mb-2 ms-3">
-                    <div className=" col-4 ">
-                    <Checkbox
-                      onChange={(e) => cartItemHandle(e.target.checked, item)}
-                    >
-                    </Checkbox>
-                      <img
-                        src={`${item?.picture[0]?.secure_url}`}
-                        className=" w-100"
-                        height={100}
-                        alt="image"
-                      />
+                    <div className=" col-5 row ">
+                      <div className="col-3 align-content-center">
+                        <Checkbox
+                          onChange={(e) =>
+                            cartItemHandle(e.target.checked, item)
+                          }
+                        ></Checkbox>
+                      </div>
+                      <div className="col-9">
+                        <img
+                          src={`${item?.picture[0]?.secure_url}`}
+                          className=" w-100"
+                          height={90}
+                          alt="image"
+                        />
+                      </div>
                     </div>
-                    <div className=" col-8">
+                    <div className=" col-7 ps-3">
                       <div className=" d-flex flex-column h-100">
                         <div>
                           <h5>
@@ -121,7 +126,7 @@ console.log(selectedCart);
                           <div>
                             <button
                               onClick={() => amountHandle(item._id, -1)}
-                              className=" px-3 me-3"
+                              className=" px-3 me-3 btn btn-secondary"
                               disabled={item?.amount === 1}
                             >
                               -
@@ -129,7 +134,7 @@ console.log(selectedCart);
                             <span>{item?.amount} </span>
                             <button
                               onClick={() => amountHandle(item?._id, 1)}
-                              className=" px-3 mx-3"
+                              className=" px-3 mx-3 btn btn-secondary"
                               disabled={item?.amount === item?.quantity}
                             >
                               +

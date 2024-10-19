@@ -12,16 +12,14 @@ import { useEffect } from 'react';
 const ProductCard = ({ item }) => {
     
   let { cart, setCart } = useSearch();
-  const [blink, setBlink] = useState(true)
-  console.log(blink);
+  // const [blink, setBlink] = useState(true)
 
-useEffect(() => {
-
-  let mm= setInterval(() => {
-    setBlink(prev=>!prev)
-  }, 1000);
-  return ()=> clearInterval(mm)
-}, [])
+// useEffect(() => {
+//   let mm= setInterval(() => {
+//     setBlink(prev=>!prev)
+//   }, 1000);
+//   return ()=> clearInterval(mm)
+// }, [])
 
 
 
@@ -36,12 +34,31 @@ useEffect(() => {
           height={screen > 768 ? 200 : 100}
           alt="image"
         />
-        <div className="card-body">
+        <div className="card-body position-relative">
           <h5 className="card-title">{item.name}</h5>
-          <div className="card-text">
+          <div className={item?.offer?'offerDisc p-3 text-white':'d-none'}>
+            <h6>Off {item.offer}%</h6>
+            <h5>{<PriceFormat price={(item.price * item.offer) / 100} />}</h5>
+          </div>
+          <div className="card-text position-relative">
             <p className="m-0">Category: {item.category?.name}</p>
-            <p className={item.offer?'text-decoration-line-through':'mb-1' }>Price: {<PriceFormat price={item.price} />} </p>
-            <p className={item.offer?'mb-2 text-danger fs-5 offerPrice':'d-none' }><span className={blink?'text-danger':'text-dark'}>Offer Price: {<PriceFormat price={item.price - item.price*item.offer/100} />}</span> </p>
+            <p className={item.offer ? "text-decoration-line-through" : "mb-1"}>
+              Price: {<PriceFormat price={item.price} />}{" "}
+            </p>
+            <p
+              className={
+                item.offer ? "mb-2 text-danger fs-5 offerPrice" : "d-none"
+              }
+            >
+              <span className={"text-danger"}>
+                Offer Price:{" "}
+                {
+                  <PriceFormat
+                    price={item.price - (item.price * item.offer) / 100}
+                  />
+                }
+              </span>{" "}
+            </p>
             <p className="m-0 ">
               <span className="bg-success p-1 rounded-3 text-white">
                 Rating: {item?.rating}

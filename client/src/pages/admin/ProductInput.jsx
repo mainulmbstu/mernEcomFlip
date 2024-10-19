@@ -11,6 +11,7 @@ const ProductInput = ({ getProducts }) => {
     description: "",
     category: "",
     price: "",
+    offer: "",
     quantity: "",
     picture: '',
   });
@@ -33,6 +34,7 @@ const ProductInput = ({ getProducts }) => {
     formdata.append("description", inputVal.description);
     formdata.append("category", inputVal.category);
     formdata.append("price", inputVal.price);
+    formdata.append("offer", inputVal.offer);
     formdata.append("quantity", inputVal.quantity);
     try {
       setLoading(true);
@@ -55,6 +57,7 @@ const ProductInput = ({ getProducts }) => {
           description: "",
           category: inputVal.category,
           price: "",
+          offer: "",
           quantity: "",
           picture: inputVal.picture,
         });
@@ -204,6 +207,14 @@ const ProductInput = ({ getProducts }) => {
                   name="price"
                   value={inputVal.price}
                   placeholder="Enter price"
+                />
+                <input
+                  onChange={inputHandle}
+                  className=" form-control mb-2"
+                  type="number"
+                  name="offer"
+                  value={inputVal.offer}
+                  placeholder="Enter offer percent, default value 0"
                 />
 
                 <input

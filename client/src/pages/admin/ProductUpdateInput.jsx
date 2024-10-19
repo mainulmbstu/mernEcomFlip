@@ -10,6 +10,7 @@ const ProductUpdateInput = ({ value }) => {
     description: "",
     category: "",
     price: "",
+    offer: "",
     quantity: "",
     picture: [],
   });
@@ -24,6 +25,7 @@ const ProductUpdateInput = ({ value }) => {
       // eslint-disable-next-line react/prop-types
       category: editProduct?.category?._id,
       price: editProduct?.price,
+      offer: editProduct?.offer,
       quantity: editProduct?.quantity,
       picture: "",
     });
@@ -45,6 +47,7 @@ const ProductUpdateInput = ({ value }) => {
     formdata.append("description", inputVal.description);
     formdata.append("category", inputVal.category);
     formdata.append("price", inputVal.price);
+    formdata.append("offer", inputVal.offer);
     formdata.append("quantity", inputVal.quantity);
     try {
       setLoading(true);
@@ -121,6 +124,7 @@ const ProductUpdateInput = ({ value }) => {
                 className="px-4"
                 encType="multipart/form-data"
               >
+                <label htmlFor=""> Product Name</label>
                 <input
                   onChange={inputHandle}
                   className=" form-control mb-2"
@@ -129,7 +133,7 @@ const ProductUpdateInput = ({ value }) => {
                   value={inputVal.name}
                   placeholder="Enter product name"
                 />
-
+                <label htmlFor=""> Category</label>
                 <div className="mb-2">
                   <input
                     ref={refCat}
@@ -159,6 +163,7 @@ const ProductUpdateInput = ({ value }) => {
                   </datalist>
                 </div>
 
+                <label htmlFor=""> Price</label>
                 <input
                   onChange={inputHandle}
                   className=" form-control mb-2"
@@ -167,7 +172,16 @@ const ProductUpdateInput = ({ value }) => {
                   value={inputVal.price}
                   placeholder="Enter price"
                 />
-
+                <label htmlFor=""> Offer</label>
+                <input
+                  onChange={inputHandle}
+                  className=" form-control mb-2"
+                  type="number"
+                  name="offer"
+                  value={inputVal.offer}
+                  placeholder="Enter offer percent"
+                />
+                <label htmlFor=""> Quantity</label>
                 <input
                   onChange={inputHandle}
                   className=" form-control mb-2"
@@ -224,6 +238,7 @@ const ProductUpdateInput = ({ value }) => {
                   </div>
                 </div>
 
+                <label htmlFor=""> Description</label>
                 <textarea
                   onChange={inputHandle}
                   className=" form-control mb-2"

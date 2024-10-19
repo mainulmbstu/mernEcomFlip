@@ -40,7 +40,7 @@ export const CartPage = () => {
   let total =
     selectedCart?.length &&
     selectedCart?.reduce((previous, current) => {
-      return previous + current?.price * current.amount;
+      return previous +( current?.price - current?.price * current?.offer/100)* current.amount;
     }, 0);
 
   let removeCartItem = (id) => {
@@ -118,7 +118,14 @@ export const CartPage = () => {
                         <div>
                           <h5>
                             Name: {item?.name}, Price:{" "}
-                            {<PriceFormat price={item?.price} />}
+                            {
+                              <PriceFormat
+                                price={
+                                  item?.price -
+                                  (item?.price * item?.offer) / 100
+                                }
+                              />
+                            }
                           </h5>
                           <p className="m-0">
                             Category: {item?.category?.name}{" "}
@@ -147,7 +154,15 @@ export const CartPage = () => {
                           </p>
                           <p className=" fw-bold">
                             Sub-Total:{" "}
-                            {<PriceFormat price={item?.price * item?.amount} />}{" "}
+                            {
+                              <PriceFormat
+                                price={
+                                  (item?.price -
+                                    (item?.price * item?.offer) / 100) *
+                                  item?.amount
+                                }
+                              />
+                            }{" "}
                           </p>{" "}
                         </div>
                         <div className=" mt-auto">

@@ -6,6 +6,7 @@ import AdminMenu from "./AdminMenu";
 import InfiniteScroll from "react-infinite-scroll-component";
 import PriceFormat from "../../Helper/PriceFormat";
 import { toast } from "react-toastify";
+import OfferInput from "../../components/OfferInput";
 
 const AdminOffer = () => {
   let { loading, setLoading, catPlain, Axios } = useAuth();
@@ -39,7 +40,6 @@ const AdminOffer = () => {
       setProducts(tempArr);
     }
   };
-  console.log(categorySlug, page);
 
   let size = 2;
   //================================================
@@ -121,7 +121,7 @@ const AdminOffer = () => {
                     <form
                       className="d-flex"
                       role="search"
-                      onSubmit={(e)=>getProductsByCat(1, size, e)}
+                      onSubmit={(e) => getProductsByCat(1, size, e)}
                     >
                       {/* <input
                         className="form-control me-2"
@@ -168,32 +168,8 @@ const AdminOffer = () => {
                       </div>
                     </form>
                   </div>
-                  <div className="col-md-4 ps-2">
-                    <form
-                      className="d-flex"
-                      role="submit"
-                      onSubmit={offerSubmit}
-                    >
-                      <div className="mb-2">
-                        <input
-                          className="form-control"
-                          type="number"
-                          name='offer'
-                          value={offer}
-                          placeholder="Write offer percentage"
-                          onChange={(e) => setOffer(e.target.value)}
-                        />
-                      </div>
-                      <div>
-                        <button
-                          className="btn btn-success btn-outline-black"
-                          type="submit"
-                        >
-                          Submit
-                        </button>
-                      </div>
-                    </form>
-                  </div>
+
+                  <OfferInput value={{offer, setOffer, offerSubmit}} />
                 </div>
 
                 <div className=" border">
@@ -216,8 +192,8 @@ const AdminOffer = () => {
                   <InfiniteScroll
                     dataLength={products.length}
                     next={() => {
-                      setPage(page+1)
-                      getProductsByCat(page+1, size)
+                      setPage(page + 1);
+                      getProductsByCat(page + 1, size);
                     }}
                     hasMore={products.length < total}
                     loader={<h1>Loading...</h1>}
@@ -233,7 +209,7 @@ const AdminOffer = () => {
                           <th scope="col">Name</th>
                           <th scope="col">Category</th>
                           <th scope="col">Quantity</th>
-                          <th scope="col">Price</th>
+                          <th scope="col">Original-Price</th>
                           <th scope="col">Offer</th>
                         </tr>
                       </thead>
@@ -283,10 +259,10 @@ const AdminOffer = () => {
                 <button
                   onClick={
                     () => {
-                      setPage(page+1)
-                      getProductsByCat(page+1, size)
+                      setPage(page + 1);
+                      getProductsByCat(page + 1, size);
                     }
-                    
+
                     // !searchVal
                     //   ? () => {
                     //       setPage(page + 1);

@@ -1,7 +1,7 @@
-const  UserModel  = require("../models/userModel");
+const UserModel = require("../models/userModel");
 const OrderModel = require("../models/OrderModel");
 const ProductModel = require("../models/productModel");
-const GalleryModel  = require("../models/GalleryModel");
+const GalleryModel = require("../models/GalleryModel");
 const { ContactModel, ContactReplyModel } = require("../models/ContactModel");
 const mailer = require("../helper/nodeMailer");
 const { v4: uuidv4 } = require("uuid");
@@ -117,7 +117,7 @@ const orderList = async (req, res) => {
     if (!orderList || orderList.length === 0) {
       return res.status(403).send({ msg: "No data found", orderList, total });
     }
-    res.status(200).send({ orderList, total});
+    res.status(200).send({ orderList, total });
   } catch (error) {
     res.status(500).json({ msg: "error from orderList", error });
   }
@@ -128,7 +128,11 @@ let orderStatusUpdate = async (req, res) => {
   try {
     let oid = req.params.oid;
     let { status } = req.body;
-    let order= await OrderModel.findByIdAndUpdate(oid, { status }, { new: true });
+    let order = await OrderModel.findByIdAndUpdate(
+      oid,
+      { status },
+      { new: true }
+    );
     if (!order) {
       return res.status(400).send({ msg: "No data found" });
     }
@@ -152,7 +156,7 @@ const adminProductList = async (req, res) => {
       .limit(size)
       .populate("user", { password: 0 })
       .populate("category")
-      .sort({ updatedAt: -1 });
+      .sort({ createdAt: -1 });
     if (!products || products.length === 0) {
       return res.send({ msg: "No data found", products, total });
     }
@@ -172,24 +176,22 @@ const adminSearchProductList = async (req, res) => {
     let size = req.query?.size ? req.query?.size : 4;
     let skip = (page - 1) * size;
 
-    const totalSearch = await ProductModel.find(
-      {
-        $or: [
-          { name: { $regex: keyword, $options: "i" } },
-          { description: { $regex: keyword, $options: "i" } },
-        ],
-      },
-    )
-    const searchProduct = await ProductModel.find(
-      {
-        $or: [
-          { name: { $regex: keyword, $options: "i" } },
-          { description: { $regex: keyword, $options: "i" } },
-        ],
-      },
-    )
+    const totalSearch = await ProductModel.find({
+      $or: [
+        { name: { $regex: keyword, $options: "i" } },
+        { description: { $regex: keyword, $options: "i" } },
+      ],
+    });
+    const searchProduct = await ProductModel.find({
+      $or: [
+        { name: { $regex: keyword, $options: "i" } },
+        { description: { $regex: keyword, $options: "i" } },
+      ],
+    })
+      .populate("category")
       .skip(skip)
       .limit(size);
+
     res.status(200).send({
       msg: "got user from searchProduct",
       searchProduct,
@@ -257,9 +259,8 @@ const orderSearch = async (req, res) => {
 //=================================================
 
 const gallery = async (req, res) => {
-
   try {
-    const picturePath = req.files.map(file=>file.path)
+    const picturePath = req.files.map((file) => file.path);
     // console.log(picturePath);
     // const { secure_url, public_id } = await uploadOnCloudinary(
     //   picturePath[1],
@@ -271,27 +272,29 @@ const gallery = async (req, res) => {
     //     .send({ msg: "error uploading images", error: secure_url });
     // }
 
-    let imageList = await GalleryModel.find({})
+    let imageList = await GalleryModel.find({});
 
     if (imageList.length === 0) {
-      let images = await GalleryModel.create({picture:picturePath} )
+      let images = await GalleryModel.create({ picture: picturePath });
       return res
         .status(201)
         .send({ msg: "images uploaded successfully", success: true, images });
     }
-    totalImage = [...imageList[0]?.picture, ...picturePath]
-    let images = await GalleryModel.findByIdAndUpdate(imageList[0]?._id, {picture:totalImage}, {new:true}  );
+    totalImage = [...imageList[0]?.picture, ...picturePath];
+    let images = await GalleryModel.findByIdAndUpdate(
+      imageList[0]?._id,
+      { picture: totalImage },
+      { new: true }
+    );
     res
       .status(201)
       .send({ msg: "images updated successfully", success: true, images });
   } catch (error) {
     console.log(error);
-    res
-      .status(500)
-      .send({
-        msg: "error from gallery create",
-        error,
-      });
+    res.status(500).send({
+      msg: "error from gallery create",
+      error,
+    });
   }
 };
 
@@ -320,16 +323,23 @@ const adminContacts = async (req, res) => {
 //====================================
 const adminContactReply = async (req, res) => {
   try {
-    const {email, reply, msgId } = req.body;
+    const { email, reply, msgId } = req.body;
     if (!reply || !msgId || !email) {
       return res.json({ msg: "All fields are required" });
     }
-    await ContactReplyModel.create({ email, reply, msgId, user: req.user?._id });
-    let findmsg = await ContactModel.findById(msgId)
+    await ContactReplyModel.create({
+      email,
+      reply,
+      msgId,
+      user: req.user?._id,
+    });
+    let findmsg = await ContactModel.findById(msgId);
     let destructure = [...findmsg.replies];
-    findmsg.replies = [...destructure, { userName: req.user?.name, msg: reply, date: Date.now() },
+    findmsg.replies = [
+      ...destructure,
+      { userName: req.user?.name, msg: reply, date: Date.now() },
     ];
-    await findmsg.save()
+    await findmsg.save();
 
     let credential = {
       email,
@@ -339,64 +349,78 @@ const adminContactReply = async (req, res) => {
       Thanks for staying with us`,
     };
     mailer(credential);
-     res.status(201).json({ msg: "Reply sent successfully", success:true });
-   } catch (error) {
-     res.status(401).json({ msg: "error from adminContactReply", error });
-   }
+    res.status(201).json({ msg: "Reply sent successfully", success: true });
+  } catch (error) {
+    res.status(401).json({ msg: "error from adminContactReply", error });
+  }
 };
 
 //====================================
-      
+
 const totalSale = async (req, res) => {
   try {
-    let sdate = new Date(req.query?.startDate)
-    let edate = new Date(req.query?.endDate)
+    let sdate = new Date(req.query?.startDate);
+    let edate = new Date(req.query?.endDate);
 
-    let todayFull = new Date()
+    let todayFull = new Date();
     let todayShort = todayFull.toDateString();
     let today = new Date(todayShort);
     let todayNow = new Date();
 
-    const orders = await OrderModel.find({ createdAt: { $gte: sdate, $lte: edate } })
-    const dateTotal = await OrderModel.find({ createdAt: { $gte: sdate, $lte: edate } }).select({total:1, createdAt:1})
-//=====
+    const orders = await OrderModel.find({
+      createdAt: { $gte: sdate, $lte: edate },
+    });
+    const dateTotal = await OrderModel.find({
+      createdAt: { $gte: sdate, $lte: edate },
+    })
+      
+      .select({ total: 1, createdAt: 1, products:1 });
+    //=====
 
-     // total lisr
-    let list=[]
+    // total lisr
+    let list = [];
     await orders.map((item) => {
       for (let v of item.products) {
         list.push(v);
       }
     });
-//===== top 5 products
-     let result = {};
-     await list.map(item => {
-       result[item.name] = (result[item.name] || 0) + item.price;
-     });
-    
+    //===== top 5 products
+    let result = {};
+    await list.map((item) => {
+      result[item.name] = (result[item.name] || 0) + item.price;
+    });
+
     let arrTotal = [];
     for (let k in result) {
-     await arrTotal.push({ name: k, totalSale: result[k] });
+      await arrTotal.push({ name: k, totalSale: result[k] });
     }
-    let topProds = await arrTotal.sort((a, b) => {
-      return b.totalSale - a.totalSale
-    }).slice(0, 5)
- //==============   
-// console.log(sortedTotal);
-    
-    const ordersToday = await OrderModel.find({ createdAt: { $gte: today, $lte: todayNow } })
-    let totalSaleToday= ordersToday?.length && ordersToday.reduce((previous, current) => { return previous + current.total
-    }, 0);
-    
-    let totalSale= orders?.length && orders.reduce((previous, current) => previous + current.total, 0);
-    
+    let topProds = await arrTotal
+      .sort((a, b) => {
+        return b.totalSale - a.totalSale;
+      })
+      .slice(0, 5);
+    //==============
+    // console.log(sortedTotal);
+
+    const ordersToday = await OrderModel.find({
+      createdAt: { $gte: today, $lte: todayNow },
+    });
+    let totalSaleToday =
+      ordersToday?.length &&
+      ordersToday.reduce((previous, current) => {
+        return previous + current.total;
+      }, 0);
+
+    let totalSale =
+      orders?.length &&
+      orders.reduce((previous, current) => previous + current.total, 0);
 
     if (!totalSale || totalSale?.length === 0) {
       return res.send({ msg: "No data found" });
     }
     res
       .status(200)
-      .send({ dateTotal,topProds, totalSaleToday, totalSale, success: true });
+      .send({ dateTotal, topProds, totalSaleToday, totalSale, success: true });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "error from totalSale", error });
@@ -411,10 +435,9 @@ let offer = async (req, res) => {
       return res.send({ msg: "Select product and input offer percentage" });
     }
     for (let id of selectIds) {
-     await ProductModel.findByIdAndUpdate(id, { offer }, { new: true });
-     
-   }
-    res.status(200).send({ msg: "offer updated successfully" , success:true});
+      await ProductModel.findByIdAndUpdate(id, { offer }, { new: true });
+    }
+    res.status(200).send({ msg: "offer updated successfully", success: true });
   } catch (error) {
     console.log(error);
     res.status(500).send({ msg: "error from update offer", error });

@@ -14,7 +14,7 @@ const { ReviewModel, RatingModel } = require("../models/ReviewModel");
 //==================================================
 const createProduct = async (req, res) => {
   try {
-    const { name, description, category, price, quantity } = req.body;
+    const { name, description, category, price, offer, quantity } = req.body;
     // console.log(req.files);
     const pictures = req.files;
     if (!name || !description || !category || !price || !quantity) {
@@ -45,6 +45,7 @@ const createProduct = async (req, res) => {
       description,
       category,
       price,
+      if (offer) {offer},
       quantity,
       user: req.user?._id,
       picture: links,
@@ -125,7 +126,7 @@ const productList = async (req, res) => {
 const updateProduct = async (req, res) => {
   try {
     let pid = req.params.pid;
-    const { name, description, category, price, quantity } = req.body;
+    const { name, description, category, price, offer, quantity } = req.body;
     const pictures = req.files;
     if (category === "undefined") {
       return res.send({ msg: "Wrong category" });
@@ -140,6 +141,7 @@ const updateProduct = async (req, res) => {
     if (description) product.description = description;
     if (category) product.category = category;
     if (price) product.price = price;
+    if (offer) product.offer = offer;
     if (quantity) product.quantity = quantity;
 
     // upload and delete image on cloudinary

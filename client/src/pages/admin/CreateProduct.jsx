@@ -9,19 +9,20 @@ import axios from "axios";
 import InfiniteScroll from "react-infinite-scroll-component";
 import DeleteModal from "../../components/DeleteModal";
 import PriceFormat from "../../Helper/PriceFormat";
+import OfferInput from "../../components/OfferInput";
 
 const CreateProduct = () => {
-  let { token, userInfo, loading, setLoading, catPlain } = useAuth();
+  let { token, userInfo, loading, setLoading, catPlain, Axios } = useAuth();
   const [editProduct, setEditProduct] = useState("");
   const [categorySlug, setCategorySlug] = useState("");
 
-  console.log(categorySlug);
+
   //=============================================================
   let [page, setPage] = useState(1);
   let [total, setTotal] = useState(0);
   let [products, setProducts] = useState([]);
-
   let size = 10;
+  
   let getProducts = async (page = 1, size = 10) => {
     page === 1 && window.scrollTo(0, 0);
     try {
@@ -51,7 +52,6 @@ const CreateProduct = () => {
   }, []);
   //======================================================
   let [searchVal, setSearchVal] = useState("");
-
   let getSearchAdminProducts = async (e, page = 1, size = 10) => {
     e && e.preventDefault();
     try {
@@ -84,15 +84,15 @@ const CreateProduct = () => {
   }, [searchVal]);
 
   //================================================
-  let getProductsByCat = async (e, page = 1) => {
-    e && e.preventDefault()
+  let getProductsByCat = async (page = 1, size=10, e) => {
+    e && e.preventDefault();
     try {
       setLoading(true);
       let { data } = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/products/category/${categorySlug}`,
         {
-          page: page,
-          size: 4,
+          page,
+          size,
           catSlug: categorySlug,
         }
       );
@@ -106,10 +106,14 @@ const CreateProduct = () => {
     }
   };
 
-  useEffect(() => {
-    getProductsByCat();
-  }, []);
+  // useEffect(() => {
+  //   getProductsByCat();
+  // }, []);
 
+  useEffect(() => {
+    setSearchVal('')
+    setPage(1)
+  }, [categorySlug]);
   //===================================================
   let [delItem, setDelItem] = useState("");
 
@@ -130,6 +134,56 @@ const CreateProduct = () => {
       getProducts();
     } else {
       toast.success(data?.msg);
+    }
+  };
+  //====================================================================
+
+  let [selectIds, setSelectIds] = useState([]);
+  let [offer, setOffer] = useState("");
+
+    useEffect(() => {
+      let selectIdArr =
+        products?.length &&
+        products.filter((item) => item?.isChecked).map((item) => item?._id);
+      setSelectIds(selectIdArr);
+    }, [products]);
+  
+    let selectHandle = (e) => {
+      let { name, checked } = e.target;
+      if (name === "selectAll") {
+        let tempArr = products?.map((item) => {
+          return { ...item, isChecked: checked };
+        });
+        setProducts(tempArr);
+      } else {
+        let tempArr = products?.map((item) =>
+          item?._id === name ? { ...item, isChecked: checked } : item
+        );
+        setProducts(tempArr);
+      }
+    };
+
+  let offerSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      let { data } = await Axios.post(`/admin/offer`, { selectIds, offer });
+      if (data.success) {
+        toast.success(data.msg);
+        setOffer("");
+        searchVal
+          ? getSearchAdminProducts(e, 1, size * page)
+          : categorySlug
+          ? getProductsByCat(1, size * page)
+          : getProducts(1, size * page);
+          
+      } else {
+        toast.error(data.msg);
+      }
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      console.log("error from contact", error);
     }
   };
   //====================================================================
@@ -163,8 +217,8 @@ const CreateProduct = () => {
                   </div>
                 </div>
 
-                <div className=" d-flex my-2">
-                  <div className="col-md-4">
+                <div className="row my-2">
+                  <div className="col-md-3">
                     <form
                       className="d-flex"
                       role="search"
@@ -187,11 +241,11 @@ const CreateProduct = () => {
                     </form>
                   </div>
 
-                  <div className="col-md-4 ps-2">
+                  <div className="col-md-3 ps-2">
                     <form
                       className="d-flex"
                       role="search"
-                      onSubmit={getProductsByCat}
+                      onSubmit={(e) => getProductsByCat(1, size * page, e)}
                     >
                       {/* <input
                         className="form-control me-2"
@@ -201,7 +255,7 @@ const CreateProduct = () => {
                         value={searchVal}
                         onChange={(e) => setSearchVal(e.target.value)}
                       /> */}
-                      <div className="mb-2">
+                      <div className="mb-2 w-100">
                         <input
                           className="form-control"
                           list="categoryList"
@@ -238,21 +292,41 @@ const CreateProduct = () => {
                       </div>
                     </form>
                   </div>
+                  <OfferInput value={{ offer, setOffer, offerSubmit }} />
                 </div>
-
                 <div className=" border">
-                  {/* {loading && <Loading />} */}
+                  <input
+                    onChange={selectHandle}
+                    name="selectAll"
+                    className=" form-check-input mx-2  border border-secondary"
+                    checked={
+                      products?.length &&
+                      products.filter((item) => item?.isChecked !== true)
+                        .length < 1
+                    }
+                    type="checkbox"
+                    id="all"
+                  />
+                  <label className=" fw-bold form-check-label" htmlFor="all">
+                    Select All
+                  </label>
+
                   <InfiniteScroll
                     dataLength={products.length}
                     next={
-                      !searchVal
-                        ? () => {
-                            setPage(page + 1);
-                            getProducts(page + 1, size);
-                          }
-                        : (e) => {
+                      searchVal
+                        ? (e) => {
                             setPage(page + 1);
                             getSearchAdminProducts(e, page + 1, size);
+                          }
+                        : categorySlug
+                        ? () => {
+                            setPage(page + 1);
+                            getProductsByCat(page + 1, size);
+                          }
+                        : () => {
+                            setPage(page + 1);
+                            getProducts(page + 1, size);
                           }
                     }
                     hasMore={products.length < total}
@@ -264,12 +338,13 @@ const CreateProduct = () => {
                     <table className="table table-hover">
                       <thead>
                         <tr>
-                          <th scope="col">SL</th>
+                          <th scope="col"></th>
                           <th scope="col">Image</th>
                           <th scope="col">Name</th>
                           <th scope="col">Category</th>
-                          <th scope="col">Price</th>
                           <th scope="col">Quantity</th>
+                          <th scope="col">Original-Price</th>
+                          <th scope="col">Offer</th>
                           <th scope="col">Delete</th>
                           <th scope="col">Update</th>
                         </tr>
@@ -277,22 +352,34 @@ const CreateProduct = () => {
 
                       <tbody>
                         {products?.length &&
-                          products.map((item, index) => {
+                          products.map((item) => {
                             return (
                               <tr key={item._id}>
-                                <td>{index + 1}</td>
                                 <td>
-                                  <img
-                                    src={`${item?.picture[0]?.secure_url}`}
-                                    alt=""
-                                    width="30"
+                                  {" "}
+                                  <input
+                                    onChange={selectHandle}
+                                    className="form-check-input border border-secondary"
+                                    type="checkbox"
+                                    name={item?._id}
+                                    id={item._id}
+                                    checked={item?.isChecked || false}
                                   />
+                                </td>
+                                <td>
+                                  <label htmlFor={item._id}>
+                                    <img
+                                      src={`${item?.picture[0]?.secure_url}`}
+                                      alt=""
+                                      width="30"
+                                    />
+                                  </label>
                                 </td>
                                 <td>{item.name}</td>
                                 <td>{item.category?.name}</td>
-                                <td>{<PriceFormat price={item.price} />}</td>
                                 <td>{item.quantity}</td>
-                                {/* <td>{"edit/update"}</td> */}
+                                <td>{<PriceFormat price={item.price} />}</td>
+                                <td>{item.offer}</td>
                                 <td>
                                   <button
                                     onClick={() => {
@@ -379,14 +466,19 @@ const CreateProduct = () => {
               <>
                 <button
                   onClick={
-                    !searchVal
-                      ? () => {
-                          setPage(page + 1);
-                          getProducts(page + 1, size);
-                        }
-                      : (e) => {
+                    searchVal
+                      ? (e) => {
                           setPage(page + 1);
                           getSearchAdminProducts(e, page + 1, size);
+                        }
+                      : categorySlug
+                      ? () => {
+                          setPage(page + 1);
+                          getProductsByCat(page + 1, size);
+                        }
+                      : () => {
+                          setPage(page + 1);
+                          getProducts(page + 1, size);
                         }
                   }
                   className="btn btn-primary my-3 px-3 mx-auto"

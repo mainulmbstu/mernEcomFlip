@@ -128,8 +128,8 @@ let orderStatusUpdate = async (req, res) => {
   try {
     let oid = req.params.oid;
     let { status } = req.body;
-    await OrderModel.findByIdAndUpdate(oid, { status }, { new: true });
-    if (!OrderModel) {
+    let order= await OrderModel.findByIdAndUpdate(oid, { status }, { new: true });
+    if (!order) {
       return res.status(400).send({ msg: "No data found" });
     }
     res.status(200).send({ msg: "order updated successfully" });
@@ -403,6 +403,24 @@ const totalSale = async (req, res) => {
   }
 };
 
+//======================================================
+let offer = async (req, res) => {
+  try {
+    let { selectIds, offer } = req.body;
+    if (!selectIds?.length || !offer) {
+      return res.send({ msg: "Select product and input offer percentage" });
+    }
+    for (let id of selectIds) {
+     await ProductModel.findByIdAndUpdate(id, { offer }, { new: true });
+     
+   }
+    res.status(200).send({ msg: "offer updated successfully" , success:true});
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ msg: "error from update offer", error });
+  }
+};
+
 module.exports = {
   userList,
   deleteUser,
@@ -417,4 +435,5 @@ module.exports = {
   adminContacts,
   adminContactReply,
   totalSale,
+  offer,
 };

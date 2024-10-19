@@ -5,9 +5,10 @@ import Layout from "../../components/Layout";
 import AdminMenu from "./AdminMenu";
 import InfiniteScroll from "react-infinite-scroll-component";
 import PriceFormat from "../../Helper/PriceFormat";
+import { toast } from "react-toastify";
 
 const AdminOffer = () => {
-  let { loading, setLoading, catPlain } = useAuth();
+  let { loading, setLoading, catPlain, Axios } = useAuth();
   const [categorySlug, setCategorySlug] = useState("");
 
   //=============================================================
@@ -15,15 +16,15 @@ const AdminOffer = () => {
   let [total, setTotal] = useState(0);
   let [products, setProducts] = useState([]);
   let [selectIds, setSelectIds] = useState([]);
+  let [offer, setOffer] = useState('');
 
-  console.log(selectIds);
   useEffect(() => {
     let selectIdArr =
-      products?.length &&
-      products.filter((item) => item?.isChecked).map((item) => item?._id);
+    products?.length &&
+    products.filter((item) => item?.isChecked).map((item) => item?._id);
     setSelectIds(selectIdArr);
   }, [products]);
-
+  
   let selectHandle = (e) => {
     let { name, checked } = e.target;
     if (name === "selectAll") {
@@ -38,10 +39,11 @@ const AdminOffer = () => {
       setProducts(tempArr);
     }
   };
+  console.log(categorySlug, page);
 
-  let size = 4;
+  let size = 2;
   //================================================
-  let getProductsByCat = async (e) => {
+  let getProductsByCat = async ( page=1, size, e) => {
     e && e.preventDefault();
     if (!categorySlug) return;
     //   alert('Select a category')
@@ -55,7 +57,7 @@ const AdminOffer = () => {
           catSlug: categorySlug,
         }
       );
-      setPage(page + 1);
+      // setPage(page + 1);
       setLoading(false);
       setTotal(data?.total?.length);
       page === 1
@@ -67,17 +69,35 @@ const AdminOffer = () => {
     }
   };
 
-  useEffect(() => {
-    if (!categorySlug) return;
-    getProductsByCat();
-  }, []);
+  // useEffect(() => {
+  //   if (!categorySlug) return;
+  //   getProductsByCat();
+  // }, []);
 
   useEffect(() => {
     setPage(1);
   }, [categorySlug]);
 
   //===================================================
-
+  //==================================================
+  let offerSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      let { data } = await Axios.post(`/admin/offer`, {selectIds, offer});
+      if (data.success) {
+        toast.success(data.msg);
+        setOffer('');
+        getProductsByCat(1, page*size);
+      } else {
+        toast.error(data.msg);
+      }
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      console.log("error from contact", error);
+    }
+  };
   //====================================================================
 
   return (
@@ -101,7 +121,7 @@ const AdminOffer = () => {
                     <form
                       className="d-flex"
                       role="search"
-                      onSubmit={getProductsByCat}
+                      onSubmit={(e)=>getProductsByCat(1, size, e)}
                     >
                       {/* <input
                         className="form-control me-2"
@@ -148,6 +168,32 @@ const AdminOffer = () => {
                       </div>
                     </form>
                   </div>
+                  <div className="col-md-4 ps-2">
+                    <form
+                      className="d-flex"
+                      role="submit"
+                      onSubmit={offerSubmit}
+                    >
+                      <div className="mb-2">
+                        <input
+                          className="form-control"
+                          type="number"
+                          name='offer'
+                          value={offer}
+                          placeholder="Write offer percentage"
+                          onChange={(e) => setOffer(e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <button
+                          className="btn btn-success btn-outline-black"
+                          type="submit"
+                        >
+                          Submit
+                        </button>
+                      </div>
+                    </form>
+                  </div>
                 </div>
 
                 <div className=" border">
@@ -169,7 +215,10 @@ const AdminOffer = () => {
 
                   <InfiniteScroll
                     dataLength={products.length}
-                    next={getProductsByCat}
+                    next={() => {
+                      setPage(page+1)
+                      getProductsByCat(page+1, size)
+                    }}
                     hasMore={products.length < total}
                     loader={<h1>Loading...</h1>}
                     endMessage={
@@ -186,7 +235,6 @@ const AdminOffer = () => {
                           <th scope="col">Quantity</th>
                           <th scope="col">Price</th>
                           <th scope="col">Offer</th>
-                          <th scope="col">Update</th>
                         </tr>
                       </thead>
 
@@ -235,8 +283,10 @@ const AdminOffer = () => {
                 <button
                   onClick={
                     () => {
-                      getProductsByCat();
+                      setPage(page+1)
+                      getProductsByCat(page+1, size)
                     }
+                    
                     // !searchVal
                     //   ? () => {
                     //       setPage(page + 1);

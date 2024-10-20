@@ -36,13 +36,13 @@ const Category = () => {
         `${import.meta.env.VITE_BASE_URL}/products/category/${params.slug}`,
         {
           page: page,
-          size: 4,
+          size: 6,
           priceCatArr,
           catSlug:params.slug
         }
       );
       setLoading(false);
-      setTotal(data?.total?.length);
+      setTotal(data?.total);
       page === 1
         ? setProducts(data?.products)
         : setProducts([...products, ...data.products]);

@@ -32,6 +32,7 @@ import CategoryHeader from "./components/CategoryHeader";
 import AdminOffer from "./pages/admin/AdminOffer";
 
 // let CreateProduct= lazy(()=>import('./pages/admin/CreateProduct'))
+let OfferPage= lazy(()=>import('./components/OfferPage'))
 let UserList = lazy(() => import("./pages/admin/UserList"));
 let CartPage = lazy(() => import("./pages/CartPage"));
 let CreateCategory= lazy(()=>import('./pages/admin/CreateCategory'))
@@ -66,6 +67,7 @@ const App = () => {
           <Routes>
             <Route path="/" element=<Home /> />
             <Route path="/gallery" element=<Gallery /> />
+            <Route path="/offers" element=<OfferPage /> />
             <Route path="/resetnewpassword/:email" element=<ResetNewPassword /> />
 
             <Route path="/products/search" element=<SearchResults /> />

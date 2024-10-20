@@ -45,7 +45,9 @@ const createProduct = async (req, res) => {
       description,
       category,
       price,
-      if (offer) {offer},
+      if(offer) {
+        offer;
+      },
       quantity,
       user: req.user?._id,
       picture: links,
@@ -107,8 +109,10 @@ const productList = async (req, res) => {
     let page = req.query.page ? req.query.page : 1;
     let size = req.query.size ? req.query.size : 4;
     let skip = (page - 1) * size;
-    const total = await ProductModel.find({}).estimatedDocumentCount();
-    const products = await ProductModel.find({})
+    let offerIds = (await ProductModel.find({offer:{$gt:0}}).sort({updatedAt:-1}).limit(5)).map(item=>item._id)
+
+    const total = (await ProductModel.find({_id:{$nin:offerIds}})).length
+    const products = await ProductModel.find({ _id:{$nin:offerIds} })
       .skip(skip)
       .limit(size)
       .populate("category")
@@ -276,28 +280,27 @@ const productByCategory = async (req, res) => {
     let filtered = await categoryList.filter(
       (parent) => parent?.slug === req.params?.slug
     );
-    
+
     let catPlain = getPlainCatList(filtered);
 
     const category2 = await CategoryModel.find({
-       $or: [{ _id: keyCat?._id }, { parentId: keyCat?._id }],
-      });
-      let finalCat=keyCat?.parentId ? category2 : catPlain
+      $or: [{ _id: keyCat?._id }, { parentId: keyCat?._id }],
+    });
+    let finalCat = keyCat?.parentId ? category2 : catPlain;
 
-     let args = {};
-     if (finalCat?.length > 0) args.category = finalCat;
-     if (priceCatArr?.length > 0)
-       args.price = { $gte: priceCatArr[0], $lte: priceCatArr[1] };
+    let args = {};
+    if (finalCat?.length > 0) args.category = finalCat;
+    if (priceCatArr?.length > 0)
+      args.price = { $gte: priceCatArr[0], $lte: priceCatArr[1] };
 
-      const total = await ProductModel.find(args);
+    const total = await ProductModel.find(args);
     const products = await ProductModel.find(args)
       .skip(skip)
       .limit(size)
       .populate("category");
 
-      res.status(200).send({ products, total });
-    }
-   catch (error) {
+    res.status(200).send({ products, total:total?.length });
+  } catch (error) {
     console.log(error);
     res.send({ msg: "error from productByCategory", error });
   }
@@ -306,13 +309,15 @@ const productByCategory = async (req, res) => {
 const moreInfo = async (req, res) => {
   try {
     const { pid } = req.params;
-    const product = await ProductModel.findOne({ _id: pid }).populate("category");
+    const product = await ProductModel.findOne({ _id: pid }).populate(
+      "category"
+    );
     // let products = product[0];
     product.rating = product.rating.toFixed(1);
     res.status(200).json({ msg: "got product moreInfo", product });
   } catch (error) {
     console.log(error);
-    res.status(500).send({ msg: "error from moreInfo", error })
+    res.status(500).send({ msg: "error from moreInfo", error });
   }
 };
 
@@ -331,7 +336,7 @@ const productSearch = async (req, res) => {
       (parent) => parent?.slug === keyCat?.slug
     );
     let catPlain = getPlainCatList(filtered);
-    // if not top parent 
+    // if not top parent
     const category2 = await CategoryModel.find({
       $or: [{ _id: keyCat?._id }, { parentId: keyCat?._id }],
     });
@@ -352,11 +357,11 @@ const productSearch = async (req, res) => {
       .limit(size)
       .populate("category")
       .sort({ createdAt: -1 });
-    
+
     res.status(200).send({
       msg: "got product from search",
       products,
-      total:totalProd?.length,
+      total: totalProd?.length,
     });
   } catch (error) {
     console.log(error);
@@ -393,11 +398,10 @@ const productFilter = async (req, res) => {
       args.price = { $gte: priceCat[0], $lte: priceCat[1] };
     const total = (await ProductModel.find(args)).length;
     const products = await ProductModel.find(args)
-    .skip(skip)
-    .limit(size)
-    .populate("category")
-    .sort({ updatedAt: -1 });
-    console.log(args);
+      .skip(skip)
+      .limit(size)
+      .populate("category")
+      .sort({ updatedAt: -1 });
 
     res.status(200).send({ success: true, products, total });
   } catch (error) {
@@ -613,12 +617,35 @@ const ratingProduct = async (req, res) => {
 const getReview = async (req, res) => {
   try {
     const { pid } = req.params;
-    const reviews = await ReviewModel.find({ pid })
-    res.status(200).json({ msg: "got review", reviews })
+    const reviews = await ReviewModel.find({ pid }).sort({createdAt:-1});
+    res.status(200).json({ msg: "got review", reviews });
   } catch (error) {
     console.log(error);
     res.status(500).send({ msg: "error from moreInfo", error });
   }
+};
+
+//===============================================================
+const offerProductList = async (req, res) => {
+  try {
+    const { page, size } = req.query;
+    let skip = (page - 1) * size;
+    
+    const total = (await ProductModel.find({offer:{$gt:0}})).length;
+    const products = await ProductModel.find({ offer: { $gt: 0 } })
+    .skip(skip)
+    .limit(size)
+    .populate("category")
+    .sort({ updatedAt: -1 });
+    
+    // console.log(total, products);
+  res.status(200).send({ success: true, products, total });
+} catch (error) {
+  console.log(error);
+  res
+    .status(500)
+    .send({ success: false, msg: "error from offerProductList", error });
+}
 };
 
 //==============================================================
@@ -640,4 +667,5 @@ module.exports = {
   reviewProduct,
   ratingProduct,
   getReview,
+  offerProductList,
 };

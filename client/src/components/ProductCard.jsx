@@ -35,44 +35,44 @@ const ProductCard = ({ item }) => {
           alt="image"
         />
         <div className="card-body position-relative">
-          <h5 className="card-title">{item.name}</h5>
+          <h5 className="card-title">{item?.name}</h5>
           <div className={item?.offer?'offerDisc p-3 text-white':'d-none'}>
-            <h6>Off {item.offer}%</h6>
-            <h5>{<PriceFormat price={(item.price * item.offer) / 100} />}</h5>
+            <h6>Off {item?.offer}%</h6>
+            <h6>{<PriceFormat price={(item?.price * item?.offer) / 100} />}</h6>
           </div>
           <div className="card-text position-relative">
-            <p className="m-0">Category: {item.category?.name}</p>
-            <p className={item.offer ? "text-decoration-line-through" : "mb-1"}>
-              Price: {<PriceFormat price={item.price} />}{" "}
+            <p className="m-0">Category: {item?.category?.name}</p>
+            <p className={item?.offer ? "text-decoration-line-through" : "mb-1"}>
+              Price: {<PriceFormat price={item?.price} />}{" "}
             </p>
             <p
               className={
-                item.offer ? "mb-2 text-danger fs-5 offerPrice" : "d-none"
+                item?.offer ? "mb-2 text-danger fs-5 offerPrice" : "d-none"
               }
             >
               <span className={"text-danger"}>
                 Offer Price:{" "}
                 {
                   <PriceFormat
-                    price={item.price - (item.price * item.offer) / 100}
+                    price={item?.price - (item?.price * item?.offer) / 100}
                   />
                 }
               </span>{" "}
             </p>
             <p className="m-0 ">
               <span className="bg-success p-1 rounded-3 text-white">
-                Rating: {item?.rating}
+                Rating: {(item?.rating)?.toFixed(1)}
                 <MdStar className=" text-warning mb-1" />
               </span>{" "}
               ({item?.ratingNo})
             </p>
             <p className="m-0">
-              Description: {item.description.substring(0, 8)} ...
+              Description: {item?.description.substring(0, 8)} ...
             </p>
           </div>
         </div>
         <div className=" d-flex justify-content-evenly">
-          <Link to={`/products/more-info/${item._id}`}>
+          <Link to={`/products/more-info/${item?._id}`}>
             <button
               // onClick={() => navigate(`products/more-info/${item?._id}`)}
               className="btn btn-primary "
@@ -83,12 +83,12 @@ const ProductCard = ({ item }) => {
           <button
             onClick={() => {
               let cartIds = cart.map((it) => it._id);
-              if (cartIds.includes(item._id)) {
+              if (cartIds.includes(item?._id)) {
                 return alert("Already added");
               }
               setCart([...cart, item]);
               localStorage.setItem("cart", JSON.stringify([...cart, item]));
-              toast.success(`${item.name} added to Cart`);
+              toast.success(`${item?.name} added to Cart`);
             }}
             className="btn btn-info mt-auto mb-1"
           >

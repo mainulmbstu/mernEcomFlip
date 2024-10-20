@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import useStore from "../hooks/useStore";
 import { Checkbox } from "antd";
 import { toast } from "react-toastify";
 import Layout from "../components/Layout";
@@ -9,15 +8,18 @@ import axios from "axios";
 import InfiniteScroll from "react-infinite-scroll-component";
 import HomeCatPage from "../components/HomeCatPage";
 import ProductCard from "../components/ProductCard";
+import { useAuth } from "../context/AuthContext";
+import { Link } from "react-router-dom";
 
 const Home = () => {
-  let { category } = useStore();
-
-  const [checkedCat, setCheckedCat] = useState([]);
-  const [priceCat, setPriceCat] = useState([]);
+  // const [checkedCat, setCheckedCat] = useState([]);
+  // const [priceCat, setPriceCat] = useState([]);
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState([]);
+  const [offerProducts, setOfferProducts] = useState([]);
+
   let [total, setTotal] = useState(0);
+  let { Axios } = useAuth();
 
   // let catHandle = (checked, id) => {
   //   let all = [...checkedCat];
@@ -30,49 +32,50 @@ const Home = () => {
   // };
 
   //==============  filter ====================================
-//   const [filterPage, setFilterPage] = useState(1);
+  //   const [filterPage, setFilterPage] = useState(1);
 
-//   useEffect(() => {
-//    setFilterPage(1)
-//  }, [checkedCat, priceCat]);
+  //   useEffect(() => {
+  //    setFilterPage(1)
+  //  }, [checkedCat, priceCat]);
 
-//   let getProductFilter = async (filterPage=1) => {
-//     try {
-//       setLoading(true);
-//       let { data } = await axios.post(
-//         `${import.meta.env.VITE_BASE_URL}/products/product-filter`,
-//         {
-//           checkedCat,
-//           priceCat,
-//           pageOrSize: {
-//             page: filterPage,
-//             size: 4,
-//           },
-//           headers: { "Content-Type": "application/json" },
-//         }
-//       );
-//       setLoading(false);
-//       if (!data.success) {
-//         return toast.error(data.msg);
-//       }
-//       setTotal(data.total);
-//         filterPage === 1
-//           ? setProducts(data?.products)
-//           : setProducts([...products, ...data.products]);
-//     } catch (error) {
-//       console.log(error);
-//     }
-//   };
+  //   let getProductFilter = async (filterPage=1) => {
+  //     try {
+  //       setLoading(true);
+  //       let { data } = await axios.post(
+  //         `${import.meta.env.VITE_BASE_URL}/products/product-filter`,
+  //         {
+  //           checkedCat,
+  //           priceCat,
+  //           pageOrSize: {
+  //             page: filterPage,
+  //             size: 4,
+  //           },
+  //           headers: { "Content-Type": "application/json" },
+  //         }
+  //       );
+  //       setLoading(false);
+  //       if (!data.success) {
+  //         return toast.error(data.msg);
+  //       }
+  //       setTotal(data.total);
+  //         filterPage === 1
+  //           ? setProducts(data?.products)
+  //           : setProducts([...products, ...data.products]);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
 
-//   useEffect(() => {
-//     if (priceCat.length !== 0 || checkedCat.length !== 0)
-//       getProductFilter();
-//     // eslint-disable-next-line react-hooks/exhaustive-deps
-//   }, [checkedCat, priceCat]);
+  //   useEffect(() => {
+  //     if (priceCat.length !== 0 || checkedCat.length !== 0)
+  //       getProductFilter();
+  //     // eslint-disable-next-line react-hooks/exhaustive-deps
+  //   }, [checkedCat, priceCat]);
 
   //========== products with limit  ==================
 
   let [page, setPage] = useState(1);
+
 
   let getProducts = async () => {
     try {
@@ -82,7 +85,7 @@ const Home = () => {
         {
           params: {
             page,
-            size: 8,
+            size: 12,
           },
         }
       );
@@ -92,15 +95,34 @@ const Home = () => {
       setLoading(false);
     } catch (error) {
       setLoading(false);
-      console.log({msg:'error from get products', error});
+      console.log({ msg: "error from get products", error });
     }
   };
+
+  //=====================================
+
+  let getOfferProducts = async () => {
+    //  page === 1 && window.scrollTo(0, 0);
+    try {
+      setLoading(true);
+      let { data } = await Axios.get("/products/offers", {
+        params: {
+          page: 1,
+          size: 5,
+        },
+      });
+      setLoading(false);
+      setTotal(data?.total);
+      setOfferProducts(data?.products);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
+    getOfferProducts();
     getProducts();
   }, []);
-
-
-
 
   //===========================================
   return (
@@ -187,6 +209,22 @@ const Home = () => {
             </div>
             <hr />
 
+            <div className="row g-3">
+              <h6>Special Offer</h6>
+              {offerProducts?.length &&
+                offerProducts?.map((item) => (
+                  <ProductCard key={item._id} item={item} />
+                ))}
+              <div className="col-6 col-md-3, col-lg-2">
+                <Link
+                  to={"/offers"}
+                  className=" d-inline-block h-100 w-100 align-content-center text-center bg-black"
+                >
+                  <span className=" fs-4">Show All</span>
+                </Link>
+              </div>
+            </div>
+            <hr />
             <h3 className=" text-danger">
               {!products?.length ? "No Product Found!!" : ""}
             </h3>

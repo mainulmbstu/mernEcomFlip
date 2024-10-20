@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useState } from 'react';
 
@@ -36,7 +36,9 @@ const CategoryHeader = () => {
 
   return (
     <div className="catPage">
-      <ul>{getCategoryList(category)}</ul>
+      <ul>
+        <NavLink to={'/offers'} className=' me-3 my-auto text-decoration-none'>OFFERS</NavLink>
+        {getCategoryList(category)}</ul>
     </div>
   );
 }

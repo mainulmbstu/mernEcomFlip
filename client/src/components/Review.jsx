@@ -10,16 +10,15 @@ const Review = ({ reviewItem }) => {
         let { name, value } = e.target;
         setinputVal((prev) => ({ ...prev, [name]: value }));
       };
-
-      let { userInfo, Axios } = useAuth();
-      const [loading, setLoading] = useState(false);
-
+let { userInfo, Axios } = useAuth();
+const [loading, setLoading] = useState(false);
     
     useEffect(() => {
      setinputVal({
-       name: userInfo.name,
-       email: userInfo.email,
+       name:  userInfo.name || '',
+       email: userInfo.email || '',
        pid: reviewItem._id,
+       review:''
      });
     }, [reviewItem])
     

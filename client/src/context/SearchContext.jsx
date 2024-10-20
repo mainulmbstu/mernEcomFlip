@@ -73,7 +73,6 @@ const SearchContextProvider = ({ children }) => {
     }
   };
 
-console.log(page);
   useEffect(() => {
     setPage(1)
     keyword && submitHandler();

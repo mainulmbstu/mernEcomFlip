@@ -265,7 +265,7 @@ const AdminOrders = () => {
                                     <div>
                                       <h5>
                                         Name: {p?.name}- Price:{" "}
-                                        {<PriceFormat price={p?.price} />}
+                                        {<PriceFormat price={p?.price-p?.price*p?.offer/100} />}
                                       </h5>
                                       <p>Category: {p?.category?.name} </p>
                                       <p>{`Qnty: ${p?.amount}`}</p>
@@ -273,7 +273,7 @@ const AdminOrders = () => {
                                         Sub-Total:{" "}
                                         {
                                           <PriceFormat
-                                            price={p?.price * p.amount}
+                                            price={(p?.price-p?.price*p?.offer/100) * p.amount}
                                           />
                                         }{" "}
                                       </p>

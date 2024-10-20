@@ -297,7 +297,8 @@ const productByCategory = async (req, res) => {
     const products = await ProductModel.find(args)
       .skip(skip)
       .limit(size)
-      .populate("category");
+      .populate("category")
+    .sort({updatedAt:-1})
 
     res.status(200).send({ products, total:total?.length });
   } catch (error) {
@@ -453,9 +454,7 @@ let deleteProduct = async (req, res) => {
 
 const orderCheckout = async (req, res) => {
   try {
-    const { cart } = req?.body;
-    let total = 0;
-    cart.length && cart.map((item) => (total += item?.price * item.amount));
+    const { cart, total } = req?.body;
     let trxn_id = "DEMO" + uuidv4();
 
     // let baseurl = "http://localhost:8000";

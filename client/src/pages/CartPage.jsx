@@ -66,7 +66,7 @@ export const CartPage = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ cart: selectedCart }),
+          body: JSON.stringify({ cart: selectedCart, total }),
         }
       );
       let data = await res.json();

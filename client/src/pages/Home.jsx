@@ -209,7 +209,7 @@ const Home = () => {
             </div>
             <hr />
 
-            <div className="row g-3">
+            <div className={offerProducts?.length?'row g-3':'d-none'}>
               <h6>Special Offer</h6>
               {offerProducts?.length &&
                 offerProducts?.map((item) => (

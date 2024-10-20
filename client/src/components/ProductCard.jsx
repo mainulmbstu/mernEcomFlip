@@ -25,7 +25,7 @@ const ProductCard = ({ item }) => {
 
 
   return (
-    <div className="col-6 col-md-3  ">
+    <div className="col-6 col-md-3 col-lg-2  ">
       <div className="card h-100">
         <img
           src={`${item?.picture[0]?.secure_url}`}

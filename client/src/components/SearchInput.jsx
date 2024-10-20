@@ -2,7 +2,7 @@ import { useSearch } from "../context/SearchContext";
 import { useNavigate } from 'react-router-dom';
 
 const SearchInput = () => {
-  const { keyword, setKeyword, submitHandler } = useSearch();
+  const { keyword, setKeyword, submitHandler, page, size } = useSearch();
     let navigate = useNavigate()
 
   
@@ -10,7 +10,7 @@ const SearchInput = () => {
   
   return (
     <div className="">
-      <form className="d-flex" role="search" onSubmit={ submitHandler}>
+      <form className="d-flex" role="search" onSubmit={(e)=> submitHandler(1, size*page, e)}>
         <input
           className="form-control"
           type="search"

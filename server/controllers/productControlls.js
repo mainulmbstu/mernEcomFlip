@@ -324,7 +324,6 @@ const productSearch = async (req, res) => {
     let skip = (page - 1) * size;
     const category = await CategoryModel.find({});
     let categoryList = await createCategories(category);
-    
     const keyCat = await CategoryModel.findOne({
       name: { $regex: keyword, $options: "i" },
     });
@@ -336,40 +335,28 @@ const productSearch = async (req, res) => {
     const category2 = await CategoryModel.find({
       $or: [{ _id: keyCat?._id }, { parentId: keyCat?._id }],
     });
-    
-    const totalProd = await ProductModel.find({
-      $or: [
-        { name: { $regex: keyword, $options: "i" } },
-        { description: { $regex: keyword, $options: "i" } },
-        { category: keyCat?.parentId?category2:catPlain },
-      ],
-    });
-    const prods = await ProductModel.find({
+
+    let args = {
       $or: [
         { name: { $regex: keyword, $options: "i" } },
         { description: { $regex: keyword, $options: "i" } },
         { category: keyCat?.parentId ? category2 : catPlain },
       ],
-    })
+    };
+    if (priceCatArr.length > 0)
+      args.price = { $gte: priceCatArr[0], $lte: priceCatArr[1] };
+
+    const totalProd = await ProductModel.find(args);
+    const products = await ProductModel.find(args)
       .skip(skip)
       .limit(size)
       .populate("category")
-      .sort({ updatedAt: -1 });
-    
-    let totalProdFilter =
-      totalProd?.length &&
-      totalProd.filter((item) => {
-        return item?.price >= priceCatArr[0] && item?.price <= priceCatArr[1];
-      });
-    
-    let products= prods?.length && prods.filter(item => {
-      return item?.price >= priceCatArr[0] && item?.price <= priceCatArr[1];
-    });
+      .sort({ createdAt: -1 });
     
     res.status(200).send({
       msg: "got product from search",
-      products: priceCatArr?.length ? products : prods,
-      total: priceCatArr?.length ? totalProdFilter?.length : totalProd?.length,
+      products,
+      total:totalProd?.length,
     });
   } catch (error) {
     console.log(error);
@@ -393,7 +380,7 @@ const similarProducts = async (req, res) => {
     res.status(401).send({ msg: "error from similarProducts", error });
   }
 };
-//============================================
+//============================================ was for home pge
 const productFilter = async (req, res) => {
   try {
     const { checkedCat, priceCat, pageOrSize } = req.body;
@@ -406,10 +393,11 @@ const productFilter = async (req, res) => {
       args.price = { $gte: priceCat[0], $lte: priceCat[1] };
     const total = (await ProductModel.find(args)).length;
     const products = await ProductModel.find(args)
-      .skip(skip)
-      .limit(size)
-      .populate("category")
-      .sort({ updatedAt: -1 });
+    .skip(skip)
+    .limit(size)
+    .populate("category")
+    .sort({ updatedAt: -1 });
+    console.log(args);
 
     res.status(200).send({ success: true, products, total });
   } catch (error) {

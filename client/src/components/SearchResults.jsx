@@ -5,24 +5,26 @@ import ProductCard from "./ProductCard";
 import PriceCategory from "./PriceCategory";
 
 const SearchResults = () => {
-  const { results, submitHandlerScroll, total, page, loading } = useSearch();
-
+  const { results, submitHandler, total, size, page,setPage, loading } = useSearch();
 
   return (
     <Layout title={"Search result"}>
       <div className={loading ? "dim" : ""}>
         <div className="row">
-            <PriceCategory/>
+          <PriceCategory />
           <div className="col-10 px-2 py-4">
             <InfiniteScroll
               dataLength={results?.length && results?.length}
-              next={() => submitHandlerScroll(page)}
+              next={(e) => {
+                setPage(page + 1);
+                submitHandler(page + 1, size , e);
+              }}
               hasMore={results?.length < total}
               loader={<h1>Loading...</h1>}
               endMessage={<h4 className=" text-center">All items loaded</h4>}
             >
               <div className="row g-3">
-                <h3>Search results ({results?.length}) </h3>
+                <h3>Search results ({results?.length} of {total}) </h3>
                 {results?.length &&
                   results?.map((item) => (
                     <ProductCard key={item._id} item={item} />
@@ -33,7 +35,10 @@ const SearchResults = () => {
               {results.length < total ? (
                 <>
                   <button
-                    onClick={() => submitHandlerScroll(page)}
+                    onClick={() => {
+                      setPage(page + 1);
+                      submitHandler(page+1, size);
+                    }}
                     className="btn btn-primary my-3 px-3 mx-auto"
                     disabled={loading}
                   >

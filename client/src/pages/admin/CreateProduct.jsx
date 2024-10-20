@@ -52,7 +52,7 @@ const CreateProduct = () => {
   }, []);
   //======================================================
   let [searchVal, setSearchVal] = useState("");
-  let getSearchAdminProducts = async (e, page = 1, size = 10) => {
+  let getSearchAdminProducts = async (page = 1, size = 10, e) => {
     e && e.preventDefault();
     try {
       if (!searchVal) return;
@@ -80,6 +80,7 @@ const CreateProduct = () => {
   };
 
   useEffect(() => {
+    
     setPage(1);
   }, [searchVal]);
 
@@ -106,9 +107,6 @@ const CreateProduct = () => {
     }
   };
 
-  // useEffect(() => {
-  //   getProductsByCat();
-  // }, []);
 
   useEffect(() => {
     setSearchVal('')
@@ -137,55 +135,22 @@ const CreateProduct = () => {
     }
   };
   //====================================================================
-
-  let [selectIds, setSelectIds] = useState([]);
-  let [offer, setOffer] = useState("");
-
-    useEffect(() => {
-      let selectIdArr =
-        products?.length &&
-        products.filter((item) => item?.isChecked).map((item) => item?._id);
-      setSelectIds(selectIdArr);
-    }, [products]);
-  
-    let selectHandle = (e) => {
-      let { name, checked } = e.target;
-      if (name === "selectAll") {
-        let tempArr = products?.map((item) => {
-          return { ...item, isChecked: checked };
-        });
-        setProducts(tempArr);
-      } else {
-        let tempArr = products?.map((item) =>
-          item?._id === name ? { ...item, isChecked: checked } : item
-        );
-        setProducts(tempArr);
-      }
-    };
-
-  let offerSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      setLoading(true);
-      let { data } = await Axios.post(`/admin/offer`, { selectIds, offer });
-      if (data.success) {
-        toast.success(data.msg);
-        setOffer("");
-        searchVal
-          ? getSearchAdminProducts(e, 1, size * page)
-          : categorySlug
-          ? getProductsByCat(1, size * page)
-          : getProducts(1, size * page);
-          
-      } else {
-        toast.error(data.msg);
-      }
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-      console.log("error from contact", error);
+  let selectHandle = (e) => {
+    let { name, checked } = e.target;
+    if (name === "selectAll") {
+      let tempArr = products?.map((item) => {
+        return { ...item, isChecked: checked };
+      });
+      setProducts(tempArr);
+    } else {
+      let tempArr = products?.map((item) =>
+        item?._id === name ? { ...item, isChecked: checked } : item
+      );
+      setProducts(tempArr);
     }
   };
+
+
   //====================================================================
 
   return (
@@ -217,83 +182,23 @@ const CreateProduct = () => {
                   </div>
                 </div>
 
-                <div className="row my-2">
-                  <div className="col-md-3">
-                    <form
-                      className="d-flex"
-                      role="search"
-                      onSubmit={getSearchAdminProducts}
-                    >
-                      <input
-                        className="form-control"
-                        type="search"
-                        placeholder="Product Name"
-                        aria-label="Search"
-                        value={searchVal}
-                        onChange={(e) => setSearchVal(e.target.value)}
-                      />
-                      <button
-                        className="btn btn-success btn-outline-black"
-                        type="submit"
-                      >
-                        Search
-                      </button>
-                    </form>
-                  </div>
-
-                  <div className="col-md-3 ps-2">
-                    <form
-                      className="d-flex"
-                      role="search"
-                      onSubmit={(e) => getProductsByCat(1, size * page, e)}
-                    >
-                      {/* <input
-                        className="form-control me-2"
-                        type="search"
-                        placeholder="Select Category"
-                        aria-label="Search"
-                        value={searchVal}
-                        onChange={(e) => setSearchVal(e.target.value)}
-                      /> */}
-                      <div className="mb-2 w-100">
-                        <input
-                          className="form-control"
-                          list="categoryList"
-                          type={"text"}
-                          placeholder="Select category"
-                          onChange={(e) => {
-                            let cat =
-                              catPlain?.length &&
-                              catPlain.find(
-                                (item) => item?.slug === e.target.value
-                              );
-                            setCategorySlug(cat?.slug);
-                          }}
-                        />
-                        <datalist id="categoryList">
-                          {catPlain?.length &&
-                            catPlain.map((item) => {
-                              return (
-                                <option
-                                  key={item._id}
-                                  value={item?.slug}
-                                ></option>
-                              );
-                            })}
-                        </datalist>
-                      </div>
-                      <div>
-                        <button
-                          className="btn btn-success btn-outline-black"
-                          type="submit"
-                        >
-                          Search
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-                  <OfferInput value={{ offer, setOffer, offerSubmit }} />
-                </div>
+                <OfferInput
+                  value={{
+                    products,
+                    getSearchAdminProducts,
+                    searchVal,
+                    setSearchVal,
+                    getProductsByCat,
+                    catPlain,
+                    setCategorySlug,
+                    page,
+                    size,
+                    setLoading,
+                    categorySlug,
+                    getProducts,
+                    Axios,
+                  }}
+                />
                 <div className=" border">
                   <input
                     onChange={selectHandle}

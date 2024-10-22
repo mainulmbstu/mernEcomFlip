@@ -5,11 +5,14 @@ import { useNavigate } from "react-router-dom";
 import PriceFormat from "../Helper/PriceFormat";
 import { Checkbox } from "antd";
 import { useState } from "react";
+import { loadStripe } from "@stripe/stripe-js";
+
 
 export const CartPage = () => {
-  let { token, userInfo } = useAuth();
+  let { token, userInfo, Axios } = useAuth();
   let { cart, setCart } = useSearch();
   let [ selectedCart, setSelectedCart ] = useState([]);
+  let [ loading, setLoading ] = useState(false);
   let navigate = useNavigate();
 
     let cartItemHandle = (checked, checkedItem) => {
@@ -56,29 +59,53 @@ export const CartPage = () => {
   };
 
   let checkout = async () => {
+    // let stripe = loadStripe(
+    //   "pk_test_51QBgqiHPFVNGKjCSM7FdA3kxRmSSaq9B8MuI9rBtowPlUmoUkK1wWIbm5qO241ZRmZumVrXYDwW8loCSzOTpUdUJ00NVHlBQKP"
+    // );
     try {
-      if (!selectedCart.length) return alert('No item has been selected for check out')
-      let res = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/products/order/checkout`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ cart: selectedCart, total }),
-        }
-      );
-      let data = await res.json();
-      window.location.replace(data.url);
+      if (!selectedCart.length)
+        return alert("No item has been selected for check out");
+      setLoading(true);
+      let { data } = await Axios.post(`/products/order/checkout`, {
+        cart: selectedCart,
+        total,
+      });
+      setLoading(false);
+      if (data?.success) {
+        let session = data?.session;
+        console.log(session);
+        window.location.href = session?.url;
+      }
     } catch (error) {
+      setLoading(false);
       console.log(error);
     }
   };
+  //============== for ssl
+  // let checkout = async () => {
+  //   try {
+  //     if (!selectedCart.length) return alert('No item has been selected for check out')
+  //     let res = await fetch(
+  //       `${import.meta.env.VITE_BASE_URL}/products/order/checkout`,
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //         body: JSON.stringify({ cart: selectedCart, total }),
+  //       }
+  //     );
+  //     let data = await res.json();
+  //     window.location.replace(data.url);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   return (
     <Layout title={"cart"}>
-      <div>
+      <div className={loading?'dim':''}>
         <div className="row text-center mb-5">
           <h3>{token ? `Hello ${userInfo?.name}` : "Hello Guest"}</h3>
           <h4 className="">

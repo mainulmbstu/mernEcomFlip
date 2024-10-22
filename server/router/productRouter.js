@@ -34,11 +34,12 @@ router.get("/getreview/:pid", productControlls.getReview);
 // ============== checkout ========================================
 
 router.post("/order/checkout", loginMiddleware, productControlls.orderCheckout);
-router.post("/payment/success/:trxn_id",productControlls.orderSuccess);
-router.post("/payment/fail/:trxn_id", productControlls.orderFail);
+// router.post("/payment/success/:trxn_id",productControlls.orderSuccess);
+// router.post("/payment/fail/:trxn_id", productControlls.orderFail);
 
-
-
+//===============for stripe
+router.get("/payment/success/:trxn_id",productControlls.orderSuccess);
+router.get("/payment/fail/:trxn_id", productControlls.orderFail);
 
 
 

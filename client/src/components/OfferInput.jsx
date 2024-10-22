@@ -57,7 +57,7 @@ const OfferInput = ({ value }) => {
 
   return (
     <div className="row my-2">
-      <div className="col-md-3">
+      <div className="col-md-3 ps-2 my-1">
         <form
           className="d-flex"
           role="search"
@@ -77,13 +77,13 @@ const OfferInput = ({ value }) => {
         </form>
       </div>
 
-      <div className="col-md-3 ps-2">
+      <div className="col-md-3 ps-2 my-1">
         <form
           className="d-flex"
           role="search"
           onSubmit={(e) => getProductsByCat(1, size * page, e)}
         >
-          <div className="mb-2 w-100">
+          <div className=" w-100">
             <input
               className="form-control"
               list="categoryList"
@@ -111,7 +111,7 @@ const OfferInput = ({ value }) => {
         </form>
       </div>
 
-      <div className="col-md-3 ps-2">
+      <div className="col-md-3 ps-2 my-1">
         <form className="d-flex" role="submit" onSubmit={offerSubmit}>
           <div className="mb-2 w-100">
             <input

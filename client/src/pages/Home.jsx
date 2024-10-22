@@ -76,7 +76,6 @@ const Home = () => {
 
   let [page, setPage] = useState(1);
 
-
   let getProducts = async () => {
     try {
       setLoading(true);
@@ -209,21 +208,22 @@ const Home = () => {
             </div>
             <hr />
 
-            <div className={offerProducts?.length?'row g-3':'d-none'}>
-              <h6>Special Offer</h6>
+            <div className={offerProducts?.length ? "row g-3" : "d-none"}>
+              <h6 className="ps-2">Special Offer</h6>
               {offerProducts?.length &&
                 offerProducts?.map((item) => (
                   <ProductCard key={item._id} item={item} />
                 ))}
-              <div className="col-6 col-md-3, col-lg-2">
+              <div className="col-6 col-md-3 col-lg-2 showAllOffer">
                 <Link
                   to={"/offers"}
-                  className=" d-inline-block h-100 w-100 align-content-center text-center bg-black"
+                  className=" d-flex w-100 h-100 bg-black justify-content-center align-items-center"
                 >
-                  <span className=" fs-4">Show All</span>
+                <span className="fs-3">All Offers</span>
                 </Link>
               </div>
             </div>
+
             <hr />
             <h3 className=" text-danger">
               {!products?.length ? "No Product Found!!" : ""}

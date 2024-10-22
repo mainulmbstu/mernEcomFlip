@@ -6,6 +6,7 @@ import PriceFormat from "../Helper/PriceFormat";
 import { Checkbox } from "antd";
 import { useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
+import { useEffect } from "react";
 
 
 export const CartPage = () => {
@@ -14,6 +15,26 @@ export const CartPage = () => {
   let [ selectedCart, setSelectedCart ] = useState([]);
   let [ loading, setLoading ] = useState(false);
   let navigate = useNavigate();
+
+  //========= cart update auto
+
+
+  useEffect(() => {
+    let cartIdArr = cart?.length && cart.map(item => item?._id)
+    let getUpdatedProducts = async () => {
+      try {
+        let {data} = await Axios.post(`/products/cart-update`, { cartIdArr });
+        console.log(data);
+        
+        setCart(data.products);
+        localStorage.setItem("cart", JSON.stringify(data.products));
+        } catch (error) {
+          console.log(error);
+        }
+    }
+    getUpdatedProducts()
+  }, [])
+  
 
     let cartItemHandle = (checked, checkedItem) => {
       let all = [...selectedCart];

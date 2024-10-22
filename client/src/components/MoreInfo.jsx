@@ -205,12 +205,12 @@ const MoreInfo = () => {
                       if (cartIds.includes(moreInfo._id)) {
                         return alert("Already added");
                       }
-                      setCart([...cart, moreInfo]);
+                      setCart([moreInfo,...cart]);
                       localStorage.setItem(
                         "cart",
-                        JSON.stringify([...cart, moreInfo])
+                        JSON.stringify([moreInfo, ...cart])
                       );
-                      toast.success(`${moreInfo.name} added to Cart`);
+                      toast.success(`${moreInfo?.name} added to Cart`);
                     }}
                     className="btn btn-info mt-auto w-100"
                   >
@@ -240,7 +240,6 @@ const MoreInfo = () => {
           <hr />
           <div className=" mb-4">
             <h4>Similar Products</h4>
-            {/* {loading && <Loading/>} */}
             <div className="row g-3">
               {similarProducts?.length &&
                 similarProducts?.map((item) => (

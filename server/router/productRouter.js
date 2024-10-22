@@ -29,6 +29,7 @@ router.delete('/delete-product/:pid', loginMiddleware, adminMiddleware, productC
 router.post('/review', productControlls.reviewProduct)
 router.post('/rating', productControlls.ratingProduct)
 router.get("/getreview/:pid", productControlls.getReview);
+router.post("/cart-update", productControlls.getCartUpdate);
 
 
 // ============== checkout ========================================

@@ -88,8 +88,8 @@ const ProductCard = ({ item }) => {
               if (cartIds.includes(item?._id)) {
                 return alert("Already added");
               }
-              setCart([...cart, item]);
-              localStorage.setItem("cart", JSON.stringify([...cart, item]));
+              setCart([item, ...cart]);
+              localStorage.setItem("cart", JSON.stringify([item, ...cart]));
               toast.success(`${item?.name} added to Cart`);
             }}
             className="btn btn-info mt-auto mb-1"

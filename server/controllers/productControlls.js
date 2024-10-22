@@ -702,6 +702,25 @@ const offerProductList = async (req, res) => {
 }
 };
 
+//===============================================================
+const getCartUpdate = async (req, res) => {
+  try {
+    const { cartIdArr } = req.body;
+    let products=[]
+    if (cartIdArr?.length) {
+      for (let v of cartIdArr) {
+        const prod = await ProductModel.findById(v).populate("category");
+        prod && await products.push(prod)
+      }
+    }
+
+    res.status(200).send({ msg: "got product from getCartUpdate", products });
+  } catch (error) {
+    console.log(error);
+    res.status(401).send({ msg: "error from getCartUpdate", error });
+  }
+};
+
 //==============================================================
 
 module.exports = {
@@ -722,4 +741,5 @@ module.exports = {
   ratingProduct,
   getReview,
   offerProductList,
+  getCartUpdate,
 };

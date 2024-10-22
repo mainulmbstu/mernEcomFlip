@@ -94,13 +94,40 @@ export const CartPage = () => {
       if (data?.success) {
         let session = data?.session;
         console.log(session);
-        // window.location.href = session?.url;
+        window.location.href = session?.url;
       }
     } catch (error) {
       setLoading(false);
       console.log(error);
     }
   };
+//===================================================
+  let checkoutBkash = async () => {
+    try {
+      if (!selectedCart.length)
+        return alert("No item has been selected for check out");
+      setLoading(true);
+      let { data } = await Axios.post(`/products/order/checkout-bkash`, {
+        cart: selectedCart,
+        total,
+        callbackURL: `${import.meta.env.VITE_BASE_URL}/products/order/bkash-callback`,
+        orderID: 'demo-101',
+        reference:'demo'
+      });
+      setLoading(false);
+      console.log(data);
+      window.location.href = data?.bkashURL;
+      // if (data?.success) {
+      // }
+    } catch (error) {
+      setLoading(false);
+      console.log(error);
+    }
+  };
+
+
+
+
   //============== for ssl
   // let checkout = async () => {
   //   try {
@@ -125,7 +152,7 @@ export const CartPage = () => {
 
   return (
     <Layout title={"cart"}>
-      <div className={loading?'dim':''}>
+      <div className={loading ? "dim" : ""}>
         <div className="row text-center mb-5">
           <h3>{token ? `Hello ${userInfo?.name}` : "Hello Guest"}</h3>
           <h4 className="">
@@ -256,12 +283,17 @@ export const CartPage = () => {
             {cart?.length && token ? (
               <div className="my-4 w-100">
                 <button onClick={checkout} className="btn btn-danger w-100">
-                  Check out
+                  Check out by stripe
                 </button>
               </div>
             ) : (
               ""
             )}
+            <div className="my-4 w-100">
+              <button onClick={checkoutBkash} className="btn btn-info w-100">
+                Check out-by-bkash
+              </button>
+            </div>
           </div>
         </div>
       </div>

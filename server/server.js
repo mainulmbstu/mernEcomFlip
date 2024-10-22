@@ -7,6 +7,7 @@ const adminRouter = require("./router/adminRouter");
 const categoryRouter = require("./router/categoryRouter");
 const productRouter = require("./router/productRouter");
 const multer = require("multer");
+const bodyParser = require("body-parser");
 
 
 
@@ -23,7 +24,8 @@ app.use(express.json());
 
 app.use('/public', express.static('public'))
 // for static path of public folder
-// app.use(express.urlencoded({ extended:false}));
+app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 // app.get('/', (req, res) => {
 //     res.send('hello ecom')

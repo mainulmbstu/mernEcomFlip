@@ -35,6 +35,7 @@ router.post("/cart-update", productControlls.getCartUpdate);
 // ============== checkout ========================================
 
 router.post("/order/checkout", loginMiddleware, productControlls.orderCheckout);
+//======= for ssl==========
 // router.post("/payment/success/:trxn_id",productControlls.orderSuccess);
 // router.post("/payment/fail/:trxn_id", productControlls.orderFail);
 
@@ -42,7 +43,9 @@ router.post("/order/checkout", loginMiddleware, productControlls.orderCheckout);
 router.get("/payment/success/:trxn_id",productControlls.orderSuccess);
 router.get("/payment/fail/:trxn_id", productControlls.orderFail);
 
-
+//================= for bkash
+router.post("/order/checkout-bkash", loginMiddleware, productControlls.orderCheckoutBkash);
+router.get("/order/bkash-callback", productControlls.bkashCallback);
 
 
 

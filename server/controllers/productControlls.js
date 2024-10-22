@@ -12,6 +12,13 @@ const slugify = require("slugify");
 const OrderModel = require("../models/OrderModel");
 const { ReviewModel, RatingModel } = require("../models/ReviewModel");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const {
+  createPayment,
+  executePayment,
+  queryPayment,
+  searchTransaction,
+  refundTransaction,
+} = require("bkash-payment");
 
 //==================================================
 const createProduct = async (req, res) => {
@@ -480,7 +487,7 @@ const orderCheckout = async (req, res) => {
       line_items: lineItems,
       mode: "payment",
       success_url: `${baseurl}/products/payment/success/${trxn_id}`,
-      cancel_url: `${baseurl}/products/payment/fail/${trxn_id}`,
+      cancel_url: `${baseurl}/products/payment/fail`,
 
       client_reference_id: req.user?.name,
       customer_email: req.user?.email,
@@ -500,17 +507,103 @@ const orderCheckout = async (req, res) => {
       },
       user: req.user._id,
     };
-    OrderModel.create(order);
+   await OrderModel.create(order);
 
     res.status(200).send({ success: true, session });
   } catch (error) {
     console.log(error);
     res
-      .status(401)
+      .status(500)
       .send({ success: false, msg: "error from orderCheckout", error });
   }
 };
 
+
+//============== check oout by bkash
+// const bkashConfig = {
+//   base_url: "https://tokenized.sandbox.bka.sh/v1.2.0-beta",
+//   username: process.env.BKASH_USERNAME,
+//   password: process.env.BKASH_PASSWORD,
+//   app_key: process.env.BKASH_APP_KEY,
+//   app_secret: process.env.BKASH_APP_SECRET,
+// };
+
+const bkashConfig = {
+  base_url: "https://tokenized.sandbox.bka.sh/v1.2.0-beta",
+  username: "01770618567",
+  password: "D7DaC<*E*eG",
+  app_key: "0vWQuCRGiUX7EPVjQDr0EUAYtc",
+  app_secret: "jcUNPBgbcqEDedNKdvE4G1cAK7D3hCjmJccNPZZBq96QIxxwAMEx",
+};
+
+const orderCheckoutBkash = async (req, res) => {
+  try {
+    const { cart, total, orderID, callbackURL, reference } = req.body;
+
+    
+    const paymentDetails = {
+      amount: total || 1, // your product price
+      callbackURL: callbackURL, // your callback route
+      orderID: orderID || "Order_101", // your orderID
+      reference: reference || "1", // your reference
+    };
+    const result = await createPayment(bkashConfig, paymentDetails);
+
+      let order = {
+        products: cart,
+        total,
+        payment: {
+          trxn_id: result.paymentID,
+        },
+        user: req.user._id,
+      };
+      await OrderModel.create(order);
+    // res.redirect(result?.bkashURL);
+    res.send(result);
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .send({ success: false, msg: "error from orderCheckoutBkash", error });
+  }
+}
+
+const bkashCallback = async (req, res) => {
+  try {
+    const { status, paymentID } = req.query;
+    let result;
+    let response = {
+      statusCode: "4000",
+      statusMessage: "Payment Failed",
+    };
+    if (status === "success")
+      result = await executePayment(bkashConfig, paymentID);
+
+    if (result?.transactionStatus === "Completed") {
+      // payment success
+      // insert result in your db
+    }
+    if (result)
+      response = {
+        statusCode: result?.statusCode,
+        statusMessage: result?.statusMessage,
+      };
+    // You may use here WebSocket, server-sent events, or other methods to notify your client
+    if (response?.statusCode === '0000') {
+      res.redirect(
+        `${process.env.BASE_URL}/products/payment/success/${paymentID}`
+      );
+        } else {
+      res.redirect(
+        `${process.env.BASE_URL}/products/payment/fail/${paymentID}`
+      );
+      
+    }
+      
+  } catch (e) {
+    console.log(e);
+  }
+}
 
 //============== for ssl
 // const orderCheckout = async (req, res) => {
@@ -744,4 +837,6 @@ module.exports = {
   getReview,
   offerProductList,
   getCartUpdate,
+  orderCheckoutBkash,
+  bkashCallback,
 };

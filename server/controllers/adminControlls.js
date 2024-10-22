@@ -400,24 +400,23 @@ const totalSale = async (req, res) => {
       })
       .slice(0, 5);
     //==============
-    // console.log(sortedTotal);
-
+    
     const ordersToday = await OrderModel.find({
       createdAt: { $gte: today, $lte: todayNow },
     });
     let totalSaleToday =
-      ordersToday?.length &&
-      ordersToday.reduce((previous, current) => {
-        return previous + current.total;
+    ordersToday?.length &&
+    ordersToday.reduce((previous, current) => {
+      return previous + current.total;
       }, 0);
-
-    let totalSale =
+      
+      let totalSale =
       orders?.length &&
       orders.reduce((previous, current) => previous + current.total, 0);
 
-    if (!totalSale || totalSale?.length === 0) {
-      return res.send({ msg: "No data found" });
-    }
+      if (!totalSale || totalSale?.length === 0) {
+        return res.send({ msg: "No data found" });
+      }
     res
       .status(200)
       .send({ dateTotal, topProds, totalSaleToday, totalSale, success: true });

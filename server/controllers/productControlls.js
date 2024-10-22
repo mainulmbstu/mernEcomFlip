@@ -117,7 +117,9 @@ const productList = async (req, res) => {
     const products = await ProductModel.find({ _id:{$nin:offerIds} })
       .skip(skip)
       .limit(size)
-      .populate("category")
+      .populate("category", 'name')
+      // .populate("category", 'name slug')
+      // .populate("category", '-picture')
       .sort({ createdAt: -1 });
     if (!products || products.length === 0) {
       return res.send({ msg: "No data found", products, total });
@@ -299,7 +301,7 @@ const productByCategory = async (req, res) => {
     const products = await ProductModel.find(args)
       .skip(skip)
       .limit(size)
-      .populate("category")
+      .populate("category", 'name')
     .sort({updatedAt:-1})
 
     res.status(200).send({ products, total:total?.length });
@@ -313,7 +315,7 @@ const moreInfo = async (req, res) => {
   try {
     const { pid } = req.params;
     const product = await ProductModel.findOne({ _id: pid }).populate(
-      "category"
+      "category", 'name'
     );
     // let products = product[0];
     product.rating = product.rating.toFixed(1);
@@ -358,7 +360,7 @@ const productSearch = async (req, res) => {
     const products = await ProductModel.find(args)
       .skip(skip)
       .limit(size)
-      .populate("category")
+      .populate("category", 'name')
       .sort({ createdAt: -1 });
 
     res.status(200).send({
@@ -379,7 +381,7 @@ const similarProducts = async (req, res) => {
       category: cid,
       _id: { $ne: pid },
     })
-      .populate("category")
+      .populate("category", 'name')
       .limit(12)
       .sort({ updatedAt: -1 });
     res.status(200).send({ msg: "got product from search", products });
@@ -418,7 +420,7 @@ const productFilter = async (req, res) => {
 const singleProduct = async (req, res) => {
   try {
     const singleProduct = await ProductModel.findOne({ _id: req.params.pid })
-      .populate("category")
+      .populate("category", 'name')
       .populate("user", { password: 0 });
 
     if (!singleProduct) {
@@ -689,7 +691,7 @@ const offerProductList = async (req, res) => {
     const products = await ProductModel.find({ offer: { $gt: 0 } })
     .skip(skip)
     .limit(size)
-    .populate("category")
+    .populate("category", 'name')
     .sort({ updatedAt: -1 });
     
     // console.log(total, products);
@@ -709,7 +711,7 @@ const getCartUpdate = async (req, res) => {
     let products=[]
     if (cartIdArr?.length) {
       for (let v of cartIdArr) {
-        const prod = await ProductModel.findById(v).populate("category");
+        const prod = await ProductModel.findById(v).populate("category", 'name');
         prod && await products.push(prod)
       }
     }

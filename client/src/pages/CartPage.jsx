@@ -24,7 +24,6 @@ export const CartPage = () => {
     let getUpdatedProducts = async () => {
       try {
         let {data} = await Axios.post(`/products/cart-update`, { cartIdArr });
-        console.log(data);
         
         setCart(data.products);
         localStorage.setItem("cart", JSON.stringify(data.products));
@@ -95,7 +94,7 @@ export const CartPage = () => {
       if (data?.success) {
         let session = data?.session;
         console.log(session);
-        window.location.href = session?.url;
+        // window.location.href = session?.url;
       }
     } catch (error) {
       setLoading(false);

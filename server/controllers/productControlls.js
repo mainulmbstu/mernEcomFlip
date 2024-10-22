@@ -529,11 +529,11 @@ const orderCheckout = async (req, res) => {
 // };
 
 const bkashConfig = {
-  base_url: "https://tokenized.sandbox.bka.sh/v1.2.0-beta",
-  username: "01770618567",
-  password: "D7DaC<*E*eG",
-  app_key: "0vWQuCRGiUX7EPVjQDr0EUAYtc",
-  app_secret: "jcUNPBgbcqEDedNKdvE4G1cAK7D3hCjmJccNPZZBq96QIxxwAMEx",
+  base_url: process.env.BKASH_BASE_URL,
+  username: process.env.BKASH_USER,
+  password: process.env.BKASH_PASSWORD,
+  app_key: process.env.BKASH_APP_KEY,
+  app_secret: process.env.BKASH_APP_SECRET,
 };
 
 const orderCheckoutBkash = async (req, res) => {

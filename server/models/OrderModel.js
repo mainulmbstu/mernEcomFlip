@@ -10,6 +10,8 @@ const orderSchema = new mongoose.Schema(
     ],
     total:Number,
     payment: {
+    payment_id:{type:String},
+    payment_method:{type:Object},
     trxn_id:{type:String},
     status:{type:Boolean, default:false}
     },

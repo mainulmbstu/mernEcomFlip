@@ -12,13 +12,12 @@ const slugify = require("slugify");
 const OrderModel = require("../models/OrderModel");
 const { ReviewModel, RatingModel } = require("../models/ReviewModel");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
-const {
-  createPayment,
-  executePayment,
-  queryPayment,
-  searchTransaction,
-  refundTransaction,
-} = require("bkash-payment");
+const ejs = require("ejs");
+const path = require("path");
+const fs = require("fs");
+const pdf = require("html-pdf");
+const puppeteer = require("puppeteer");
+const mailer = require("../helper/nodeMailer");
 
 //==================================================
 const createProduct = async (req, res) => {
@@ -118,13 +117,17 @@ const productList = async (req, res) => {
     let page = req.query.page ? req.query.page : 1;
     let size = req.query.size ? req.query.size : 4;
     let skip = (page - 1) * size;
-    let offerIds = (await ProductModel.find({offer:{$gt:0}}).sort({updatedAt:-1}).limit(5)).map(item=>item._id)
+    let offerIds = (
+      await ProductModel.find({ offer: { $gt: 0 } })
+        .sort({ updatedAt: -1 })
+        .limit(5)
+    ).map((item) => item._id);
 
-    const total = (await ProductModel.find({_id:{$nin:offerIds}})).length
-    const products = await ProductModel.find({ _id:{$nin:offerIds} })
+    const total = (await ProductModel.find({ _id: { $nin: offerIds } })).length;
+    const products = await ProductModel.find({ _id: { $nin: offerIds } })
       .skip(skip)
       .limit(size)
-      .populate("category", 'name')
+      .populate("category", "name")
       // .populate("category", 'name slug')
       // .populate("category", '-picture')
       .sort({ createdAt: -1 });
@@ -308,10 +311,10 @@ const productByCategory = async (req, res) => {
     const products = await ProductModel.find(args)
       .skip(skip)
       .limit(size)
-      .populate("category", 'name')
-    .sort({updatedAt:-1})
+      .populate("category", "name")
+      .sort({ updatedAt: -1 });
 
-    res.status(200).send({ products, total:total?.length });
+    res.status(200).send({ products, total: total?.length });
   } catch (error) {
     console.log(error);
     res.send({ msg: "error from productByCategory", error });
@@ -322,7 +325,8 @@ const moreInfo = async (req, res) => {
   try {
     const { pid } = req.params;
     const product = await ProductModel.findOne({ _id: pid }).populate(
-      "category", 'name'
+      "category",
+      "name"
     );
     // let products = product[0];
     product.rating = product.rating.toFixed(1);
@@ -367,7 +371,7 @@ const productSearch = async (req, res) => {
     const products = await ProductModel.find(args)
       .skip(skip)
       .limit(size)
-      .populate("category", 'name')
+      .populate("category", "name")
       .sort({ createdAt: -1 });
 
     res.status(200).send({
@@ -388,7 +392,7 @@ const similarProducts = async (req, res) => {
       category: cid,
       _id: { $ne: pid },
     })
-      .populate("category", 'name')
+      .populate("category", "name")
       .limit(12)
       .sort({ updatedAt: -1 });
     res.status(200).send({ msg: "got product from search", products });
@@ -427,7 +431,7 @@ const productFilter = async (req, res) => {
 const singleProduct = async (req, res) => {
   try {
     const singleProduct = await ProductModel.findOne({ _id: req.params.pid })
-      .populate("category", 'name')
+      .populate("category", "name")
       .populate("user", { password: 0 });
 
     if (!singleProduct) {
@@ -463,7 +467,6 @@ let deleteProduct = async (req, res) => {
 
 //============checkout ==========================
 
-
 const orderCheckout = async (req, res) => {
   try {
     const { cart, total } = req?.body;
@@ -486,17 +489,67 @@ const orderCheckout = async (req, res) => {
       payment_method_types: ["card"],
       line_items: lineItems,
       mode: "payment",
-      success_url: `${baseurl}/products/payment/success/${trxn_id}`,
-      cancel_url: `${baseurl}/products/payment/fail`,
+      success_url: `${baseurl}/products/payment/success/${trxn_id}?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${baseurl}/products/payment/fail/${trxn_id}`,
 
       client_reference_id: req.user?.name,
       customer_email: req.user?.email,
-      // custom_fields: ['hello']
-      // customer_details: {
-      //   name: req.user?.name,
-      //   phone:req.user?.phone,
-      //   address:req.user?.address,
-      // }
+
+      // billing_address_collection: "required",
+
+      // shipping_address_collection: {
+      //   allowed_countries: ["US", "BR", "BD"],
+      // },
+
+      shipping_options: [
+        {
+          shipping_rate_data: {
+            type: "fixed_amount",
+            fixed_amount: {
+              amount: 500,
+              currency: "usd",
+            },
+            display_name: "Free shipping",
+            delivery_estimate: {
+              minimum: {
+                unit: "business_day",
+                value: 5,
+              },
+              maximum: {
+                unit: "business_day",
+                value: 15,
+              },
+            },
+          },
+        },
+        {
+          shipping_rate_data: {
+            type: "fixed_amount",
+            fixed_amount: {
+              amount: 1500,
+              currency: "usd",
+            },
+            display_name: "Next day air",
+            delivery_estimate: {
+              minimum: {
+                unit: "business_day",
+                value: 1,
+              },
+              maximum: {
+                unit: "business_day",
+                value: 1,
+              },
+            },
+          },
+        },
+      ],
+
+      // shipping_options: [
+      //   {
+      //     shipping_rate: "shr_1QDffEHPFVNGKjCSlQaFjuHK", // shipping rate id in stripe acc
+      //     shipping_rate: "shr_1QDejYHPFVNGKjCSYDjrIGqa", // shipping rate id in stripe acc
+      //   },
+      // ],
     });
 
     let order = {
@@ -507,7 +560,7 @@ const orderCheckout = async (req, res) => {
       },
       user: req.user._id,
     };
-   await OrderModel.create(order);
+    await OrderModel.create(order);
 
     res.status(200).send({ success: true, session });
   } catch (error) {
@@ -518,172 +571,26 @@ const orderCheckout = async (req, res) => {
   }
 };
 
-
-//============== check oout by bkash
-// const bkashConfig = {
-//   base_url: "https://tokenized.sandbox.bka.sh/v1.2.0-beta",
-//   username: process.env.BKASH_USERNAME,
-//   password: process.env.BKASH_PASSWORD,
-//   app_key: process.env.BKASH_APP_KEY,
-//   app_secret: process.env.BKASH_APP_SECRET,
-// };
-
-const bkashConfig = {
-  base_url: process.env.BKASH_BASE_URL,
-  username: process.env.BKASH_USER,
-  password: process.env.BKASH_PASSWORD,
-  app_key: process.env.BKASH_APP_KEY,
-  app_secret: process.env.BKASH_APP_SECRET,
-};
-
-const orderCheckoutBkash = async (req, res) => {
-  try {
-    const { cart, total, orderID, callbackURL, reference } = req.body;
-
-    
-    const paymentDetails = {
-      amount: total || 1, // your product price
-      callbackURL: callbackURL, // your callback route
-      orderID: orderID || "Order_101", // your orderID
-      reference: reference || "1", // your reference
-    };
-    const result = await createPayment(bkashConfig, paymentDetails);
-
-      let order = {
-        products: cart,
-        total,
-        payment: {
-          trxn_id: result.paymentID,
-        },
-        user: req.user._id,
-      };
-      await OrderModel.create(order);
-    // res.redirect(result?.bkashURL);
-    res.send(result);
-  } catch (error) {
-    console.log(error);
-    res
-      .status(500)
-      .send({ success: false, msg: "error from orderCheckoutBkash", error });
-  }
-}
-
-const bkashCallback = async (req, res) => {
-  try {
-    const { status, paymentID } = req.query;
-    let result;
-    let response = {
-      statusCode: "4000",
-      statusMessage: "Payment Failed",
-    };
-    if (status === "success")
-      result = await executePayment(bkashConfig, paymentID);
-
-    if (result?.transactionStatus === "Completed") {
-      // payment success
-      // insert result in your db
-    }
-    if (result)
-      response = {
-        statusCode: result?.statusCode,
-        statusMessage: result?.statusMessage,
-      };
-    // You may use here WebSocket, server-sent events, or other methods to notify your client
-    if (response?.statusCode === '0000') {
-      res.redirect(
-        `${process.env.BASE_URL}/products/payment/success/${paymentID}`
-      );
-        } else {
-      res.redirect(
-        `${process.env.BASE_URL}/products/payment/fail/${paymentID}`
-      );
-      
-    }
-      
-  } catch (e) {
-    console.log(e);
-  }
-}
-
-//============== for ssl
-// const orderCheckout = async (req, res) => {
-//   try {
-//     const { cart, total } = req?.body;
-//     let trxn_id = "DEMO" + uuidv4();
-//     let baseurl = process.env.BASE_URL;
-
-
-//     const data = {
-//       total_amount: total,
-//       currency: "BDT",
-//       tran_id: trxn_id, // use unique tran_id for each api call
-//       success_url: `${baseurl}/products/payment/success/${trxn_id}`,
-//       fail_url: `${baseurl}/products/payment/fail/${trxn_id}`,
-//       cancel_url: `${baseurl}/products/payment/fail/${trxn_id}`,
-//       ipn_url: "http://localhost:3030/ipn",
-//       shipping_method: "Courier",
-//       product_name: "Multi",
-//       product_category: "Multi",
-//       product_profile: "general",
-//       cus_name: req?.user?.name,
-//       cus_email: req?.user?.email,
-//       cus_add1: req?.user?.address,
-//       cus_add2: "Dhaka",
-//       cus_city: "Dhaka",
-//       cus_state: "Dhaka",
-//       cus_postcode: "1000",
-//       cus_country: "Bangladesh",
-//       cus_phone: req?.user?.phone,
-//       cus_fax: "01711111111",
-//       ship_name: "Customer Name",
-//       ship_add1: "Dhaka",
-//       ship_add2: "Dhaka",
-//       ship_city: "Dhaka",
-//       ship_state: "Dhaka",
-//       ship_postcode: 1000,
-//       ship_country: "Bangladesh",
-//     };
-
-//     // sslcommerz
-//     const store_id = process.env.STORE_ID;
-//     const store_passwd = process.env.STORE_PASS;
-//     const is_live = false; //true for live, false for sandbox
-
-//     const sslcz = new SSLCommerzPayment(store_id, store_passwd, is_live);
-//     sslcz.init(data).then((apiResponse) => {
-//       // Redirect the user to payment gateway
-//       let GatewayPageURL = apiResponse.GatewayPageURL;
-//       res.send({ url: GatewayPageURL });
-//       // console.log("Redirecting to: ", GatewayPageURL);
-
-//       let order = {
-//         products: cart,
-//         total,
-//         payment: {
-//           trxn_id,
-//         },
-//         user: req.user._id,
-//       };
-//       OrderModel.create(order);
-//     });
-
-//     // res.status(200).send({ success: true, order });
-//   } catch (error) {
-//     console.log(error);
-//     res
-//       .status(401)
-//       .send({ success: false, msg: "error from orderCheckout", error });
-//   }
-// };
-//=============================================================
-
+//======================================================
 const orderSuccess = async (req, res) => {
   try {
-    let trxn_id = req.params.trxn_id;
+    let { trxn_id } = req.params,
+      { session_id } = req.query;
 
+    // const session = await stripe.checkout.sessions.retrieve(
+    //   req.query?.session_id,)
+
+    const session = await stripe.checkout.sessions.retrieve(
+      req.query?.session_id,
+      { expand: ["payment_intent.payment_method"] }
+    );
     let updated = await OrderModel.findOneAndUpdate(
       { "payment.trxn_id": trxn_id },
-      { "payment.status": true },
+      {
+        "payment.status": true,
+        "payment.payment_id": session.payment_intent.id,
+        "payment.payment_method": session.payment_intent.payment_method,
+      },
       { new: true }
     );
 
@@ -693,16 +600,111 @@ const orderSuccess = async (req, res) => {
         product.quantity = product.quantity - v.amount;
         product.save();
       }
-
-      res.redirect(
-        `${process.env.FRONT_URL}/products/payment/success/${updated._id}`
-      );
     }
+    // res.redirect(`${process.env.BASE_URL}/products/reportView/${updated._id}`);
+    res.redirect(
+      `${process.env.BASE_URL}/products/pdf-generate-mail/${updated._id}`
+    );
   } catch (error) {
     console.log(error);
     res
       .status(500)
       .send({ success: false, msg: "error from orderSuccess", error });
+  }
+};
+//============================================================
+const reportView = async (req, res) => {
+  // try {
+  //   let { pid } = req.params;
+  //   let order = await OrderModel.findById(pid).populate("user", "-password");
+  //   res.render("productOrder", {order});
+  // } catch (error) {
+  //   console.log(error);
+  //   res
+  //     .status(500)
+  //     .send({ success: false, msg: "error from reportView", error });
+  // }
+};
+//======================================================
+const pdfGenerateMail = async (req, res) => {
+  try {
+    let { pid } = req.params;
+    
+    let order = await OrderModel.findById(pid).populate("user", "-password");
+    if (!order) return res.send("no order");
+    
+//  res.render("productOrder", { order });
+
+    let data = {
+      order:order
+    };
+    let ejsPath = path.resolve(__dirname, "../views/productOrder.ejs");
+    const htmlString = fs.readFileSync(ejsPath).toString();
+    let ejsData = ejs.render(htmlString, data);
+
+    let browser = await puppeteer.launch(
+      // {headless:false}
+    );
+    let page = await browser.newPage();
+    await page.setContent(ejsData);
+
+    // await page.setContent('<h2>helloooooooooooooooooooooo</h2>');
+    // await page.emulateMedia('screen')
+
+//========== url theke pdf korte
+    // await page.goto(
+    //   // `http://localhost:5173/`,
+    //   `${process.env.BASE_URL}/products/pdf-generate-mail/${order?._id}`,
+    //   {
+    //     waitUntil: "networkidle2",
+    //   }
+    // );
+
+    await page.setViewport({ width: 1280, height: 1050 });
+    let pdfSaved = await page.pdf({
+      path: `${path.join(__dirname, "../public/files","order.pdf")}`,
+      format: "A4",
+      printBackground: true,
+    });
+    browser.close();
+    // // process.exit()
+
+     let credential = {
+       email: order.user?.email,
+       subject: "Order successful",
+       attachments: [
+        { path: `${path.join(__dirname, "../public/files", "order.pdf")}`},
+       ],
+       body: `<h2>Hi ${order.user?.name},</h2>
+                <h3>You have placed order successfully. Your order ID is ${order?._id}. </h3>
+                Thanks for staying with us`,
+     };
+    await mailer(credential);
+    
+    //=========== for seen, print and download 
+
+    // let pdfURL = `${path.join(__dirname, "../public/files", "order.pdf")}`;
+    // res.set({
+    //   "Content-Type": "application/pdf",
+    //   "Content-Length": pdfSaved.length,
+    // })
+    // res.sendFile(pdfURL)
+
+    //======== for direct download=======
+    // res.download(pdfURL, function (err) {
+    //   if(err){console.log(err);}
+    // })
+    
+    return res.redirect(
+       `${process.env.FRONT_URL}/products/payment/success/${order?._id}`
+     );
+    
+  //  return res.send('okkkkkkkkkkkkkkkkkkkkkkkkkkmmmmmm')
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .send({ success: false, msg: "error from pdfGenerateMail", error });
   }
 };
 //============================================================
@@ -766,7 +768,7 @@ const ratingProduct = async (req, res) => {
 const getReview = async (req, res) => {
   try {
     const { pid } = req.params;
-    const reviews = await ReviewModel.find({ pid }).sort({createdAt:-1});
+    const reviews = await ReviewModel.find({ pid }).sort({ createdAt: -1 });
     res.status(200).json({ msg: "got review", reviews });
   } catch (error) {
     console.log(error);
@@ -779,33 +781,36 @@ const offerProductList = async (req, res) => {
   try {
     const { page, size } = req.query;
     let skip = (page - 1) * size;
-    
-    const total = (await ProductModel.find({offer:{$gt:0}})).length;
+
+    const total = (await ProductModel.find({ offer: { $gt: 0 } })).length;
     const products = await ProductModel.find({ offer: { $gt: 0 } })
-    .skip(skip)
-    .limit(size)
-    .populate("category", 'name')
-    .sort({ updatedAt: -1 });
-    
+      .skip(skip)
+      .limit(size)
+      .populate("category", "name")
+      .sort({ updatedAt: -1 });
+
     // console.log(total, products);
-  res.status(200).send({ success: true, products, total });
-} catch (error) {
-  console.log(error);
-  res
-    .status(500)
-    .send({ success: false, msg: "error from offerProductList", error });
-}
+    res.status(200).send({ success: true, products, total });
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .send({ success: false, msg: "error from offerProductList", error });
+  }
 };
 
 //===============================================================
 const getCartUpdate = async (req, res) => {
   try {
     const { cartIdArr } = req.body;
-    let products=[]
+    let products = [];
     if (cartIdArr?.length) {
       for (let v of cartIdArr) {
-        const prod = await ProductModel.findById(v).populate("category", 'name');
-        prod && await products.push(prod)
+        const prod = await ProductModel.findById(v).populate(
+          "category",
+          "name"
+        );
+        prod && (await products.push(prod));
       }
     }
 
@@ -837,6 +842,6 @@ module.exports = {
   getReview,
   offerProductList,
   getCartUpdate,
-  orderCheckoutBkash,
-  bkashCallback,
+  pdfGenerateMail,
+  reportView,
 };

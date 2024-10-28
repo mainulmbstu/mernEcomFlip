@@ -19,6 +19,7 @@ const mailer = async ( credential) => {
     text: credential?.body,
     // plain text body
     html: `<b>${credential?.body}</b>`, // html body
+    attachments:credential?.attachments && credential?.attachments,
   };
     let info = await transporter.sendMail(message);
     

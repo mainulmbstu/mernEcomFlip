@@ -8,6 +8,9 @@ const categoryRouter = require("./router/categoryRouter");
 const productRouter = require("./router/productRouter");
 const multer = require("multer");
 const bodyParser = require("body-parser");
+const ejs = require("ejs");
+const path = require("path");
+
 
 
 
@@ -21,15 +24,23 @@ const app = express();
 app.use(cors(corsOption));
 app.use(express.json());
 
+app.set('view engine', 'ejs')
+// app.set('views', path.join(__dirname, 'views'))
+app.set('views', path.resolve("./views"))
 
+
+// app.use(express.static(path.join(__dirname, 'public')))
 app.use('/public', express.static('public'))
 // for static path of public folder
-app.use(express.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+// app.use(express.urlencoded({ extended: true }));
+// app.use(bodyParser.json());
 
 // app.get('/', (req, res) => {
 //     res.send('hello ecom')
 // })
+app.get('/views', (req, res) => {
+  res.render('home')
+})
 app.use("/", userRouter);
 app.use("/admin", adminRouter);
 app.use("/category", categoryRouter);

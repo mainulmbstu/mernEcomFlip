@@ -93,7 +93,6 @@ export const CartPage = () => {
       setLoading(false);
       if (data?.success) {
         let session = data?.session;
-        console.log(session);
         window.location.href = session?.url;
       }
     } catch (error) {
@@ -101,29 +100,9 @@ export const CartPage = () => {
       console.log(error);
     }
   };
+
 //===================================================
-  let checkoutBkash = async () => {
-    try {
-      if (!selectedCart.length)
-        return alert("No item has been selected for check out");
-      setLoading(true);
-      let { data } = await Axios.post(`/products/order/checkout-bkash`, {
-        cart: selectedCart,
-        total,
-        callbackURL: `${import.meta.env.VITE_BASE_URL}/products/order/bkash-callback`,
-        orderID: 'demo-101',
-        reference:'demo'
-      });
-      setLoading(false);
-      console.log(data);
-      window.location.href = data?.bkashURL;
-      // if (data?.success) {
-      // }
-    } catch (error) {
-      setLoading(false);
-      console.log(error);
-    }
-  };
+
 
 
 
@@ -173,18 +152,21 @@ export const CartPage = () => {
                     <div className=" col-5 row ">
                       <div className="col-3 align-content-center">
                         <Checkbox
+                          id={item?._id}
                           onChange={(e) =>
                             cartItemHandle(e.target.checked, item)
                           }
                         ></Checkbox>
                       </div>
                       <div className="col-9">
-                        <img
-                          src={`${item?.picture[0]?.secure_url}`}
-                          className=" w-100"
-                          height={90}
-                          alt="image"
-                        />
+                        <label htmlFor={item?._id}>
+                          <img
+                            src={`${item?.picture[0]?.secure_url}`}
+                            className=" w-100"
+                            height={90}
+                            alt="image"
+                          />
+                        </label>
                       </div>
                     </div>
                     <div className=" col-7 ps-3">
@@ -289,11 +271,6 @@ export const CartPage = () => {
             ) : (
               ""
             )}
-            <div className="my-4 w-100">
-              <button onClick={checkoutBkash} className="btn btn-info w-100">
-                Check out-by-bkash
-              </button>
-            </div>
           </div>
         </div>
       </div>

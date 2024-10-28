@@ -79,6 +79,7 @@ const Orders = () => {
                               <th scope="col">#</th>
                               <th scope="col">Status</th>
                               <th scope="col">Payment</th>
+                              <th scope="col">Payment ID</th>
                               <th scope="col">Item</th>
                               <th scope="col">Total Price</th>
                               <th scope="col">Time</th>
@@ -90,6 +91,9 @@ const Orders = () => {
                               <td>{item?.status} </td>
                               <td>
                                 {item?.payment?.status ? "Success" : "Failed"}{" "}
+                              </td>
+                              <td>
+                                {item?.payment?.payment_id}
                               </td>
                               <td>{item?.products.length} </td>
                               <td>{<PriceFormat price={item?.total} />} </td>

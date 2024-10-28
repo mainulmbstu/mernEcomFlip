@@ -640,7 +640,7 @@ const pdfGenerateMail = async (req, res) => {
     
       let ejsPath = path.resolve(__dirname, "../views/productOrder.ejs");
       const htmlString = fs.readFileSync(ejsPath).toString();
-      let ejsData = ejs.render(htmlString, data);
+      let ejsData = ejs.render(htmlString, data)
       //  res.render("productOrder", { order });
 
     let browser = await puppeteer.launch(

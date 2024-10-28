@@ -660,13 +660,13 @@ const pdfGenerateMail = async (req, res) => {
     //   }
     // );
 
-    await page.setViewport({ width: 1280, height: 1050 });
-    let pdfSaved = await page.pdf({
-      path: `${path.join(__dirname, "../public/files","order.pdf")}`,
-      format: "A4",
-      printBackground: true,
-    });
-    browser.close();
+    // await page.setViewport({ width: 1280, height: 1050 });
+    // let pdfSaved = await page.pdf({
+    //   path: `${path.join(__dirname, "../public/files","order.pdf")}`,
+    //   format: "A4",
+    //   printBackground: true,
+    // });
+    // browser.close();
     // // process.exit()
 
     //  let credential = {

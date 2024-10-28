@@ -669,17 +669,17 @@ const pdfGenerateMail = async (req, res) => {
     browser.close();
     // // process.exit()
 
-     let credential = {
-       email: order.user?.email,
-       subject: "Order successful",
-       attachments: [
-        { path: `${path.join(__dirname, "../public/files", "order.pdf")}`},
-       ],
-       body: `<h2>Hi ${order.user?.name},</h2>
-                <h3>You have placed order successfully. Your order ID is ${order?._id}. </h3>
-                Thanks for staying with us`,
-     };
-    await mailer(credential);
+    //  let credential = {
+    //    email: order.user?.email,
+    //    subject: "Order successful",
+    //    attachments: [
+    //     { path: `${path.join(__dirname, "../public/files", "order.pdf")}`},
+    //    ],
+    //    body: `<h2>Hi ${order.user?.name},</h2>
+    //             <h3>You have placed order successfully. Your order ID is ${order?._id}. </h3>
+    //             Thanks for staying with us`,
+    //  };
+    // await mailer(credential);
     
     //=========== for seen, print and download 
 

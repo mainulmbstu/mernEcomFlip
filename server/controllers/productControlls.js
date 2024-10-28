@@ -631,7 +631,7 @@ const pdfGenerateMail = async (req, res) => {
     let { pid } = req.params;
     
     let order = await OrderModel.findById(pid).populate("user", "-password");
-    if (!order) return res.send("no order");
+    if (!order) return res.send("no order")
     
 //  res.render("productOrder", { order });
 

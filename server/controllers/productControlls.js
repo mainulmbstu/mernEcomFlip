@@ -634,13 +634,14 @@ const pdfGenerateMail = async (req, res) => {
     if (!order) return res.send("no order")
     
       
-      let data = {
-        order:order
-      };
+      // let data = {
+      //   order:order
+    // };
+    
       let ejsPath = path.resolve(__dirname, "../views/productOrder.ejs");
       const htmlString = fs.readFileSync(ejsPath).toString();
       let ejsData = ejs.render(htmlString, data);
-       res.render("productOrder", { order });
+      //  res.render("productOrder", { order });
 
     let browser = await puppeteer.launch(
       {headless:false}
@@ -695,9 +696,9 @@ const pdfGenerateMail = async (req, res) => {
     //   if(err){console.log(err);}
     // })
     
-    // return res.redirect(
-    //    `${process.env.FRONT_URL}/products/payment/success/${order?._id}`
-    //  );
+    return res.redirect(
+       `${process.env.FRONT_URL}/products/payment/success/${order?._id}`
+     );
     
   //  return res.send('okkkkkkkkkkkkkkkkkkkkkkkkkkmmmmmm')
   } catch (error) {

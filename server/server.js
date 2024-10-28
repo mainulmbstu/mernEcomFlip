@@ -67,6 +67,6 @@ let port= process.env.PORT || 8080
 
 dbcon().then(() => {
   app.listen(port, () => {
-    console.log(`server running on ${process.env.mode} mode on ${port}`);
+    console.log(`server running on ${process.env.MODE} mode on ${port}`);
   });
 });

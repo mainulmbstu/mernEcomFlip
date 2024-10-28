@@ -644,7 +644,10 @@ const pdfGenerateMail = async (req, res) => {
       //  res.render("productOrder", { order });
 
     let browser = await puppeteer.launch(
-      // {headless:false}
+      {
+        // headless: false,
+        executablePath:process.env.MODE==='live' && 'C:\Program Files\Google\Chrome\Application\chrome.exe'
+      }
     );
     let page = await browser.newPage();
     await page.setContent(ejsData);

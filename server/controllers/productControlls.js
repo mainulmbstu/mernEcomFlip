@@ -635,18 +635,18 @@ const pdfGenerateMail = async (req, res) => {
     
 //  res.render("productOrder", { order });
 
-    let data = {
-      order:order
-    };
-    let ejsPath = path.resolve(__dirname, "../views/productOrder.ejs");
-    const htmlString = fs.readFileSync(ejsPath).toString();
-    let ejsData = ejs.render(htmlString, data);
+    // let data = {
+    //   order:order
+    // };
+    // let ejsPath = path.resolve(__dirname, "../views/productOrder.ejs");
+    // const htmlString = fs.readFileSync(ejsPath).toString();
+    // let ejsData = ejs.render(htmlString, data);
 
-    let browser = await puppeteer.launch(
-      // {headless:false}
-    );
-    let page = await browser.newPage();
-    await page.setContent(ejsData);
+    // let browser = await puppeteer.launch(
+    //   // {headless:false}
+    // );
+    // let page = await browser.newPage();
+    // await page.setContent(ejsData);
 
     // await page.setContent('<h2>helloooooooooooooooooooooo</h2>');
     // await page.emulateMedia('screen')

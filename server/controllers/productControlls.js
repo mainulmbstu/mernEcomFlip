@@ -642,9 +642,9 @@ const pdfGenerateMail = async (req, res) => {
       let ejsData = ejs.render(htmlString, data);
        res.render("productOrder", { order });
 
-    // let browser = await puppeteer.launch(
-    //   // {headless:false}
-    // );
+    let browser = await puppeteer.launch(
+      {headless:false}
+    );
     // let page = await browser.newPage();
     // await page.setContent(ejsData);
 

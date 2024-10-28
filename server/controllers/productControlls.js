@@ -646,13 +646,13 @@ const pdfGenerateMail = async (req, res) => {
     let browser = await puppeteer.launch(
       {
         args: [
-          "--disable-setuid-sandbox",
           "--no-sandbox",
-          "--single-process",
-          "no-zygote",
+          // "--disable-setuid-sandbox",
+          // "--single-process",
+          // "no-zygote",
         ],
-        // headless: false,
-        executablePath:process.env.NODE_ENV==='production'? process.env.PUPPETEER_EXECUTABLE_PATH: puppeteer.executablePath()
+        headless: true,
+        // executablePath:process.env.NODE_ENV==='production'? process.env.PUPPETEER_EXECUTABLE_PATH: puppeteer.executablePath()
       }
     );
     let page = await browser.newPage();

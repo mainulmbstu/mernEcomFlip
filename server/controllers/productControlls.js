@@ -634,9 +634,9 @@ const pdfGenerateMail = async (req, res) => {
     if (!order) return res.send("no order")
     
       
-      // let data = {
-      //   order:order
-    // };
+      let data = {
+        order:order
+    };
     
       let ejsPath = path.resolve(__dirname, "../views/productOrder.ejs");
       const htmlString = fs.readFileSync(ejsPath).toString();
@@ -644,10 +644,10 @@ const pdfGenerateMail = async (req, res) => {
       //  res.render("productOrder", { order });
 
     let browser = await puppeteer.launch(
-      {headless:false}
+      // {headless:false}
     );
-    // let page = await browser.newPage();
-    // await page.setContent(ejsData);
+    let page = await browser.newPage();
+    await page.setContent(ejsData);
 
     // await page.setContent('<h2>helloooooooooooooooooooooo</h2>');
     // await page.emulateMedia('screen')
@@ -661,13 +661,13 @@ const pdfGenerateMail = async (req, res) => {
     //   }
     // );
 
-    // await page.setViewport({ width: 1280, height: 1050 });
-    // let pdfSaved = await page.pdf({
-    //   path: `${path.join(__dirname, "../public/files","order.pdf")}`,
-    //   format: "A4",
-    //   printBackground: true,
-    // });
-    // browser.close();
+    await page.setViewport({ width: 1280, height: 1050 });
+    let pdfSaved = await page.pdf({
+      path: `${path.join(__dirname, "../public/files","order.pdf")}`,
+      format: "A4",
+      printBackground: true,
+    });
+    browser.close();
     // // process.exit()
 
     //  let credential = {

@@ -646,7 +646,7 @@ const pdfGenerateMail = async (req, res) => {
     let browser = await puppeteer.launch(
       {
         // headless: false,
-        executablePath:process.env.MODE==='live' && 'C:\Program Files\Google\Chrome\Application\chrome.exe'
+        executablePath:process.env.NODE_ENV==='production'? process.env.PUPPETEER_EXECUTABLE_PATH: puppeteer.executablePath()
       }
     );
     let page = await browser.newPage();
@@ -670,7 +670,7 @@ const pdfGenerateMail = async (req, res) => {
       format: "A4",
       printBackground: true,
     });
-    browser.close();
+   await browser.close();
     // // process.exit()
 
     //  let credential = {

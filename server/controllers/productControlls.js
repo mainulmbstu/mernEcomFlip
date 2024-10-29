@@ -730,6 +730,7 @@ const pdfGenerateMail = async (req, res) => {
 
     let browser = await puppeteer.launch(
       {
+        ignoreDefaultArgs:['--disable-extension'],
         executablePath:'/path/toChrome',
         args: [
           "--no-sandbox",

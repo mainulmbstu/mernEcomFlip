@@ -666,7 +666,7 @@ const pdfGenerateMail = async (req, res) => {
       // },
     };
     var document = {
-      html:ejsData,
+      html: ejsData,
       // html,
       data: {
         order,
@@ -680,11 +680,25 @@ const pdfGenerateMail = async (req, res) => {
         console.log(res);
       })
       .catch((error) => {
-        console.error(error)
+        console.error(error);
       });
+    let credential = {
+      email: order.user?.email,
+      subject: "Order successful",
+      attachments: [
+        { path: `${path.join(__dirname, "../public/files", "order.pdf")}` },
+      ],
+      body: `<h2>Hi ${order.user?.name},</h2>
+                    <h3>You have placed order successfully. Your order ID is ${order?._id}. </h3>
+                    Thanks for staying with us`,
+    };
+    await mailer(credential);
 
+        return res.redirect(
+           `${process.env.FRONT_URL}/products/payment/success/${order?._id}`
+         );
 
-    return res.send("okkkkkkkkkkkkkkkkkkkkkkkkkkmmmmmm");
+    // return res.send("okkkkkkkkkkkkkkkkkkkkkkkkkkmmmmmm");
   } catch (error) {
     console.log(error);
     res

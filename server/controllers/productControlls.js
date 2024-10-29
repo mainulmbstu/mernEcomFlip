@@ -671,28 +671,31 @@ const pdfGenerateMail = async (req, res) => {
       data: {
         order,
       },
-      path: "./output.pdf",
-      type: "",
+      path: "./order.pdf",
+      type: "application/pdf",
     };
-    pdfCreator
+   await pdfCreator
       .create(document, options)
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+      // .then((res) => {
+      //   console.log(res);
+      // })
+      // .catch((error) => {
+      //   console.error(error);
+      // });
     let credential = {
       email: order.user?.email,
       subject: "Order successful",
       attachments: [
-        { path: `${path.join(__dirname, "../public/files", "order.pdf")}` },
+        { path: `${path.join(__dirname, "../", "order.pdf")}` },
       ],
       body: `<h2>Hi ${order.user?.name},</h2>
                     <h3>You have placed order successfully. Your order ID is ${order?._id}. </h3>
                     Thanks for staying with us`,
     };
     await mailer(credential);
+
+
+    await fs.unlinkSync(`${path.join(__dirname, "../", "order.pdf")}`)
 
         return res.redirect(
            `${process.env.FRONT_URL}/products/payment/success/${order?._id}`

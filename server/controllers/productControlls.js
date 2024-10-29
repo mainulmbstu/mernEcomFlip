@@ -15,7 +15,6 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const ejs = require("ejs");
 const path = require("path");
 const fs = require("fs");
-// const pdf = require("html-pdf");
 let pdfCreator = require("pdf-creator-node");
 const puppeteer = require("puppeteer");
 const mailer = require("../helper/nodeMailer");
@@ -626,7 +625,9 @@ const reportView = async (req, res) => {
   //     .send({ success: false, msg: "error from reportView", error });
   // }
 };
-//======================================================
+//============================================================
+
+//==================pdf-creator-node
 const pdfGenerateMail = async (req, res) => {
   try {
     let { pid } = req.params;
@@ -649,23 +650,24 @@ const pdfGenerateMail = async (req, res) => {
       format: "A4",
       orientation: "portrait",
       border: "10mm",
-      header: {
-        height: "45mm",
-        contents: '<div style="text-align: center;">Author: Shyam Hajare</div>',
-      },
-      footer: {
-        height: "28mm",
-        contents: {
-          first: "Cover page",
-          2: "Second page", // Any page number is working. 1-based index
-          default:
-            '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>', // fallback value
-          last: "Last Page",
-        },
-      },
+      // header: {
+      //   height: "45mm",
+      //   contents: '<div style="text-align: center;">Author: Shyam Hajare</div>',
+      // },
+      // footer: {
+      //   height: "28mm",
+      //   contents: {
+      //     first: "Cover page",
+      //     2: "Second page", // Any page number is working. 1-based index
+      //     default:
+      //       '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>', // fallback value
+      //     last: "Last Page",
+      //   },
+      // },
     };
     var document = {
       html:ejsData,
+      // html,
       data: {
         order,
       },
@@ -678,8 +680,9 @@ const pdfGenerateMail = async (req, res) => {
         console.log(res);
       })
       .catch((error) => {
-        console.error(error);
+        console.error(error)
       });
+
 
     return res.send("okkkkkkkkkkkkkkkkkkkkkkkkkkmmmmmm");
   } catch (error) {
@@ -690,7 +693,7 @@ const pdfGenerateMail = async (req, res) => {
   }
 };
 
-// //======================================================
+// //=================puppeteer
 // const pdfGenerateMail = async (req, res) => {
 //   try {
 //     let { pid } = req.params;
@@ -785,7 +788,7 @@ const pdfGenerateMail = async (req, res) => {
 //============================================================
 const orderFail = async (req, res) => {
   try {
-    let trxn_id = req.params.trxn_id;
+    let trxn_id = req.params.trxn_id
     let deleted = await OrderModel.findOneAndDelete({
       "payment.trxn_id": trxn_id,
     });

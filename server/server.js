@@ -13,7 +13,6 @@ const path = require("path");
 
 
 
-
 const corsOption = {
   origin: process.env.FRONT_URL,
   method: "GET, POST, PATCH, PUT, DELETE, HEAD",
@@ -23,6 +22,8 @@ const corsOption = {
 const app = express();
 app.use(cors(corsOption));
 app.use(express.json());
+
+
 
 app.set('view engine', 'ejs')
 // app.set('views', path.join(__dirname, 'views'))

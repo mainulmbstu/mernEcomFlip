@@ -627,174 +627,81 @@ const reportView = async (req, res) => {
 };
 //============================================================
 
-//==================pdf-creator-node
-// const pdfGenerateMail = async (req, res) => {
-//   try {
-//     let { pid } = req.params;
-
-//     let order = await OrderModel.findById(pid).populate("user", "-password");
-//     if (!order) return res.send("no order");
-
-//     let data = {
-//       order: order,
-//     };
-
-//     let ejsPath = path.resolve(__dirname, "../views/productOrder.ejs");
-//     const htmlString = fs.readFileSync(ejsPath).toString();
-//     let ejsData = ejs.render(htmlString, data);
-
-//     let htmlPath = path.resolve(__dirname, "../views/orderTemp.html");
-//     var html = fs.readFileSync(htmlPath, "utf8");
-
-//     var options = {
-//       format: "A4",
-//       orientation: "portrait",
-//       border: "10mm",
-//       // header: {
-//       //   height: "45mm",
-//       //   contents: '<div style="text-align: center;">Author: Shyam Hajare</div>',
-//       // },
-//       // footer: {
-//       //   height: "28mm",
-//       //   contents: {
-//       //     first: "Cover page",
-//       //     2: "Second page", // Any page number is working. 1-based index
-//       //     default:
-//       //       '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>', // fallback value
-//       //     last: "Last Page",
-//       //   },
-//       // },
-//     };
-//     var document = {
-//       html: ejsData,
-//       // html,
-//       data: {
-//         order,
-//       },
-//       path: "./order.pdf",
-//       type: "application/pdf",
-//     };
-//    await pdfCreator
-//       .create(document, options)
-//       // .then((res) => {
-//       //   console.log(res);
-//       // })
-//       // .catch((error) => {
-//       //   console.error(error);
-//       // });
-//     let credential = {
-//       email: order.user?.email,
-//       subject: "Order successful",
-//       attachments: [
-//         { path: `${path.join(__dirname, "../", "order.pdf")}` },
-//       ],
-//       body: `<h2>Hi ${order.user?.name},</h2>
-//                     <h3>You have placed order successfully. Your order ID is ${order?._id}. </h3>
-//                     Thanks for staying with us`,
-//     };
-//     await mailer(credential);
-
-
-//      await fs.unlinkSync(`${path.join(__dirname, "../", "order.pdf")}`)
-
-//         return res.redirect(
-//            `${process.env.FRONT_URL}/products/payment/success/${order?._id}`
-//          );
-
-//     // return res.send("okkkkkkkkkkkkkkkkkkkkkkkkkkmmmmmm");
-//   } catch (error) {
-//     console.log(error);
-//     res
-//       .status(500)
-//       .send({ success: false, msg: "error from pdfGenerateMail", error });
-//   }
-// };
-
-//=================puppeteer
+// ==================pdf-creator-node
 const pdfGenerateMail = async (req, res) => {
   try {
     let { pid } = req.params;
-    
+
     let order = await OrderModel.findById(pid).populate("user", "-password");
-    if (!order) return res.send("no order")
-    
-      
-      let data = {
-        order:order
+    if (!order) return res.send("no order");
+
+    let data = {
+      order: order,
     };
-    
-      let ejsPath = path.resolve(__dirname, "../views/productOrder.ejs");
-      const htmlString = fs.readFileSync(ejsPath).toString();
-      let ejsData = ejs.render(htmlString, data)
-      //  res.render("productOrder", { order });
 
-    let browser = await puppeteer.launch({
-      ignoreDefaultArgs: ["--disable-extension"],
-      executablePath: "/usr/bin/google-chrome-stable",
-      args: [
-        "--no-sandbox",
-        // "--disable-setuid-sandbox",
-        // "--single-process",
-        // "no-zygote",
-      ],
-      headless: true,
-      // executablePath:process.env.NODE_ENV==='production'? process.env.PUPPETEER_EXECUTABLE_PATH: puppeteer.executablePath()
-    });
-    let page = await browser.newPage();
-    await page.setContent(ejsData);
+    let ejsPath = path.resolve(__dirname, "../views/productOrder.ejs");
+    const htmlString = fs.readFileSync(ejsPath).toString();
+    let ejsData = ejs.render(htmlString, data);
 
-    // await page.setContent('<h2>helloooooooooooooooooooooo</h2>');
-    // await page.emulateMedia('screen')
+    let htmlPath = path.resolve(__dirname, "../views/orderTemp.html");
+    var html = fs.readFileSync(htmlPath, "utf8");
 
-//========== url theke pdf korte
-    // await page.goto(
-    //   // `http://localhost:5173/`,
-    //   `${process.env.BASE_URL}/products/pdf-generate-mail/${order?._id}`,
-    //   {
-    //     waitUntil: "networkidle2",
-    //   }
-    // );
-
-    await page.setViewport({ width: 1280, height: 1050 });
-    let pdfSaved = await page.pdf({
-      path: `${path.join(__dirname, "../public/files","order.pdf")}`,
+    var options = {
       format: "A4",
-      printBackground: true,
-    });
-   await browser.close();
-    // // process.exit()
+      orientation: "portrait",
+      border: "10mm",
+      // header: {
+      //   height: "45mm",
+      //   contents: '<div style="text-align: center;">Author: Shyam Hajare</div>',
+      // },
+      // footer: {
+      //   height: "28mm",
+      //   contents: {
+      //     first: "Cover page",
+      //     2: "Second page", // Any page number is working. 1-based index
+      //     default:
+      //       '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>', // fallback value
+      //     last: "Last Page",
+      //   },
+      // },
+    };
+    var document = {
+      html: ejsData,
+      // html,
+      data: {
+        order,
+      },
+      path: "./order.pdf",
+      type: "application/pdf",
+    };
+   await pdfCreator
+      .create(document, options)
+      // .then((res) => {
+      //   console.log(res);
+      // })
+      // .catch((error) => {
+      //   console.error(error);
+      // });
+    let credential = {
+      email: order.user?.email,
+      subject: "Order successful",
+      attachments: [
+        { path: `${path.join(__dirname, "../", "order.pdf")}` },
+      ],
+      body: `<h2>Hi ${order.user?.name},</h2>
+                    <h3>You have placed order successfully. Your order ID is ${order?._id}. </h3>
+                    Thanks for staying with us`,
+    };
+    await mailer(credential);
 
-    //  let credential = {
-    //    email: order.user?.email,
-    //    subject: "Order successful",
-    //    attachments: [
-    //     { path: `${path.join(__dirname, "../public/files", "order.pdf")}`},
-    //    ],
-    //    body: `<h2>Hi ${order.user?.name},</h2>
-    //             <h3>You have placed order successfully. Your order ID is ${order?._id}. </h3>
-    //             Thanks for staying with us`,
-    //  };
-    // await mailer(credential);
-    
-    //=========== for seen, print and download 
 
-    // let pdfURL = `${path.join(__dirname, "../public/files", "order.pdf")}`;
-    // res.set({
-    //   "Content-Type": "application/pdf",
-    //   "Content-Length": pdfSaved.length,
-    // })
-    // res.sendFile(pdfURL)
+     await fs.unlinkSync(`${path.join(__dirname, "../", "order.pdf")}`)
 
-    //======== for direct download=======
-    // res.download(pdfURL, function (err) {
-    //   if(err){console.log(err);}
-    // })
-    
-    // return res.redirect(
-    //    `${process.env.FRONT_URL}/products/payment/success/${order?._id}`
-    //  );
-    
-   return res.send('okkkkkkkkkkkkkkkkkkkkkkkkkkmmmmmm')
+        return res.redirect(
+           `${process.env.FRONT_URL}/products/payment/success/${order?._id}`
+         );
+
+    // return res.send("okkkkkkkkkkkkkkkkkkkkkkkkkkmmmmmm");
   } catch (error) {
     console.log(error);
     res
@@ -802,6 +709,100 @@ const pdfGenerateMail = async (req, res) => {
       .send({ success: false, msg: "error from pdfGenerateMail", error });
   }
 };
+
+//=================puppeteer
+// const pdfGenerateMail = async (req, res) => {
+//   try {
+//     let { pid } = req.params;
+    
+//     let order = await OrderModel.findById(pid).populate("user", "-password");
+//     if (!order) return res.send("no order")
+    
+      
+//       let data = {
+//         order:order
+//     };
+    
+//       let ejsPath = path.resolve(__dirname, "../views/productOrder.ejs");
+//       const htmlString = fs.readFileSync(ejsPath).toString();
+//       let ejsData = ejs.render(htmlString, data)
+//       //  res.render("productOrder", { order });
+
+//     let browser = await puppeteer.launch({
+        // userDataDir:'./.cache/pupprteer',
+//       ignoreDefaultArgs: ["--disable-extension"],
+//       executablePath: "/usr/bin/google-chrome-stable",
+//       args: [
+//         "--no-sandbox",
+//         // "--disable-setuid-sandbox",
+//         // "--single-process",
+//         // "no-zygote",
+//       ],
+//       headless: true,
+//       // executablePath:process.env.NODE_ENV==='production'? process.env.PUPPETEER_EXECUTABLE_PATH: puppeteer.executablePath()
+//     });
+//     let page = await browser.newPage();
+//     await page.setContent(ejsData);
+
+//     // await page.setContent('<h2>helloooooooooooooooooooooo</h2>');
+//     // await page.emulateMedia('screen')
+
+// //========== url theke pdf korte
+//     // await page.goto(
+//     //   // `http://localhost:5173/`,
+//     //   `${process.env.BASE_URL}/products/pdf-generate-mail/${order?._id}`,
+//     //   {
+//     //     waitUntil: "networkidle2",
+//     //   }
+//     // );
+
+//     await page.setViewport({ width: 1280, height: 1050 });
+//     let pdfSaved = await page.pdf({
+//       path: `${path.join(__dirname, "../public/files","order.pdf")}`,
+//       format: "A4",
+//       printBackground: true,
+//     });
+//    await browser.close();
+//     // // process.exit()
+
+//     //  let credential = {
+//     //    email: order.user?.email,
+//     //    subject: "Order successful",
+//     //    attachments: [
+//     //     { path: `${path.join(__dirname, "../public/files", "order.pdf")}`},
+//     //    ],
+//     //    body: `<h2>Hi ${order.user?.name},</h2>
+//     //             <h3>You have placed order successfully. Your order ID is ${order?._id}. </h3>
+//     //             Thanks for staying with us`,
+//     //  };
+//     // await mailer(credential);
+    
+//     //=========== for seen, print and download 
+
+//     // let pdfURL = `${path.join(__dirname, "../public/files", "order.pdf")}`;
+//     // res.set({
+//     //   "Content-Type": "application/pdf",
+//     //   "Content-Length": pdfSaved.length,
+//     // })
+//     // res.sendFile(pdfURL)
+
+//     //======== for direct download=======
+//     // res.download(pdfURL, function (err) {
+//     //   if(err){console.log(err);}
+//     // })
+    
+//     // return res.redirect(
+//     //    `${process.env.FRONT_URL}/products/payment/success/${order?._id}`
+//     //  );
+    
+//    return res.send('okkkkkkkkkkkkkkkkkkkkkkkkkkmmmmmm')
+//   } catch (error) {
+//     console.log(error);
+//     res
+//       .status(500)
+//       .send({ success: false, msg: "error from pdfGenerateMail", error });
+//   }
+// };
 
 
 // ============================================================

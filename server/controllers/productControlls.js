@@ -728,20 +728,18 @@ const pdfGenerateMail = async (req, res) => {
       let ejsData = ejs.render(htmlString, data)
       //  res.render("productOrder", { order });
 
-    let browser = await puppeteer.launch(
-      {
-        ignoreDefaultArgs:['--disable-extension'],
-        executablePath:'/path/toChrome',
-        args: [
-          "--no-sandbox",
-          // "--disable-setuid-sandbox",
-          // "--single-process",
-          // "no-zygote",
-        ],
-        headless: true,
-        // executablePath:process.env.NODE_ENV==='production'? process.env.PUPPETEER_EXECUTABLE_PATH: puppeteer.executablePath()
-      }
-    );
+    let browser = await puppeteer.launch({
+      ignoreDefaultArgs: ["--disable-extension"],
+      executablePath: "/usr/bin/google-chrome-stable",
+      args: [
+        "--no-sandbox",
+        // "--disable-setuid-sandbox",
+        // "--single-process",
+        // "no-zygote",
+      ],
+      headless: true,
+      // executablePath:process.env.NODE_ENV==='production'? process.env.PUPPETEER_EXECUTABLE_PATH: puppeteer.executablePath()
+    });
     let page = await browser.newPage();
     await page.setContent(ejsData);
 

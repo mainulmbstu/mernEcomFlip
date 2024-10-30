@@ -333,6 +333,21 @@ const getContacts = async (req, res) => {
   }
 };
 
+//======================================================
+let cancelOrder = async (req, res) => {
+  try {
+    let {oid} = req.body;
+    let order = await OrderModel.findByIdAndUpdate(oid, { status:'Cancelled' }, { new: true });
+    if (!order) {
+      return res.send({ msg: "No data found" });
+    }
+    res.status(200).send({ msg: "Order cancelled successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ msg: "error from cancelOrder", error });
+  }
+};
+
 
 //==============================================
 
@@ -350,4 +365,5 @@ module.exports = {
   getOTP,
   contact,
   getContacts,
+  cancelOrder,
 };

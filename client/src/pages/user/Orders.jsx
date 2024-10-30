@@ -7,31 +7,38 @@ import { useAuth } from "../../context/AuthContext";
 import Layout from "./../../components/Layout";
 import InfiniteScroll from "react-infinite-scroll-component";
 import PriceFormat from "../../Helper/PriceFormat";
+import { toast } from "react-toastify";
+import CancelModal from "../../components/CancelModal";
 
 const Orders = () => {
   let [loading, setLoading] = useState(false);
   let [orders, setOrders] = useState([]);
-  let { token } = useAuth();
+  let { token, Axios } = useAuth();
   let [page, setPage] = useState(1);
   let [total, setTotal] = useState(0);
+  let [cancelItem, setCancelItem] = useState('');
+let size = 10
 
-  let getUserOrders = async () => {
-    page === 1 && window.scrollTo(0, 0);
+  let getUserOrders = async (page, size) => {
+    // page === 1 && window.scrollTo(0, 0);
     try {
       setLoading(true);
       let { data } = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/user/orders`,
         {
+
           params: {
-            page: page,
-            size: 8,
+            page,
+            size,
           },
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      setPage(page + 1);
+    
       setTotal(data.total);
-      setOrders([...orders, ...data.orderList]);
+       page === 1
+         ? setOrders(data?.orderList)
+         : setOrders([...orders, ...data.orderList]);
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -40,9 +47,22 @@ const Orders = () => {
   };
 
   useEffect(() => {
-    if (token) getUserOrders();
+    if (token) getUserOrders(page, size);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
+//=============================================
+  let cancelOrder = async (oid) => {
+    try {
+      setLoading(true);
+      let { data } = await Axios.post(`/cancel-order/${oid}`, {oid});
+      setLoading(false);
+      await toast.success(data.msg)
+      getUserOrders(1, page*size)
+    } catch (error) {
+      setLoading(false);
+      console.log(error);
+    }
+  }
 
   return (
     <Layout title="User order list">
@@ -63,7 +83,10 @@ const Orders = () => {
           <div className=" col-md-9 p-2">
             <InfiniteScroll
               dataLength={orders.length}
-              next={getUserOrders}
+              next={() => {
+                setPage(page + 1);
+                getUserOrders(page + 1, size);
+              }}
               hasMore={orders.length < total}
               loader={<h1>Loading...</h1>}
               endMessage={<h4 className=" text-center">All items loaded</h4>}
@@ -83,6 +106,7 @@ const Orders = () => {
                               <th scope="col">Item</th>
                               <th scope="col">Total Price</th>
                               <th scope="col">Time</th>
+                              <th scope="col">Action</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -92,12 +116,25 @@ const Orders = () => {
                               <td>
                                 {item?.payment?.status ? "Success" : "Failed"}{" "}
                               </td>
-                              <td>
-                                {item?.payment?.payment_id}
-                              </td>
+                              <td>{item?.payment?.payment_id}</td>
                               <td>{item?.products.length} </td>
                               <td>{<PriceFormat price={item?.total} />} </td>
                               <td>{moment(item?.createdAt).fromNow()} </td>
+
+                              <td>
+                                <button
+                                  onClick={() => setCancelItem(item)}
+                                  type="button"
+                                  className="btn btn-danger"
+                                  data-bs-toggle="modal"
+                                  data-bs-target="#cancelOrder"
+                                  disabled={item?.status !== "Not Process"}
+                                >
+                                  {item?.status === "Cancelled"
+                                    ? "Cancelled"
+                                    : "Cancel"}
+                                </button>
+                              </td>
                             </tr>
                           </tbody>
                         </table>
@@ -161,6 +198,7 @@ const Orders = () => {
             </InfiniteScroll>
           </div>
         </div>
+        <CancelModal value={{ item:cancelItem, func:cancelOrder, text:'Do you want to cancel this order' }} />
       </div>
     </Layout>
   );

@@ -16,6 +16,7 @@ router.get("/user/orders", loginMiddleware, userControlls.userOrders);
 router.get("/gallery", userControlls.gallery);
 router.post("/contact", userControlls.contact);
 router.get("/get-contacts",loginMiddleware, userControlls.getContacts);
+router.post("/cancel-order/:oid", loginMiddleware, userControlls.cancelOrder);
 //=================== forgot password
 router.post("/userVerified", localVariable, userControlls.userVerified);
 router.post("/OTPVerified/:email", userControlls.OTPVerified);

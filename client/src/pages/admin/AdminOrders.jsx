@@ -19,7 +19,7 @@ const AdminOrders = () => {
     "Processing",
     "shipped",
     "delivered",
-    "cancel",
+    "cancelled",
   ]);
   let [loading, setLoading] = useState(false);
   let { token, userInfo, Axios } = useAuth();
@@ -217,7 +217,13 @@ const AdminOrders = () => {
                           <tbody>
                             <tr>
                               <td>{i + 1} </td>
-                              <td>
+                              <td
+                                className={
+                                  item?.status === "Cancelled"
+                                    ? "bg-danger"
+                                    : ""
+                                }
+                              >
                                 <Select
                                   variant={false}
                                   defaultValue={item?.status}
@@ -249,6 +255,7 @@ const AdminOrders = () => {
                                     setPrintItem(item);
                                   }}
                                   className="btn btn-info"
+                                  disabled={item?.status==='Cancelled'}
                                 >
                                   {printItem?._id === item?._id
                                     ? "OK"
@@ -298,8 +305,12 @@ const AdminOrders = () => {
                                       </h5>
                                       <p>Category: {p?.category?.name} </p>
                                       <p
-                                        className={p?.color?.length ? "" : "d-none"}
-                                      >{`Color: ${p?.color?.length && p?.color[0]}`}</p>
+                                        className={
+                                          p?.color?.length ? "" : "d-none"
+                                        }
+                                      >{`Color: ${
+                                        p?.color?.length && p?.color[0]
+                                      }`}</p>
                                       <p>{`Qnty: ${p?.amount}`}</p>
                                       <p>
                                         Sub-Total:{" "}

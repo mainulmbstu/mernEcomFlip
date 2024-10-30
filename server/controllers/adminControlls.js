@@ -79,8 +79,8 @@ let userStatusUpdate = async (req, res) => {
   try {
     let id = req.params.id;
     let { role } = req.body;
-    await UserModel.findByIdAndUpdate(id, { role }, { new: true });
-    if (!UserModel) {
+   let user= await UserModel.findByIdAndUpdate(id, { role }, { new: true });
+    if (!user) {
       return res.status(400).send({ msg: "No data found" });
     }
     res.status(200).send({ msg: "User updated successfully" });

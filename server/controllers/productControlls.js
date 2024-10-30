@@ -3,9 +3,6 @@ const {
   deleteImageOnCloudinary,
 } = require("../helper/cloudinary");
 const { v4: uuidv4 } = require("uuid");
-
-const SSLCommerzPayment = require("sslcommerz-lts");
-
 const ProductModel = require("../models/productModel");
 const CategoryModel = require("../models/CategoryModel");
 const slugify = require("slugify");

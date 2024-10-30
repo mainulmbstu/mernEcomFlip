@@ -184,7 +184,7 @@ const updateProduct = async (req, res) => {
     if (category) product.category = category;
     if (price) product.price = price;
     if (offer) product.offer = offer;
-    if (quantity) product.quantity = quantity;
+    if (quantity) product.quantity = quantity
     product.color = cArr;
 
     // upload and delete image on cloudinary

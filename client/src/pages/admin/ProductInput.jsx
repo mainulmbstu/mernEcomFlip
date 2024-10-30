@@ -13,9 +13,9 @@ const ProductInput = ({ getProducts }) => {
     price: "",
     offer: "",
     quantity: "",
+    color: "",
     picture: '',
   });
-
   let { token, catPlain } = useAuth();
   let inputHandle = (e) => {
     let { name, value } = e.target;
@@ -36,6 +36,7 @@ const ProductInput = ({ getProducts }) => {
     formdata.append("price", inputVal.price);
     formdata.append("offer", inputVal.offer);
     formdata.append("quantity", inputVal.quantity);
+    formdata.append("color", inputVal.color);
     try {
       setLoading(true);
 
@@ -59,6 +60,7 @@ const ProductInput = ({ getProducts }) => {
           price: "",
           offer: "",
           quantity: "",
+          color: "",
           picture: inputVal.picture,
         });
         setLoading(false);
@@ -224,6 +226,15 @@ const ProductInput = ({ getProducts }) => {
                   name="quantity"
                   value={inputVal.quantity}
                   placeholder="Enter quantity"
+                />
+
+                <input
+                  onChange={inputHandle}
+                  className=" form-control mb-2"
+                  type="text"
+                  name="color"
+                  value={inputVal.color}
+                  placeholder="Type Color with comma (Black,Red,Blue) "
                 />
 
                 <div>

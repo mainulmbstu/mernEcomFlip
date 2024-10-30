@@ -59,6 +59,7 @@ const Print = ({ printItem }, ref) => {
             <tr>
               <th scope="col">#</th>
               <th scope="col">Product</th>
+              <th scope="col">Color</th>
               <th scope="col">Unit Price</th>
               <th scope="col">Quantity</th>
               <th scope="col">Sub-Total</th>
@@ -72,6 +73,7 @@ const Print = ({ printItem }, ref) => {
                   <tr key={item._id}>
                     <td>{i + 1}</td>
                     <td>{item.name}</td>
+                    <td>{item?.color?.length? item?.color[0]:'N/A'}</td>
                     <td>
                       {
                         <PriceFormat

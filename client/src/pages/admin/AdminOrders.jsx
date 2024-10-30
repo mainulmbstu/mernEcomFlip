@@ -297,6 +297,9 @@ const AdminOrders = () => {
                                         }
                                       </h5>
                                       <p>Category: {p?.category?.name} </p>
+                                      <p
+                                        className={p?.color?.length ? "" : "d-none"}
+                                      >{`Color: ${p?.color?.length && p?.color[0]}`}</p>
                                       <p>{`Qnty: ${p?.amount}`}</p>
                                       <p>
                                         Sub-Total:{" "}

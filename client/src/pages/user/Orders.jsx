@@ -118,15 +118,33 @@ const Orders = () => {
                                   <div>
                                     <h5>
                                       Name: {p?.name}- Price:{" "}
-                                      {<PriceFormat price={p?.price-p?.price*p?.offer/100} />}
+                                      {
+                                        <PriceFormat
+                                          price={
+                                            p?.price -
+                                            (p?.price * p?.offer) / 100
+                                          }
+                                        />
+                                      }
                                     </h5>
                                     <p>Category: {p?.category?.name} </p>
+                                    <p
+                                      className={
+                                        p?.color?.length ? "" : "d-none"
+                                      }
+                                    >{`Color: ${
+                                      p?.color?.length && p?.color[0]
+                                    }`}</p>
                                     <p>{`Quantity: ${p?.amount}`}</p>
                                     <p>
                                       Sub-Total:{" "}
                                       {
                                         <PriceFormat
-                                          price={(p?.price-p?.price*p?.offer/100) * p.amount}
+                                          price={
+                                            (p?.price -
+                                              (p?.price * p?.offer) / 100) *
+                                            p.amount
+                                          }
                                         />
                                       }{" "}
                                     </p>

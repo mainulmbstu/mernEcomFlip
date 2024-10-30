@@ -85,6 +85,7 @@
                         <th scope="col">#</th>
                         <th scope="col">Image</th>
                         <th scope="col">Product</th>
+                        <th scope="col">Color</th>
                         <th scope="col">Unit Price</th>
                         <th scope="col">Quantity</th>
                         <th scope="col">Sub-Total</th>
@@ -97,6 +98,7 @@
                             <td><%= i+1 %></td>
                             <td><img src=<%= item.picture[0].secure_url %> width='50px' height='auto' alt="image"></td>
                             <td><%= item.name %></td>
+                            <td><%= item.color?.length?item.color:'N/A' %></td>
                             <td> $ <%= item.price-item.price*item.offer/100 %></td>
                             <td><%= item.amount %></td>
                             <td> $ <%= (item.price-item.price*item.offer/100)* item.amount %></td>

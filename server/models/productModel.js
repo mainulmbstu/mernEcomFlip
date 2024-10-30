@@ -13,6 +13,9 @@ const productSchema = new mongoose.Schema(
     price: { type: Number, required: true },
     offer: { type: Number, default: 0 },
     quantity: { type: Number, required: true },
+    color: [
+      { type: String}
+    ],
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User", //collection name in mongoose.model('User', userSchema)

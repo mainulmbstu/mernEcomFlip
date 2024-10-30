@@ -167,7 +167,30 @@ const MoreInfo = () => {
                   <h5>Name: {moreInfo?.name} </h5>
                   <p>Product ID: {moreInfo?._id} </p>
                   <p>Category: {moreInfo?.category?.name} </p>
-                  <p>Price: {<PriceFormat price={moreInfo?.price} />} </p>
+                  <p className={moreInfo?.offer ? "text-decoration-line-through" : "d-none"}>
+                    Price: {<PriceFormat price={moreInfo?.price} />}{" "}
+                  </p>
+                  <p>
+                    Price:{" "}
+                    {
+                      <PriceFormat
+                        price={
+                          moreInfo?.price -
+                          (moreInfo?.price * moreInfo?.offer) / 100
+                        }
+                      />
+                    }{" "}
+                  </p>
+                  <p className={moreInfo?.offer ? "text-danger" : "d-none"}>
+                    Offer: {moreInfo?.offer}% off{" "}
+                  </p>
+                  <p className={moreInfo?.color?.length ? "" : "d-none"}>
+                    Available Color:{" "}
+                    {moreInfo?.color?.length &&
+                      moreInfo?.color?.map((item, i) => (
+                        <span key={i}>{item}, </span>
+                      ))}
+                  </p>
                   <p>Quqntity: {moreInfo?.quantity} </p>
                   <p className="m-0 ">
                     <span className="bg-success p-1 rounded-3 text-white">
@@ -205,7 +228,7 @@ const MoreInfo = () => {
                       if (cartIds.includes(moreInfo._id)) {
                         return alert("Already added");
                       }
-                      setCart([moreInfo,...cart]);
+                      setCart([moreInfo, ...cart]);
                       localStorage.setItem(
                         "cart",
                         JSON.stringify([moreInfo, ...cart])

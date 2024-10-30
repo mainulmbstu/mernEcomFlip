@@ -22,8 +22,8 @@ const mailer = require("../helper/nodeMailer");
 //==================================================
 const createProduct = async (req, res) => {
   try {
-    const { name, description, category, price, offer, quantity } = req.body;
-    // console.log(req.files);
+    let { name, description, category, price, color, offer, quantity } =
+      req.body;
     const pictures = req.files;
     if (!name || !description || !category || !price || !quantity) {
       return res.send({ msg: "All fields are required" });
@@ -47,22 +47,42 @@ const createProduct = async (req, res) => {
           .send({ msg: "error uploading image", error: secure_url });
       }
     }
-    let product = await ProductModel.create({
-      name: name.toUpperCase(),
-      slug: slugify(name),
-      description,
-      category,
-      price,
-      if(offer) {
-        offer;
-      },
-      quantity,
-      user: req.user?._id,
-      picture: links,
+    let cArr = [];
+    if (color) {
+      cArr = await color.split(",");
+    }
+    let product = new ProductModel();
+
+    product.name = name.toUpperCase();
+    product.slug = slugify(name);
+    product.description = description;
+    product.category = category;
+    product.price = price;
+    if (offer) product.offer = offer;
+    if (color) product.color = cArr;
+    product.quantity = quantity;
+    product.user = req.user?._id;
+    product.picture = links;
+
+    await product.save();
+
+    // let product = await ProductModel.create({
+    //   name: name.toUpperCase(),
+    //   slug: slugify(name),
+    //   description,
+    //   category,
+    //   price,
+    //   offer,
+    //   color:color && color,
+    //   quantity,
+    //   user: req.user?._id,
+    //   picture: links,
+    // });
+    res.status(201).send({
+      msg: "product created successfully",
+      success: true,
+      product,
     });
-    res
-      .status(201)
-      .send({ msg: "product created successfully", success: true, product });
   } catch (error) {
     console.log(error);
     res.status(500).send({
@@ -144,7 +164,7 @@ const productList = async (req, res) => {
 const updateProduct = async (req, res) => {
   try {
     let pid = req.params.pid;
-    const { name, description, category, price, offer, quantity } = req.body;
+    const { name, description, category, price, offer, quantity, color } = req.body;
     const pictures = req.files;
     if (category === "undefined") {
       return res.send({ msg: "Wrong category" });
@@ -153,6 +173,10 @@ const updateProduct = async (req, res) => {
     if (!product) {
       return res.send({ msg: "No data found" });
     }
+      let cArr = [];
+      if (color) {
+        cArr = await color.split(",");
+      }
 
     if (name) product.name = name.toUpperCase();
     if (name) product.slug = slugify(name);
@@ -161,6 +185,7 @@ const updateProduct = async (req, res) => {
     if (price) product.price = price;
     if (offer) product.offer = offer;
     if (quantity) product.quantity = quantity;
+    product.color = cArr;
 
     // upload and delete image on cloudinary
     let picturePaths =
@@ -674,32 +699,28 @@ const pdfGenerateMail = async (req, res) => {
       path: "./order.pdf",
       type: "application/pdf",
     };
-   await pdfCreator
-      .create(document, options)
-      // .then((res) => {
-      //   console.log(res);
-      // })
-      // .catch((error) => {
-      //   console.error(error);
-      // });
+    await pdfCreator.create(document, options);
+    // .then((res) => {
+    //   console.log(res);
+    // })
+    // .catch((error) => {
+    //   console.error(error);
+    // });
     let credential = {
       email: order.user?.email,
       subject: "Order successful",
-      attachments: [
-        { path: `${path.join(__dirname, "../", "order.pdf")}` },
-      ],
+      attachments: [{ path: `${path.join(__dirname, "../", "order.pdf")}` }],
       body: `<h2>Hi ${order.user?.name},</h2>
                     <h3>You have placed order successfully. Your order ID is ${order?._id}. </h3>
                     Thanks for staying with us`,
     };
     await mailer(credential);
 
+    await fs.unlinkSync(`${path.join(__dirname, "../", "order.pdf")}`);
 
-     await fs.unlinkSync(`${path.join(__dirname, "../", "order.pdf")}`)
-
-        return res.redirect(
-           `${process.env.FRONT_URL}/products/payment/success/${order?._id}`
-         );
+    return res.redirect(
+      `${process.env.FRONT_URL}/products/payment/success/${order?._id}`
+    );
 
     // return res.send("okkkkkkkkkkkkkkkkkkkkkkkkkkmmmmmm");
   } catch (error) {
@@ -714,22 +735,21 @@ const pdfGenerateMail = async (req, res) => {
 // const pdfGenerateMail = async (req, res) => {
 //   try {
 //     let { pid } = req.params;
-    
+
 //     let order = await OrderModel.findById(pid).populate("user", "-password");
 //     if (!order) return res.send("no order")
-    
-      
+
 //       let data = {
 //         order:order
 //     };
-    
+
 //       let ejsPath = path.resolve(__dirname, "../views/productOrder.ejs");
 //       const htmlString = fs.readFileSync(ejsPath).toString();
 //       let ejsData = ejs.render(htmlString, data)
 //       //  res.render("productOrder", { order });
 
 //     let browser = await puppeteer.launch({
-        // userDataDir:'./.cache/pupprteer',
+// userDataDir:'./.cache/pupprteer',
 //       ignoreDefaultArgs: ["--disable-extension"],
 //       executablePath: "/usr/bin/google-chrome-stable",
 //       args: [
@@ -776,8 +796,8 @@ const pdfGenerateMail = async (req, res) => {
 //     //             Thanks for staying with us`,
 //     //  };
 //     // await mailer(credential);
-    
-//     //=========== for seen, print and download 
+
+//     //=========== for seen, print and download
 
 //     // let pdfURL = `${path.join(__dirname, "../public/files", "order.pdf")}`;
 //     // res.set({
@@ -790,11 +810,11 @@ const pdfGenerateMail = async (req, res) => {
 //     // res.download(pdfURL, function (err) {
 //     //   if(err){console.log(err);}
 //     // })
-    
+
 //     // return res.redirect(
 //     //    `${process.env.FRONT_URL}/products/payment/success/${order?._id}`
 //     //  );
-    
+
 //    return res.send('okkkkkkkkkkkkkkkkkkkkkkkkkkmmmmmm')
 //   } catch (error) {
 //     console.log(error);
@@ -804,13 +824,11 @@ const pdfGenerateMail = async (req, res) => {
 //   }
 // };
 
-
 // ============================================================
-
 
 const orderFail = async (req, res) => {
   try {
-    let trxn_id = req.params.trxn_id
+    let trxn_id = req.params.trxn_id;
     let deleted = await OrderModel.findOneAndDelete({
       "payment.trxn_id": trxn_id,
     });

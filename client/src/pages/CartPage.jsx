@@ -7,48 +7,74 @@ import { Checkbox } from "antd";
 import { useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { useEffect } from "react";
-
+import { useRef } from "react";
+import { useCallback } from "react";
 
 export const CartPage = () => {
   let { token, userInfo, Axios } = useAuth();
   let { cart, setCart } = useSearch();
-  let [ selectedCart, setSelectedCart ] = useState([]);
-  let [ loading, setLoading ] = useState(false);
+  let [selectedCart, setSelectedCart] = useState([]);
+  let [loading, setLoading] = useState(false);
   let navigate = useNavigate();
 
   //========= cart update auto
-
-
   useEffect(() => {
-    let cartIdArr = cart?.length && cart.map(item => item?._id)
+    let cartIdArr = cart?.length && cart.map((item) => item?._id);
     let getUpdatedProducts = async () => {
       try {
-        let {data} = await Axios.post(`/products/cart-update`, { cartIdArr });
-        
+        let { data } = await Axios.post(`/products/cart-update`, { cartIdArr });
+
         setCart(data.products);
         localStorage.setItem("cart", JSON.stringify(data.products));
-        } catch (error) {
-          console.log(error);
-        }
-    }
-    getUpdatedProducts()
-  }, [])
-  
-
-    let cartItemHandle = (checked, checkedItem) => {
-      let all = [...selectedCart];
-      if (checked) {
-        all.push(checkedItem);
-      } else {
-        all = all.filter((item) => item._id !== checkedItem._id);
+      } catch (error) {
+        console.log(error);
       }
-      setSelectedCart(all);
     };
+    getUpdatedProducts();
+  }, []);
+
+  // let ref1 = useRef()
+  let [refList, setRefList] = useState([])
+  
+ let ref1 = useCallback((el) => {
+   setRefList((prev) => [...prev, el]);
+ }, []);
+
+  // console.log(refList[0]?.id);
+  
+  let cartItemHandle = (checked, checkedItem) => {
+    let all = [...selectedCart];
+    if (checked) {
+      all.push(checkedItem);
+    } else {
+      all = all.filter((item) => item._id !== checkedItem._id);
+     let one= (refList?.length &&
+        refList.find((item) => item?.id === checkedItem?._id))
+      one.value=''
+    }
+    setSelectedCart(all);
+  };
+
+  let colorHandle = (id, e) => {
+    let findObj = selectedCart.length && selectedCart.find((item) => item._id === id);
+    if (!findObj) {
+      alert("Please select the item first");
+     let one =
+       refList?.length && refList.find((item) => item?.id === id);
+    return one.value = "";
+    }
+    let tempObj = { ...findObj };
+    tempObj.color = [e.target.value];
+    let tempArr2 = selectedCart.filter(item => item._id !== id)
+    tempArr2.push(tempObj)
+    setSelectedCart(tempArr2)
+  }
 
 
   let amountHandle = (id, d) => {
-    let isSelected = selectedCart.length && selectedCart.find(item => item._id === id)
-    if (!isSelected) return alert('Please select the item first')
+    let isSelected =
+      selectedCart.length && selectedCart.find((item) => item._id === id);
+    if (!isSelected) return alert("Please select the item first");
     let ind = -1;
     selectedCart.length &&
       selectedCart?.forEach((data, index) => {
@@ -61,15 +87,23 @@ export const CartPage = () => {
   };
 
   let total =
-    selectedCart?.length &&
-    selectedCart?.reduce((previous, current) => {
-      return previous +( current?.price - current?.price * current?.offer/100)* current.amount;
-    }, 0);
+     selectedCart?.length &&
+     selectedCart?.reduce((previous, current) => {
+       return (
+         previous +
+         (current?.price - (current?.price * current?.offer) / 100) *
+           current.amount
+       );
+     }, 0);
 
   let removeCartItem = (id) => {
     try {
+      let isSelected = selectedCart?.length && selectedCart.find(item => item._id === id)
+      if (isSelected) {
+        return alert('Deselect the item first to remove from cart')
+      }
       let index = cart?.findIndex((item) => item._id === id);
-      let newCart=[...cart]
+      let newCart = [...cart];
       newCart?.splice(index, 1);
       setCart(newCart);
       localStorage.setItem("cart", JSON.stringify(newCart));
@@ -101,11 +135,7 @@ export const CartPage = () => {
     }
   };
 
-//===================================================
-
-
-
-
+  //===================================================
 
   //============== for ssl
   // let checkout = async () => {
@@ -156,6 +186,8 @@ export const CartPage = () => {
                           onChange={(e) =>
                             cartItemHandle(e.target.checked, item)
                           }
+                          checked={selectedCart?.length && selectedCart?.filter((p) => p?._id === item?._id
+                          ).length > 0}
                         ></Checkbox>
                       </div>
                       <div className="col-9">
@@ -186,6 +218,51 @@ export const CartPage = () => {
                           <p className="m-0">
                             Category: {item?.category?.name}{" "}
                           </p>
+                          <p
+                            className={
+                              item?.color?.length ? "m-0 py-2 w-50" : "d-none"
+                            }
+                          >
+                            <select
+                              ref={ref1}
+                              onChange={(e) => colorHandle(item._id, e)}
+                              name=""
+                              id={item?._id}
+                              // value={'colormm'}
+                              className="form-select"
+                            >
+                              <option value={""}>Select Color</option>
+                              {item?.color?.length &&
+                                item?.color.map((clr) => (
+                                  <option key={clr} value={clr}>
+                                    {clr}
+                                  </option>
+                                ))}
+                            </select>
+                          </p>
+                          {/* <div className="mb-2">
+                            <input
+                              ref={ref1}
+                              className="form-control"
+                              list="mm"
+                              type={"text"}
+                          
+                              placeholder={"bbbbbbbb"}
+                              onChange={(e) => colorHandle(item._id, e)}
+                            />
+
+                            <datalist id="mm">
+                              {item?.color?.length &&
+                                item?.color.map((clr) => {
+                                  return (
+                                    <option
+                                      key={clr}
+                                      value={clr}
+                                    ></option>
+                                  );
+                                })}
+                            </datalist>
+                          </div> */}
                           <div>
                             <button
                               onClick={() => amountHandle(item._id, -1)}

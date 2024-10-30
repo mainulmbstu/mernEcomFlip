@@ -12,6 +12,7 @@ const ProductUpdateInput = ({ value }) => {
     price: "",
     offer: "",
     quantity: "",
+    color: "",
     picture: [],
   });
   let { loading, setLoading, Axios, catPlain } = useAuth();
@@ -27,6 +28,7 @@ const ProductUpdateInput = ({ value }) => {
       price: editProduct?.price,
       offer: editProduct?.offer,
       quantity: editProduct?.quantity,
+      color: editProduct?.color,
       picture: "",
     });
   }, [editProduct]);
@@ -49,6 +51,7 @@ const ProductUpdateInput = ({ value }) => {
     formdata.append("price", inputVal.price);
     formdata.append("offer", inputVal.offer);
     formdata.append("quantity", inputVal.quantity);
+    formdata.append("color", inputVal.color);
     try {
       setLoading(true);
       let { data } = await Axios.post(
@@ -189,6 +192,15 @@ const ProductUpdateInput = ({ value }) => {
                   name="quantity"
                   value={inputVal.quantity}
                   placeholder="Enter quantity"
+                />
+                <label htmlFor=""> Color (if applicable) </label>
+                <input
+                  onChange={inputHandle}
+                  className=" form-control mb-2"
+                  type="text"
+                  name="color"
+                  value={inputVal.color}
+                  placeholder="Type Color with comma (Black,Red,Blue) "
                 />
 
                 <div>

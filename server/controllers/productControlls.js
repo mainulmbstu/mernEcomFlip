@@ -728,7 +728,8 @@ const pdfGenerateMail = async (req, res) => {
   }
 };
 
-//=================puppeteer
+// =================puppeteer
+
 // const pdfGenerateMail = async (req, res) => {
 //   try {
 //     let { pid } = req.params;
@@ -746,16 +747,16 @@ const pdfGenerateMail = async (req, res) => {
 //       //  res.render("productOrder", { order });
 
 //     let browser = await puppeteer.launch({
-// userDataDir:'./.cache/pupprteer',
-//       ignoreDefaultArgs: ["--disable-extension"],
-//       executablePath: "/usr/bin/google-chrome-stable",
-//       args: [
-//         "--no-sandbox",
-//         // "--disable-setuid-sandbox",
-//         // "--single-process",
-//         // "no-zygote",
-//       ],
-//       headless: true,
+// // userDataDir:'./.cache/pupprteer',
+// //       ignoreDefaultArgs: ["--disable-extension"],
+// //       executablePath: "/usr/bin/google-chrome-stable",
+//       // args: [
+//       //   "--no-sandbox",
+//       //   "--disable-setuid-sandbox",
+//       //   "--single-process",
+//       //   "no-zygote",
+//       // ],
+//       // headless: true,
 //       // executablePath:process.env.NODE_ENV==='production'? process.env.PUPPETEER_EXECUTABLE_PATH: puppeteer.executablePath()
 //     });
 //     let page = await browser.newPage();

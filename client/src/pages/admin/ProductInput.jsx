@@ -22,6 +22,7 @@ const ProductInput = ({ getProducts }) => {
     setInputVal((prev) => ({ ...prev, [name]: value }));
   };
 
+
   //=================================================
   let productSubmit = async (e) => {
     e.preventDefault();
